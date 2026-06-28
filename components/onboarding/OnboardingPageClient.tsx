@@ -4,9 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Bluetooth, Cloud, Wind } from "lucide-react";
 import { OnboardingStepIndicator } from "@/components/onboarding/OnboardingStepIndicator";
+import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/input";
-import { MEDICAL_DISCLAIMER } from "@/lib/constants";
 import {
   ONBOARDING_STORAGE_KEY,
   type DemoRiskFactors,
@@ -126,122 +127,125 @@ export function OnboardingPageClient() {
 
       <div className="flex-1 space-y-5">
         {step === 1 && (
-          <section className="space-y-4">
-            <p className="text-sm text-[var(--text-secondary)]">
-              ข้อมูลส่วนตัว (ไม่เก็บชื่อ-นามสกุล)
-            </p>
-            <label className="block space-y-1">
-              <span className="text-sm">อายุ</span>
-              <Input
-                type="number"
-                min={1}
-                max={120}
-                value={age}
-                onChange={(e) => setAge(e.target.value)}
-              />
-            </label>
-            <label className="block space-y-1">
-              <span className="text-sm">เพศ</span>
-              <Select value={gender} onChange={(e) => setGender(e.target.value)}>
-                <option value="">เลือก</option>
-                <option value="female">หญิง</option>
-                <option value="male">ชาย</option>
-                <option value="other">อื่น ๆ</option>
-              </Select>
-            </label>
-            <label className="block space-y-1">
-              <span className="text-sm">น้ำหนัก (kg)</span>
-              <Input
-                type="number"
-                min={1}
-                step={0.1}
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
-              />
-            </label>
-          </section>
+          <Card>
+            <CardContent className="space-y-4 pt-4">
+              <p className="text-sm text-[var(--text-secondary)]">
+                ข้อมูลส่วนตัว (ไม่เก็บชื่อ-นามสกุล)
+              </p>
+              <label className="block space-y-1">
+                <span className="text-sm">อายุ</span>
+                <Input
+                  type="number"
+                  min={1}
+                  max={120}
+                  value={age}
+                  onChange={(e) => setAge(e.target.value)}
+                />
+              </label>
+              <label className="block space-y-1">
+                <span className="text-sm">เพศ</span>
+                <Select value={gender} onChange={(e) => setGender(e.target.value)}>
+                  <option value="">เลือก</option>
+                  <option value="female">หญิง</option>
+                  <option value="male">ชาย</option>
+                  <option value="other">อื่น ๆ</option>
+                </Select>
+              </label>
+              <label className="block space-y-1">
+                <span className="text-sm">น้ำหนัก (kg)</span>
+                <Input
+                  type="number"
+                  min={1}
+                  step={0.1}
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                />
+              </label>
+            </CardContent>
+          </Card>
         )}
 
         {step === 2 && (
-          <section className="space-y-4">
-            <p className="text-sm text-[var(--text-secondary)]">
-              ปัจจัยเสี่ยง (เลือกได้มากกว่าหนึ่งข้อ)
-            </p>
-            {[
-              { id: "diabetes", label: "โรคเบาหวาน", checked: hasDiabetes, set: setHasDiabetes },
-              {
-                id: "hypertension",
-                label: "ความดันโลหิตสูง",
-                checked: hasHypertension,
-                set: setHasHypertension,
-              },
-              {
-                id: "family",
-                label: "ประวัติครอบครัวเป็นโรคไต",
-                checked: hasFamilyHistory,
-                set: setHasFamilyHistory,
-              },
-            ].map((item) => (
-              <label
-                key={item.id}
-                className="flex cursor-pointer items-center gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3"
-              >
-                <input
-                  type="checkbox"
-                  checked={item.checked}
-                  onChange={(e) => item.set(e.target.checked)}
-                  className="h-4 w-4 accent-[var(--accent-primary)]"
-                />
-                <span className="text-sm">{item.label}</span>
-              </label>
-            ))}
-          </section>
+          <Card>
+            <CardContent className="space-y-3 pt-4">
+              <p className="text-sm text-[var(--text-secondary)]">
+                ปัจจัยเสี่ยง (เลือกได้มากกว่าหนึ่งข้อ)
+              </p>
+              {[
+                { id: "diabetes", label: "โรคเบาหวาน", checked: hasDiabetes, set: setHasDiabetes },
+                {
+                  id: "hypertension",
+                  label: "ความดันโลหิตสูง",
+                  checked: hasHypertension,
+                  set: setHasHypertension,
+                },
+                {
+                  id: "family",
+                  label: "ประวัติครอบครัวเป็นโรคไต",
+                  checked: hasFamilyHistory,
+                  set: setHasFamilyHistory,
+                },
+              ].map((item) => (
+                <label
+                  key={item.id}
+                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-border-subtle bg-[var(--bg-primary)] px-4 py-3"
+                >
+                  <input
+                    type="checkbox"
+                    checked={item.checked}
+                    onChange={(e) => item.set(e.target.checked)}
+                    className="h-4 w-4 accent-[var(--accent-primary)]"
+                  />
+                  <span className="text-sm">{item.label}</span>
+                </label>
+              ))}
+            </CardContent>
+          </Card>
         )}
 
         {step === 3 && (
-          <section className="space-y-4">
-            <p className="text-sm font-medium">ข้อจำกัดความรับผิดชอบ</p>
-            <p className="rounded-xl border border-border-subtle bg-surface p-4 text-sm leading-relaxed text-[var(--text-secondary)]">
-              {MEDICAL_DISCLAIMER}
-            </p>
-            <label className="flex cursor-pointer items-start gap-3">
-              <input
-                type="checkbox"
-                checked={disclaimerAccepted}
-                onChange={(e) => setDisclaimerAccepted(e.target.checked)}
-                className="mt-1 h-4 w-4 accent-[var(--accent-primary)]"
-              />
-              <span className="text-sm">
-                ฉันเข้าใจและยอมรับว่าระบบนี้เป็นการคัดกรองความเสี่ยงเท่านั้น
-              </span>
-            </label>
-          </section>
+          <Card>
+            <CardContent className="space-y-4 pt-4">
+              <p className="text-sm font-medium">ข้อจำกัดความรับผิดชอบ</p>
+              <DisclaimerBanner compact />
+              <label className="flex cursor-pointer items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={disclaimerAccepted}
+                  onChange={(e) => setDisclaimerAccepted(e.target.checked)}
+                  className="mt-1 h-4 w-4 accent-[var(--accent-primary)]"
+                />
+                <span className="text-sm">
+                  ฉันเข้าใจและยอมรับว่าระบบนี้เป็นการคัดกรองความเสี่ยงเท่านั้น
+                </span>
+              </label>
+            </CardContent>
+          </Card>
         )}
 
         {step === 4 && (
-          <section className="space-y-4">
+          <section className="space-y-3">
             <p className="text-sm text-[var(--text-secondary)]">
               การวัดเกิดที่อุปกรณ์ IoT — แอปจะแสดงผลหลังข้อมูลซิงค์เข้ามา
             </p>
             {DEVICE_STEPS.map((item, index) => {
               const Icon = item.icon;
               return (
-                <div
-                  key={item.title}
-                  className="flex gap-3 rounded-xl border border-border-subtle bg-surface p-4"
-                >
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-primary/10">
-                    <Icon className="h-5 w-5 text-accent-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium">
-                      {index + 1}. {item.title}
-                    </p>
-                    <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
+                <Card key={item.title}>
+                  <CardContent className="flex gap-3 pt-4">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-primary/10">
+                      <Icon className="h-5 w-5 text-accent-primary" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium">
+                        {index + 1}. {item.title}
+                      </p>
+                      <p className="mt-1 text-sm text-[var(--text-secondary)]">
+                        {item.description}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
               );
             })}
           </section>

@@ -12,7 +12,7 @@ const buttonVariants = cva(
         secondary:
           "border border-accent-primary text-accent-primary bg-transparent hover:bg-accent-primary/5",
         ghost: "text-accent-primary hover:bg-accent-primary/5",
-        danger: "bg-risk-high text-white hover:bg-risk-high/90",
+        danger: "bg-risk-high text-white hover:bg-risk-high/90 focus-visible:ring-risk-high",
       },
       size: {
         default: "h-12 px-6",

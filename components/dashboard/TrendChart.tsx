@@ -86,7 +86,7 @@ export function TrendChart({
               <Line
                 type="monotone"
                 dataKey="mq135_value"
-                stroke="#2563EB"
+                stroke="var(--accent-primary, #2563EB)"
                 strokeWidth={2}
                 dot={false}
                 name={SENSOR_UI.ammonia.label}
@@ -95,7 +95,7 @@ export function TrendChart({
                 <Line
                   type="monotone"
                   dataKey="acetone_ppb"
-                  stroke="#7DD3FC"
+                  stroke="var(--accent-secondary, #7DD3FC)"
                   strokeWidth={2}
                   dot={false}
                   name={SENSOR_UI.acetone.label}

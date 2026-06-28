@@ -8,7 +8,7 @@ interface DeviceStatusBadgeProps {
 }
 
 const statusStyles: Record<DeviceStatus, string> = {
-  connected: "bg-risk-low/10 text-risk-low",
+  connected: "bg-accent-primary/10 text-accent-primary",
   disconnected: "bg-[var(--text-secondary)]/10 text-[var(--text-secondary)]",
   demo: "bg-accent-primary/10 text-accent-primary",
 };

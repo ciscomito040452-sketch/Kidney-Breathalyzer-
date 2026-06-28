@@ -64,7 +64,7 @@ export function AIInsightCard({
               <Line
                 type="monotone"
                 dataKey="score"
-                stroke="#2563EB"
+                stroke="var(--accent-primary, #2563EB)"
                 strokeWidth={2}
                 dot={false}
               />

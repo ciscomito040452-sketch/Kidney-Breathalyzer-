@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { InsightFactorCard } from "@/components/ai-insight/InsightFactorCard";
+import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
+import { SensorValueCard } from "@/components/shared/SensorValueCard";
 import { buildInsightContextFactors } from "@/lib/ai-insight/context-factors";
 import { getDefaultDemoRiskFactors } from "@/lib/mock/demo-user";
 import { getRiskFactorsFromStorage } from "@/lib/profile/onboarding-storage";
@@ -34,14 +35,30 @@ export function InsightContextSection({
 
   return (
     <section className="space-y-3">
-      <h2 className="text-base font-semibold">ข้อมูลที่ใช้วิเคราะห์</h2>
-      <p className="text-xs text-[var(--text-secondary)]">
-        จากเซนเซอร์ลมหายใจ ความถี่การใช้งานอุปกรณ์ และปัจจัยเสี่ยงที่คุณกรอกเอง
-        — ไม่ใช่การวินิจฉัยโรค
-      </p>
-      {factors.map((factor) => (
-        <InsightFactorCard key={factor.id} factor={factor} />
-      ))}
+      <PageSectionHeader
+        title="ข้อมูลที่ใช้วิเคราะห์"
+        subtitle="จากเซนเซอร์ลมหายใจ ความถี่การใช้งาน และปัจจัยเสี่ยงที่คุณกรอก — ไม่ใช่การวินิจฉัยโรค"
+      />
+      <div className="grid grid-cols-2 gap-3">
+        {factors.map((factor) => {
+          const Icon = factor.icon;
+          return (
+            <SensorValueCard
+              key={factor.id}
+              className="min-w-0"
+              icon={
+                <Icon
+                  className="h-4 w-4 shrink-0 text-accent-primary"
+                  strokeWidth={1.75}
+                />
+              }
+              label={factor.label}
+              value={factor.value}
+              statusLabel={factor.statusLabel}
+            />
+          );
+        })}
+      </div>
     </section>
   );
 }

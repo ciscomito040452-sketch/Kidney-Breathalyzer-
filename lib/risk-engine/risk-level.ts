@@ -23,22 +23,3 @@ export function riskLevelBgColor(level: RiskLevel): string {
   };
   return colors[level];
 }
-
-export function riskHeroCardClasses(level: RiskLevel): string {
-  const classes: Record<RiskLevel, string> = {
-    low: "border-risk-low/15 bg-gradient-to-br from-risk-low/10 via-white to-risk-low/5",
-    moderate:
-      "border-risk-moderate/15 bg-gradient-to-br from-risk-moderate/10 via-white to-risk-moderate/5",
-    high: "border-risk-high/15 bg-gradient-to-br from-risk-high/10 via-white to-risk-high/5",
-  };
-  return classes[level];
-}
-
-export function riskHeroGlowClasses(level: RiskLevel): string {
-  const classes: Record<RiskLevel, string> = {
-    low: "from-risk-low/30 to-risk-low/20",
-    moderate: "from-risk-moderate/30 to-risk-moderate/20",
-    high: "from-risk-high/30 to-risk-high/20",
-  };
-  return classes[level];
-}

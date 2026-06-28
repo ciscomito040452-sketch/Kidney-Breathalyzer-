@@ -27,7 +27,7 @@ export default function ResultPage({ params }: ResultPageProps) {
   }
 
   return (
-    <main className="min-h-screen space-y-6 px-4 py-6 pb-10">
+    <main className="space-y-6 px-4 py-6 pb-10">
       <header>
         <Link
           href="/history"

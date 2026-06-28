@@ -60,10 +60,9 @@ function shouldRecordDay(
   rand: () => number
 ): boolean {
   const daysFromLatest = totalDays - 1 - dayIndex;
-  if (daysFromLatest <= 2) return true;
-  if (daysFromLatest < 7) return rand() > 0.3;
-  if (daysFromLatest < 14) return rand() > 0.42;
-  return rand() > 0.58;
+  if (daysFromLatest <= 6) return rand() > 0.08;
+  if (daysFromLatest < 14) return rand() > 0.35;
+  return rand() > 0.55;
 }
 
 function sensorValuesForDay(

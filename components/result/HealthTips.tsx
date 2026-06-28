@@ -16,7 +16,7 @@ export function HealthTips({ tips }: HealthTipsProps) {
           {tips.map((tip) => (
             <li key={tip} className="flex items-start gap-2 text-sm">
               <CheckCircle2
-                className="mt-0.5 h-4 w-4 shrink-0 text-risk-low"
+                className="mt-0.5 h-4 w-4 shrink-0 text-accent-primary"
                 strokeWidth={2}
               />
               <span>{tip}</span>

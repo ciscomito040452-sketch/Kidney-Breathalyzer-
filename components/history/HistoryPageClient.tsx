@@ -6,7 +6,9 @@ import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { HistoryMeasurementRow } from "@/components/history/HistoryMeasurementRow";
 import { TrendChart } from "@/components/dashboard/TrendChart";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
 import { SegmentedControl } from "@/components/shared/SegmentedControl";
+import { TabPageHeader } from "@/components/shared/TabPageHeader";
 import {
   HISTORY_DAY_OPTIONS,
   RISK_SHORT_LABELS,
@@ -29,7 +31,7 @@ const RISK_FILTER_OPTIONS = [
 export function HistoryPageClient({
   initialMeasurements,
 }: HistoryPageClientProps) {
-  const [days, setDays] = useState<HistoryDays>(7);
+  const [days, setDays] = useState<HistoryDays>(30);
   const [riskFilter, setRiskFilter] = useState<RiskLevel | "all">("all");
 
   const measurements = useMemo(
@@ -60,12 +62,10 @@ export function HistoryPageClient({
 
   return (
     <main className="space-y-6 px-4 py-6">
-      <header>
-        <h1 className="text-xl font-semibold">ประวัติการวัด</h1>
-        <p className="text-sm text-[var(--text-secondary)]">
-          ติดตามแนวโน้มและผลย้อนหลัง
-        </p>
-      </header>
+      <TabPageHeader
+        title="ประวัติการวัด"
+        subtitle="ติดตามแนวโน้มและผลย้อนหลัง"
+      />
 
       <SegmentedControl
         options={HISTORY_DAY_OPTIONS}
@@ -77,16 +77,14 @@ export function HistoryPageClient({
       <TrendChart data={trendData} title={`แนวโน้ม ${days} วัน`} showDualLine />
 
       <section className="space-y-3">
-        <div>
-          <h2 className="text-base font-semibold text-[var(--text-primary)]">
-            รายการวัด
-          </h2>
-          <p className="text-xs text-[var(--text-secondary)]">
-            {filtered.length > 0
+        <PageSectionHeader
+          title="รายการวัด"
+          subtitle={
+            filtered.length > 0
               ? `${filtered.length} รายการในช่วง ${days} วัน`
-              : `ไม่มีรายการในช่วง ${days} วัน`}
-          </p>
-        </div>
+              : `ไม่มีรายการในช่วง ${days} วัน`
+          }
+        />
 
         <div className="grid grid-cols-4 gap-2">
           {RISK_FILTER_OPTIONS.map(({ value, label }) => (
@@ -120,7 +118,7 @@ export function HistoryPageClient({
         </div>
       </section>
 
-      <DisclaimerBanner compact />
+      <DisclaimerBanner />
     </main>
   );
 }

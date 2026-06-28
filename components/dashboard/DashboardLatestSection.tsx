@@ -1,12 +1,10 @@
-import type { ReactNode } from "react";
-import { Activity, FlaskConical, Wind } from "lucide-react";
-import { RiskIndicator } from "@/components/shared/RiskIndicator";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatRiskDeltaThai } from "@/lib/measurements/risk-delta";
+import { FlaskConical, Wind } from "lucide-react";
+import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
+import { RiskScoreCard } from "@/components/shared/RiskScoreCard";
+import { SensorValueCard } from "@/components/shared/SensorValueCard";
 import {
   formatAcetonePpb,
   formatAmmoniaPpb,
-  formatRiskScoreDisplay,
   SENSOR_UI,
 } from "@/lib/sensor-labels";
 import {
@@ -26,42 +24,6 @@ interface DashboardLatestSectionProps {
   riskDelta?: number | null;
 }
 
-interface SensorValueCardProps {
-  icon: ReactNode;
-  label: string;
-  value: number;
-  unit: string;
-  statusLabel: string;
-}
-
-function SensorValueCard({
-  icon,
-  label,
-  value,
-  unit,
-  statusLabel,
-}: SensorValueCardProps) {
-  return (
-    <Card className="flex-1">
-      <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)]">
-          {icon}
-          {label}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-1">
-        <p className="text-3xl font-semibold tabular-nums tracking-tight">
-          {value}
-          <span className="ml-1 text-base font-normal text-[var(--text-secondary)]">
-            {unit}
-          </span>
-        </p>
-        <p className="text-xs text-[var(--text-secondary)]">{statusLabel}</p>
-      </CardContent>
-    </Card>
-  );
-}
-
 export function DashboardLatestSection({
   riskLevel,
   riskScore,
@@ -75,43 +37,22 @@ export function DashboardLatestSection({
 
   return (
     <section className="space-y-3">
-      <div>
-        <h2 className="text-base font-semibold text-[var(--text-primary)]">
-          ผลการวัดล่าสุด
-        </h2>
-        <p className="text-xs text-[var(--text-secondary)]">
-          {formatDateTimeThai(measuredAt)}
-        </p>
-      </div>
+      <PageSectionHeader
+        title="ผลการวัดล่าสุด"
+        subtitle={formatDateTimeThai(measuredAt)}
+      />
 
-      <Card>
-        <CardHeader className="pb-2">
-          <CardTitle className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)]">
-            <Activity
-              className="h-4 w-4 text-accent-primary"
-              strokeWidth={1.75}
-            />
-            คะแนนความเสี่ยง
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          <p className="text-3xl font-semibold tabular-nums tracking-tight">
-            {formatRiskScoreDisplay(riskScore)}
-          </p>
-          <RiskIndicator level={riskLevel} />
-          {riskDelta != null && (
-            <p className="text-xs text-[var(--text-secondary)]">
-              {formatRiskDeltaThai(riskDelta)}
-            </p>
-          )}
-        </CardContent>
-      </Card>
+      <RiskScoreCard
+        riskLevel={riskLevel}
+        riskScore={riskScore}
+        riskDelta={riskDelta}
+      />
 
       <div className="flex gap-3">
         <SensorValueCard
           icon={
             <FlaskConical
-              className="h-4 w-4 text-accent-primary"
+              className="h-4 w-4 shrink-0 text-accent-primary"
               strokeWidth={1.75}
             />
           }
@@ -123,7 +64,7 @@ export function DashboardLatestSection({
         <SensorValueCard
           icon={
             <Wind
-              className="h-4 w-4 text-accent-primary"
+              className="h-4 w-4 shrink-0 text-accent-primary"
               strokeWidth={1.75}
             />
           }

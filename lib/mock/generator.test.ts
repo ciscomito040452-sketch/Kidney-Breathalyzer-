@@ -27,7 +27,7 @@ describe("seedDemoMeasurements", () => {
   it("produces believable gamification stats", () => {
     const stats = computeGamificationStats(seedDemoMeasurements(30));
     expect(stats.current_streak).toBeLessThanOrEqual(7);
-    expect(stats.weekly_count).toBeLessThanOrEqual(5);
+    expect(stats.weekly_count).toBeLessThanOrEqual(7);
     expect(stats.challenge_days.filter(Boolean).length).toBeLessThan(14);
   });
 });

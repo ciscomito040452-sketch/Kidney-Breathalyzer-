@@ -36,9 +36,9 @@ Version: 1.1 (MVP — aligned with Example UX-UI.png)
   --bg-surface: #F5F5F7;
   --accent-primary: #2563EB;
   --accent-secondary: #7DD3FC;
-  --risk-low: #34C759;
-  --risk-moderate: #FF9500;
-  --risk-high: #FF3B30;
+  --risk-low: #60A5FA;
+  --risk-moderate: #2563EB;
+  --risk-high: #1E3A8A;
   --text-primary: #1D1D1F;
   --text-secondary: #86868B;
   --border-subtle: #E5E5EA;
@@ -62,9 +62,9 @@ Version: 1.1 (MVP — aligned with Example UX-UI.png)
 | `--bg-surface` | Cards, sections, chart background |
 | `--accent-primary` | Primary CTA, active nav, links |
 | `--accent-secondary` | Gradients, highlights, secondary buttons |
-| `--risk-low` | Risk badge Low, positive indicators |
-| `--risk-moderate` | Risk badge Moderate, warnings |
-| `--risk-high` | Risk badge High, alerts |
+| `--risk-low` | Risk ต่ำ — ฟ้าอ่อน (monochrome blue scale) |
+| `--risk-moderate` | Risk ปานกลาง — ฟ้าหลัก |
+| `--risk-high` | Risk สูง — น้ำเงินเข้ม |
 | `--text-primary` | Headings, body text |
 | `--text-secondary` | Captions, labels, timestamps |
 
@@ -128,23 +128,24 @@ Version: 1.1 (MVP — aligned with Example UX-UI.png)
 
 ## Components
 
-### RiskBadge
+### RiskIndicator (หลัก)
 
-แสดงระดับความเสี่ยง — pill shape, สีตาม level
+แสดงระดับความเสี่ยง — dot + short label (`ต่ำ` / `ปานกลาง` / `สูง`)
 
-```
-[ ความเสี่ยงต่ำ ]     bg: risk-low/10, text: risk-low, border: risk-low/20
-[ ความเสี่ยงปานกลาง ]
-[ ความเสี่ยงสูง ]
-```
+- ใช้ใน Dashboard, History, Result, AI Insight
+- สีตาม blue scale: `risk-low`, `risk-moderate`, `risk-high`
+- **ห้ามใช้** traffic-light (เขียว/ส้ม/แดง)
 
-### RiskHeroCard
+### RiskBadge (รอง — ไม่ใช้ใน MVP UI)
 
-Card ใหญ่บน Dashboard — แสดง risk level ล่าสุด + คะแนน
+Pill badge แบบเต็ม — เก็บไว้สำหรับกรณีพิเศษเท่านั้น
 
-- Background: gradient อ่อนตาม risk color (`risk-low/5` → `risk-low/10`)
-- ตัวเลขคะแนนใหญ่ (32px)
-- RiskBadge ด้านบน
+### DashboardLatestSection
+
+Section ผลล่าสุดบน Dashboard — `PageSectionHeader` + `RiskScoreCard` + sensor cards คู่
+
+- Card มาตรฐาน `rounded-2xl`, ไม่มี gradient
+- ตัวเลขคะแนน `text-3xl` + `RiskIndicator`
 
 ### MeasurementStepper
 
@@ -152,7 +153,7 @@ Card ใหญ่บน Dashboard — แสดง risk level ล่าสุด
 
 - Step indicator: numbered circles + connecting line
 - Active step: `--accent-primary`
-- Completed: `--risk-low` check icon
+- Completed: `--accent-primary` check icon
 
 ### TrendChart
 
@@ -183,7 +184,7 @@ Card เดียว — ไม่ใช่ chat
 
 ### BottomNav
 
-4 แท็บ fixed bottom
+4 แท็บ — **floating pill capsule** เหนือขอบล่าง
 
 | Tab | Label | Icon (Lucide) | Route |
 |-----|-------|---------------|-------|
@@ -194,10 +195,10 @@ Card เดียว — ไม่ใช่ chat
 
 **หมายเหตุ:** ไม่มี tab "วัดค่า" — การวัดเกิดที่อุปกรณ์ IoT ไม่ใช่ในแอป
 
-- Active: `--accent-primary` icon + label
-- Inactive: `--text-secondary`
-- Height: 56px + safe area
-- Background: `--bg-primary` + top border `--border-subtle`
+- Container: `rounded-full`, `shadow-card`, `backdrop-blur-md`, margin จากขอบล่าง
+- Active: `bg-accent-primary/10`, `text-accent-primary`
+- Inactive: `text-secondary`
+- Label: `text-[10px]` ใต้ไอคอน, touch target 44px min
 
 ### StreakCard (P1)
 

@@ -19,8 +19,8 @@ interface SensorChipRowProps {
 
 function statusClasses(status: SensorStatus): string {
   return status === "normal"
-    ? "bg-risk-low/10 text-risk-low"
-    : "bg-risk-moderate/10 text-risk-moderate";
+    ? "text-[var(--text-secondary)]"
+    : "bg-accent-primary/10 text-accent-primary";
 }
 
 export function SensorChipRow({ mq135, mq3, compact = false }: SensorChipRowProps) {
@@ -67,7 +67,8 @@ export function SensorChipRow({ mq135, mq3, compact = false }: SensorChipRowProp
             </p>
             <span
               className={cn(
-                "mt-1 inline-block rounded-full px-2 py-0.5 text-[10px] font-medium",
+                "mt-1 inline-block text-[11px] font-medium",
+                chip.status === "elevated" && "rounded-full px-2 py-0.5",
                 statusClasses(chip.status)
               )}
             >

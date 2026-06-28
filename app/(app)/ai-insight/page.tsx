@@ -1,15 +1,17 @@
 import Link from "next/link";
-import { Sparkles } from "lucide-react";
+import { CheckCircle2, Sparkles } from "lucide-react";
 import { InsightContextSection } from "@/components/ai-insight/InsightContextSection";
 import { TrendChart } from "@/components/dashboard/TrendChart";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
-import { RiskBadge } from "@/components/shared/RiskBadge";
+import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
+import { RiskScoreCard } from "@/components/shared/RiskScoreCard";
+import { TabPageHeader } from "@/components/shared/TabPageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HEALTH_TIPS } from "@/lib/risk-engine";
 import { getDemoMeasurements } from "@/lib/mock/demo-store";
 import { getEffectiveRiskFactors } from "@/lib/profile/effective-risk-factors";
-import { formatRiskScoreDisplay, SENSOR_UI } from "@/lib/sensor-labels";
+import { SENSOR_UI } from "@/lib/sensor-labels";
 import { formatDateTimeThai } from "@/lib/utils";
 
 export default function AIInsightPage() {
@@ -52,15 +54,13 @@ export default function AIInsightPage() {
 
   return (
     <main className="space-y-6 px-4 py-6">
-      <header>
-        <h1 className="flex items-center gap-2 text-xl font-semibold">
-          <Sparkles className="h-5 w-5 text-accent-primary" />
-          ข้อมูลเชิงลึกจาก AI
-        </h1>
-        <p className="text-sm text-[var(--text-secondary)]">
-          การวิเคราะห์เบื้องต้นจากข้อมูลการวัด
-        </p>
-      </header>
+      <TabPageHeader
+        title="ข้อมูลเชิงลึกจาก AI"
+        subtitle="การวิเคราะห์เบื้องต้นจากข้อมูลการวัด"
+        icon={
+          <Sparkles className="h-5 w-5 text-accent-primary" strokeWidth={1.75} />
+        }
+      />
 
       {!latest ? (
         <Card>
@@ -70,51 +70,52 @@ export default function AIInsightPage() {
         </Card>
       ) : (
         <>
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-base">ผลล่าสุด</CardTitle>
-                <RiskBadge level={latest.risk_level} />
-              </div>
-              <p className="text-xs text-[var(--text-secondary)]">
-                {formatDateTimeThai(latest.measured_at)}
-              </p>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-3xl font-semibold tabular-nums">
-                {formatRiskScoreDisplay(latest.risk_score)}
-              </p>
-              <p className="text-sm leading-relaxed">
-                {latest.ai_explanation}
-              </p>
-            </CardContent>
-          </Card>
+          <section className="space-y-3">
+            <PageSectionHeader
+              title="ผลล่าสุด"
+              subtitle={formatDateTimeThai(latest.measured_at)}
+            />
+            <RiskScoreCard
+              riskLevel={latest.risk_level}
+              riskScore={latest.risk_score}
+            />
+            <Card>
+              <CardContent className="pt-4">
+                <p className="text-sm leading-relaxed">
+                  {latest.ai_explanation}
+                </p>
+              </CardContent>
+            </Card>
+          </section>
 
           <InsightContextSection latest={latest} measurements={measurements} />
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base">เปรียบเทียบ 7 วัน</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm leading-relaxed">{trendMessage}</p>
-            </CardContent>
-          </Card>
-
-          <TrendChart
-            data={trendData}
-            title="แนวโน้ม 30 วัน"
-            showDualLine
-          />
+          <section className="space-y-3">
+            <PageSectionHeader title="แนวโน้ม" />
+            <TrendChart
+              data={trendData}
+              title="แนวโน้ม 30 วัน"
+              showDualLine
+            />
+            <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+              {trendMessage}
+            </p>
+          </section>
 
           <Card>
-            <CardHeader>
+            <CardHeader className="pb-2">
               <CardTitle className="text-base">คำแนะนำสั้น ๆ</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="list-inside list-disc space-y-1 text-sm">
+              <ul className="space-y-2">
                 {HEALTH_TIPS.slice(0, 3).map((tip) => (
-                  <li key={tip}>{tip}</li>
+                  <li key={tip} className="flex items-start gap-2 text-sm">
+                    <CheckCircle2
+                      className="mt-0.5 h-4 w-4 shrink-0 text-accent-primary"
+                      strokeWidth={2}
+                    />
+                    <span>{tip}</span>
+                  </li>
                 ))}
               </ul>
             </CardContent>

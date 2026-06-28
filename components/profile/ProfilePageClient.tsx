@@ -7,19 +7,18 @@ import {
   Globe,
   LogOut,
   Moon,
-  Smartphone,
   User,
 } from "lucide-react";
 import { useDemo } from "@/components/providers/DemoProvider";
-import { DeviceStatusBadge } from "@/components/dashboard/DeviceStatusBadge";
-import { resolveDeviceStatus } from "@/lib/device/status";
+import { DashboardDeviceInfo } from "@/components/dashboard/DashboardDeviceInfo";
+import { TabPageHeader } from "@/components/shared/TabPageHeader";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   formatGenderThai,
   getProfileDisplayFromStorage,
   getProfileInitials,
   getRiskFactorsFromStorage,
 } from "@/lib/profile/onboarding-storage";
-import { formatDateTimeThai } from "@/lib/utils";
 
 interface ProfilePageClientProps {
   lastMeasuredAt: string | null;
@@ -27,7 +26,6 @@ interface ProfilePageClientProps {
 
 export function ProfilePageClient({ lastMeasuredAt }: ProfilePageClientProps) {
   const { isDemo, exitDemoMode } = useDemo();
-  const deviceStatus = resolveDeviceStatus(lastMeasuredAt, isDemo);
   const [profile, setProfile] = useState({
     age: 45,
     gender: "other",
@@ -83,37 +81,17 @@ export function ProfilePageClient({ lastMeasuredAt }: ProfilePageClientProps) {
         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-accent-primary/10 text-lg font-semibold text-accent-primary">
           {profile.initials}
         </div>
-        <div>
-          <h1 className="text-xl font-semibold">โปรไฟล์</h1>
-          <p className="text-sm text-[var(--text-secondary)]">
-            {profile.weight_kg} kg
-            {riskSummary.length > 0 && ` · ${riskSummary.join(", ")}`}
-          </p>
-        </div>
+        <TabPageHeader
+          title="โปรไฟล์"
+          subtitle={`${profile.weight_kg} kg${
+            riskSummary.length > 0 ? ` · ${riskSummary.join(", ")}` : ""
+          }`}
+        />
       </header>
 
-      <div className="rounded-2xl border border-border-subtle bg-surface p-4">
-        <div className="flex items-start gap-3">
-          <Smartphone className="mt-0.5 h-5 w-5 text-accent-primary" />
-          <div className="flex-1 space-y-2">
-            <p className="text-sm font-medium">อุปกรณ์ Kidney Breathalyzer</p>
-            <DeviceStatusBadge status={deviceStatus} />
-            {lastMeasuredAt && (
-              <p className="text-xs text-[var(--text-secondary)]">
-                ซิงค์ล่าสุด: {formatDateTimeThai(lastMeasuredAt)}
-              </p>
-            )}
-            <Link
-              href="/onboarding?step=4"
-              className="inline-block text-sm text-accent-primary"
-            >
-              วิธีใช้อุปกรณ์
-            </Link>
-          </div>
-        </div>
-      </div>
+      <DashboardDeviceInfo lastMeasuredAt={lastMeasuredAt} />
 
-      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface">
+      <Card className="overflow-hidden p-0">
         {settingsItems.map((item, index) => {
           const Icon = item.icon;
           const content = (
@@ -152,13 +130,22 @@ export function ProfilePageClient({ lastMeasuredAt }: ProfilePageClientProps) {
             </div>
           );
         })}
-      </div>
+      </Card>
+
+      <p className="text-center">
+        <Link
+          href="/onboarding?step=4"
+          className="text-sm text-accent-primary"
+        >
+          วิธีใช้อุปกรณ์
+        </Link>
+      </p>
 
       {isDemo && (
         <button
           type="button"
           onClick={exitDemoMode}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-risk-high/20 bg-risk-high/5 py-3 text-sm font-medium text-risk-high"
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface py-3 text-sm font-medium text-[var(--text-secondary)]"
         >
           <LogOut className="h-4 w-4" />
           ออกจากโหมดสาธิต

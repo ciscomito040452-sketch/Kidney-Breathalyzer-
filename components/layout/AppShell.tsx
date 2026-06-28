@@ -6,7 +6,7 @@ interface AppShellProps {
 
 export function AppShell({ children }: AppShellProps) {
   return (
-    <div className="min-h-screen pb-[calc(5rem+env(safe-area-inset-bottom,0px))]">
+    <div className="min-h-screen pb-[calc(5.5rem+env(safe-area-inset-bottom,0px))]">
       {children}
       <BottomNav />
     </div>
