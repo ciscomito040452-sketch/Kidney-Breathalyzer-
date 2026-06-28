@@ -28,7 +28,7 @@ export function WeeklyGoalCard({ count, target }: WeeklyGoalCardProps) {
           </span>
         </p>
         {met && (
-          <p className="text-xs text-risk-low">บรรลุเป้าแล้ว</p>
+          <p className="text-xs text-accent-primary">บรรลุเป้าแล้ว</p>
         )}
         <Progress value={progressPercent} aria-label="ความคืบหน้าเป้าหมายรายสัปดาห์" />
       </CardContent>

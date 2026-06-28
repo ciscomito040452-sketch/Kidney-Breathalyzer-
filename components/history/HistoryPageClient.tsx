@@ -76,36 +76,49 @@ export function HistoryPageClient({
 
       <TrendChart data={trendData} title={`แนวโน้ม ${days} วัน`} showDualLine />
 
-      <div className="flex flex-wrap gap-2">
-        {RISK_FILTER_OPTIONS.map(({ value, label }) => (
-          <button
-            key={value}
-            type="button"
-            onClick={() => setRiskFilter(value)}
-            className={cn(
-              "min-h-[36px] rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
-              riskFilter === value
-                ? "bg-accent-primary text-white"
-                : "bg-surface text-[var(--text-secondary)] hover:bg-surface/80"
-            )}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
+      <section className="space-y-3">
+        <div>
+          <h2 className="text-base font-semibold text-[var(--text-primary)]">
+            รายการวัด
+          </h2>
+          <p className="text-xs text-[var(--text-secondary)]">
+            {filtered.length > 0
+              ? `${filtered.length} รายการในช่วง ${days} วัน`
+              : `ไม่มีรายการในช่วง ${days} วัน`}
+          </p>
+        </div>
 
-      <div className="space-y-2.5">
-        {filtered.length === 0 ? (
-          <EmptyState
-            icon={ClipboardList}
-            message="ไม่พบข้อมูลในช่วงที่เลือก"
-          />
-        ) : (
-          filtered.map((m) => (
-            <HistoryMeasurementRow key={m.id} measurement={m} />
-          ))
-        )}
-      </div>
+        <div className="grid grid-cols-4 gap-2">
+          {RISK_FILTER_OPTIONS.map(({ value, label }) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => setRiskFilter(value)}
+              className={cn(
+                "min-h-[44px] rounded-full px-2 text-sm font-medium transition-colors",
+                riskFilter === value
+                  ? "bg-accent-primary text-white"
+                  : "bg-surface text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]"
+              )}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="space-y-3">
+          {filtered.length === 0 ? (
+            <EmptyState
+              icon={ClipboardList}
+              message="ไม่พบข้อมูลในช่วงที่เลือก"
+            />
+          ) : (
+            filtered.map((m) => (
+              <HistoryMeasurementRow key={m.id} measurement={m} />
+            ))
+          )}
+        </div>
+      </section>
 
       <DisclaimerBanner compact />
     </main>

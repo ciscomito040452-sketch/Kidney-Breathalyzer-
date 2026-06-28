@@ -4,10 +4,9 @@ import { Challenge14Card } from "@/components/gamification/Challenge14Card";
 import { StreakCard } from "@/components/gamification/StreakCard";
 import { WeeklyGoalCard } from "@/components/gamification/WeeklyGoalCard";
 import { DashboardDeviceInfo } from "@/components/dashboard/DashboardDeviceInfo";
+import { DashboardLatestSection } from "@/components/dashboard/DashboardLatestSection";
 import { DashboardTrendSection } from "@/components/dashboard/DashboardTrendSection";
-import { LatestMeasurementCard } from "@/components/dashboard/LatestMeasurementCard";
 import { PageHeader } from "@/components/dashboard/PageHeader";
-import { RiskHeroCard } from "@/components/dashboard/RiskHeroCard";
 import { AIInsightCard } from "@/components/layout/AIInsightCard";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
@@ -53,11 +52,12 @@ export default function DashboardPage() {
       <DashboardDeviceInfo lastMeasuredAt={latest?.measured_at ?? null} />
 
       {latest && (
-        <RiskHeroCard
+        <DashboardLatestSection
           riskLevel={latest.risk_level}
           riskScore={latest.risk_score}
           mq135={latest.mq135_value}
           mq3={latest.mq3_value}
+          measuredAt={latest.measured_at}
           riskDelta={riskDelta}
         />
       )}
@@ -85,14 +85,6 @@ export default function DashboardPage() {
         count={gamification.weekly_count}
         target={WEEKLY_GOAL_TARGET}
       />
-
-      {latest && (
-        <LatestMeasurementCard
-          measuredAt={latest.measured_at}
-          mq135={latest.mq135_value}
-          mq3={latest.mq3_value}
-        />
-      )}
 
       <DashboardTrendSection measurements={measurements} />
 
