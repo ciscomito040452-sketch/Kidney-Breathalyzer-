@@ -1,0 +1,27 @@
+---
+description: Kidney Breathalyzer project rules for medical language, UI conventions, and build order
+globs:
+  - "**/*.{ts,tsx,js,jsx,md}"
+alwaysApply: true
+---
+
+# Kidney Breathalyzer Rules
+
+## Medical Language
+- Use "คัดกรองความเสี่ยง" — NEVER "วินิจฉัยโรค"
+- Show disclaimer on every page with risk results
+- AI gives general health info only, not diagnosis
+
+## UI
+- No Emoji — use Lucide icons only
+- Thai UI text — follow Docs/UI_UX_SPECIFICATION.md
+- Colors: accent #2B7FD4, surface #F5F5F7, Apple Health style
+
+## Build Order
+- P0 first: Landing → Dashboard → Measurement → Result
+- Demo Mode must work without hardware
+- Rule-based scoring only — no ML in MVP
+
+## Code
+- Logic in lib/, thin pages, feature components in components/
+- Read AGENTS.md and Docs/ before implementing

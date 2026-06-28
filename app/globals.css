@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg-primary: #ffffff;
+  --bg-canvas: #dce4ee;
+  --bg-surface: #f5f5f7;
+  --accent-primary: #2563eb;
+  --accent-secondary: #7dd3fc;
+  --risk-low: #34c759;
+  --risk-moderate: #ff9500;
+  --risk-high: #ff3b30;
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
+  --border-subtle: #e5e5ea;
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.dark {
+  --bg-primary: #000000;
+  --bg-surface: #1c1c1e;
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+}
+
+@layer base {
+  * {
+    @apply border-border-subtle;
+  }
+
+  body {
+    @apply text-[var(--text-primary)] antialiased;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .shadow-mobile {
+    box-shadow:
+      0 0 0 1px rgba(43, 127, 212, 0.08),
+      0 24px 48px -12px rgba(30, 58, 95, 0.18);
+  }
+}
+
+@media (min-width: 431px) {
+  .mobile-frame {
+    min-height: calc(100vh - 2rem);
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+    border-radius: 1.5rem;
+    overflow: hidden;
+  }
+}
