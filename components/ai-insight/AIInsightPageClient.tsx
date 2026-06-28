@@ -1,19 +1,21 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2 } from "lucide-react";
+import { HolisticInsightCard } from "@/components/ai-insight/HolisticInsightCard";
 import { InsightContextSection } from "@/components/ai-insight/InsightContextSection";
 import { TrendChart } from "@/components/dashboard/TrendChart";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
-import { RiskScoreCard } from "@/components/shared/RiskScoreCard";
 import { AIInsightPageHeader } from "@/components/ai-insight/AIInsightPageHeader";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatInsightTrendMessage, getSensorUILabels } from "@/lib/i18n/labels";
+import { buildHolisticInsight } from "@/lib/ai-insight/build-holistic-insight";
+import { getDefaultDemoRiskFactors } from "@/lib/mock/demo-user";
+import { getRiskFactorsFromStorage } from "@/lib/profile/onboarding-storage";
 import { getHealthTips } from "@/lib/risk-engine";
-import { formatDateTimeLocale } from "@/lib/utils";
 import type { Measurement } from "@/types/measurement";
 
 interface AIInsightPageClientProps {
@@ -24,24 +26,22 @@ export function AIInsightPageClient({
   measurements,
 }: AIInsightPageClientProps) {
   const { locale, translate } = usePreferences();
+  const [riskFactors, setRiskFactors] = useState(getDefaultDemoRiskFactors());
   const latest = measurements[0];
-  const sensorUi = getSensorUILabels(locale);
 
-  const last7 = measurements.filter((m) => {
-    const cutoff = new Date();
-    cutoff.setDate(cutoff.getDate() - 7);
-    return new Date(m.measured_at) >= cutoff;
-  });
+  useEffect(() => {
+    setRiskFactors(getRiskFactorsFromStorage());
+  }, []);
 
-  const avgMq135 =
-    last7.length > 0
-      ? last7.reduce((s, m) => s + m.mq135_value, 0) / last7.length
-      : 0;
-
-  const trendPercent =
-    latest && avgMq135 > 0
-      ? ((latest.mq135_value - avgMq135) / avgMq135) * 100
-      : 0;
+  const insight = useMemo(
+    () =>
+      buildHolisticInsight({
+        measurements,
+        riskFactors,
+        locale,
+      }),
+    [measurements, riskFactors, locale]
+  );
 
   const trendData = measurements
     .slice()
@@ -54,12 +54,14 @@ export function AIInsightPageClient({
       risk_score: m.risk_score,
     }));
 
-  const ammoniaName = sensorUi.ammonia.label.split(" ")[0];
-  const trendMessage = formatInsightTrendMessage(
-    locale,
-    ammoniaName,
-    trendPercent
-  );
+  const sparklineData = measurements
+    .slice()
+    .reverse()
+    .slice(-14)
+    .map((m) => ({
+      date: m.measured_at,
+      risk_score: m.risk_score,
+    }));
 
   const healthTips = getHealthTips(locale);
 
@@ -67,7 +69,7 @@ export function AIInsightPageClient({
     <main className="space-y-6 px-4 py-6">
       <AIInsightPageHeader />
 
-      {!latest ? (
+      {!insight ? (
         <Card>
           <CardContent className="py-8 text-center text-sm text-[var(--text-secondary)]">
             {translate("noMeasurementData")}
@@ -75,25 +77,12 @@ export function AIInsightPageClient({
         </Card>
       ) : (
         <>
-          <section className="space-y-3">
-            <PageSectionHeader
-              title={translate("insightLatestTitle")}
-              subtitle={formatDateTimeLocale(locale, latest.measured_at)}
-            />
-            <RiskScoreCard
-              riskLevel={latest.risk_level}
-              riskScore={latest.risk_score}
-            />
-            <Card>
-              <CardContent className="pt-4">
-                <p className="text-sm leading-relaxed">
-                  {latest.ai_explanation}
-                </p>
-              </CardContent>
-            </Card>
-          </section>
+          <HolisticInsightCard
+            insight={insight}
+            sparklineData={sparklineData}
+          />
 
-          <InsightContextSection latest={latest} measurements={measurements} />
+          <InsightContextSection measurements={measurements} />
 
           <section className="space-y-3">
             <PageSectionHeader title={translate("insightTrendSection")} />
@@ -103,9 +92,35 @@ export function AIInsightPageClient({
               showDualLine
             />
             <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
-              {trendMessage}
+              {insight.trendNarrative}
             </p>
           </section>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">
+                {translate("researchNoteTitle")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed text-[var(--text-secondary)]">
+                {insight.researchNote}
+              </p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-base">
+                {translate("nextStepsTitle")}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm leading-relaxed">
+                {insight.suggestion}
+              </p>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader className="pb-2">
@@ -128,11 +143,13 @@ export function AIInsightPageClient({
             </CardContent>
           </Card>
 
-          <Button className="w-full" asChild>
-            <Link href={`/result/${latest.id}`}>
-              {translate("viewFullReport")}
-            </Link>
-          </Button>
+          {latest && (
+            <Button variant="secondary" className="w-full" asChild>
+              <Link href={`/result/${latest.id}`}>
+                {translate("viewLatestReport")}
+              </Link>
+            </Button>
+          )}
         </>
       )}
 

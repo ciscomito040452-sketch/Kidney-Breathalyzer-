@@ -6,6 +6,7 @@ import type { AppLocale } from "@/lib/preferences/profile-preferences";
 import type { DemoRiskFactors } from "@/lib/profile/onboarding-storage";
 import { summarizeRiskFactorLabels } from "@/lib/profile/risk-factor-labels";
 import { formatAcetonePpb, formatAmmoniaPpb } from "@/lib/sensor-labels";
+import { analyzeMeasurements } from "@/lib/ai-insight/analyze-measurements";
 import { normalizeMq135, normalizeMq3 } from "@/lib/risk-engine";
 import type { Measurement } from "@/types/measurement";
 
@@ -79,16 +80,19 @@ function countMeasurementsInDays(
 }
 
 export function buildInsightContextFactors(input: {
-  latest: Measurement;
   measurements: Measurement[];
   riskFactors: DemoRiskFactors;
   locale?: AppLocale;
 }): InsightFactor[] {
   const locale = input.locale ?? "th";
-  const { latest, measurements, riskFactors } = input;
+  const { measurements, riskFactors } = input;
   const sensorUi = getSensorUILabels(locale);
-  const ammoniaNorm = normalizeMq135(latest.mq135_value);
-  const acetoneNorm = normalizeMq3(latest.mq3_value);
+  const analytics = analyzeMeasurements(measurements);
+
+  const avgMq135 = analytics?.avgMq135 ?? 0;
+  const avgMq3 = analytics?.avgMq3 ?? 0;
+  const ammoniaNorm = normalizeMq135(avgMq135);
+  const acetoneNorm = normalizeMq3(avgMq3);
   const weeklyCount = countMeasurementsInDays(measurements, 7);
   const ammoniaStatus = sensorStatus(ammoniaNorm);
   const acetoneStatus = sensorStatus(acetoneNorm);
@@ -104,7 +108,9 @@ export function buildInsightContextFactors(input: {
       id: "ammonia",
       icon: Wind,
       label: sensorUi.ammonia.label,
-      value: `${formatAmmoniaPpb(latest.mq135_value)} ${sensorUi.ammonia.unit}`,
+      value: analytics
+        ? `${formatAmmoniaPpb(avgMq135)} ${sensorUi.ammonia.unit}`
+        : `— ${sensorUi.ammonia.unit}`,
       status: ammoniaStatus,
       statusLabel: insightStatusLabel(locale, ammoniaStatus),
     },
@@ -112,7 +118,9 @@ export function buildInsightContextFactors(input: {
       id: "acetone",
       icon: Activity,
       label: sensorUi.acetone.label,
-      value: `${formatAcetonePpb(latest.mq3_value)} ${sensorUi.acetone.unit}`,
+      value: analytics
+        ? `${formatAcetonePpb(avgMq3)} ${sensorUi.acetone.unit}`
+        : `— ${sensorUi.acetone.unit}`,
       status: acetoneStatus,
       statusLabel: insightStatusLabel(locale, acetoneStatus),
     },
@@ -120,10 +128,14 @@ export function buildInsightContextFactors(input: {
       id: "measurement-frequency",
       icon: Gauge,
       label: t(locale, "insightMeasurementFreq"),
-      value: t(locale, "insightMeasurementFreqValue").replace(
-        "{n}",
-        String(weeklyCount)
-      ),
+      value: analytics
+        ? t(locale, "insightMeasurementFreqAllValue")
+            .replace("{n}", String(analytics.count))
+            .replace("{days}", String(analytics.daySpan))
+        : t(locale, "insightMeasurementFreqValue").replace(
+            "{n}",
+            String(weeklyCount)
+          ),
       status: frequencyStatus,
       statusLabel: insightStatusLabel(locale, frequencyStatus),
     },

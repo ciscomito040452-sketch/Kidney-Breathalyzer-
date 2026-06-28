@@ -17,20 +17,23 @@ export function HistoryDayGroupSection({ group }: HistoryDayGroupSectionProps) {
 
   return (
     <section className="space-y-2">
-      <div className="flex items-baseline justify-between gap-2 px-0.5">
-        <h3 className="text-sm font-semibold text-[var(--text-primary)]">
+      <div className="flex items-baseline justify-between gap-2 px-1">
+        <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
           {group.label}
         </h3>
         <span className="text-xs text-[var(--text-secondary)]">
           {countLabel}
         </span>
       </div>
-      <div className="space-y-2">
-        {group.items.map((m) => (
+
+      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface shadow-card">
+        {group.items.map((m, index) => (
           <HistoryMeasurementRow
             key={m.id}
             measurement={m}
             variant="compact"
+            grouped
+            isLast={index === group.items.length - 1}
           />
         ))}
       </div>

@@ -10,12 +10,10 @@ import { getRiskFactorsFromStorage } from "@/lib/profile/onboarding-storage";
 import type { Measurement } from "@/types/measurement";
 
 interface InsightContextSectionProps {
-  latest: Measurement;
   measurements: Measurement[];
 }
 
 export function InsightContextSection({
-  latest,
   measurements,
 }: InsightContextSectionProps) {
   const { locale, translate } = usePreferences();
@@ -28,12 +26,11 @@ export function InsightContextSection({
   const factors = useMemo(
     () =>
       buildInsightContextFactors({
-        latest,
         measurements,
         riskFactors,
         locale,
       }),
-    [latest, measurements, riskFactors, locale]
+    [measurements, riskFactors, locale]
   );
 
   return (
