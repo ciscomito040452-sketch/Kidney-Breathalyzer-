@@ -35,7 +35,7 @@ export function InsightIconBadge({
     accent: "bg-[var(--accent-tint)] text-accent-primary",
     good: "bg-risk-low/15 text-risk-low",
     attention: "bg-risk-moderate/15 text-risk-moderate",
-    neutral: "bg-surface-elevated text-[var(--text-secondary)]",
+    neutral: "bg-[var(--accent-tint)] text-accent-primary ring-1 ring-border-subtle",
   }[tone];
 
   const sizeClass =
@@ -126,4 +126,52 @@ export function parseHighlightLabel(label: string): {
   }
   const detail = split.pop() ?? "";
   return { title: split.join(" · "), detail };
+}
+
+const statusPillClass = {
+  good: "bg-risk-low/15 text-risk-low",
+  attention: "bg-accent-primary/12 text-accent-primary",
+  neutral: "bg-surface-elevated text-[var(--text-secondary)]",
+} as const;
+
+export function InsightMetricRow({
+  icon: Icon,
+  iconTone = "accent",
+  label,
+  value,
+  statusLabel,
+  statusTone = "neutral",
+}: {
+  icon: LucideIcon;
+  iconTone?: "accent" | "good" | "attention" | "neutral";
+  label: string;
+  value?: string;
+  statusLabel?: string;
+  statusTone?: keyof typeof statusPillClass;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 px-4 py-3.5">
+      <div className="flex min-w-0 items-center gap-3">
+        <InsightIconBadge icon={Icon} tone={iconTone} size="sm" />
+        <p className="min-w-0 text-sm text-[var(--text-secondary)]">{label}</p>
+      </div>
+      <div className="flex shrink-0 items-center gap-2 text-right">
+        {value && (
+          <span className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">
+            {value}
+          </span>
+        )}
+        {statusLabel && (
+          <span
+            className={cn(
+              "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
+              statusPillClass[statusTone]
+            )}
+          >
+            {statusLabel}
+          </span>
+        )}
+      </div>
+    </div>
+  );
 }

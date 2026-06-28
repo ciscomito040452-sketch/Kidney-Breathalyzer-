@@ -46,7 +46,17 @@ export function TrendChartInsight({
         <p className="text-sm text-[var(--text-secondary)]">
           {formatTrendInsightLatestLine(locale, insight.latestRiskLabel)}
         </p>
-        <p className="rounded-xl bg-[var(--accent-tint)] px-3 py-2.5 text-sm font-medium leading-snug text-accent-primary">
+        <p
+          className={cn(
+            "rounded-xl px-3 py-2.5 text-sm font-medium leading-snug",
+            insight.recommendationTone === "attention" &&
+              "bg-risk-moderate/12 text-risk-moderate",
+            insight.recommendationTone === "good" &&
+              "bg-risk-low/12 text-risk-low",
+            insight.recommendationTone === "neutral" &&
+              "bg-[var(--accent-tint)] text-accent-primary"
+          )}
+        >
           {insight.nextStep}
         </p>
       </div>

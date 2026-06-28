@@ -344,20 +344,20 @@ export function buildHolisticInsight(input: {
       tone: ammoniaStatus === "elevated" ? "attention" : "good",
     },
     {
-      id: "pattern",
-      label:
-        locale === "en"
-          ? `${analytics.count} readings · ${analytics.moderateOrHighPercent}% moderate or higher`
-          : `วัด ${analytics.count} ครั้ง · ${analytics.moderateOrHighPercent}% ปานกลางขึ้นไป`,
-      tone: analytics.moderateOrHighPercent >= 50 ? "attention" : "neutral",
-    },
-    {
       id: "acetone",
       label:
         locale === "en"
           ? `${sensorUi.acetone.label} avg. ${acetonePpb} ${sensorUi.acetone.unit} · ${statusLabel(acetoneStatus)}`
           : `${sensorUi.acetone.label} เฉลี่ย ${acetonePpb} ${sensorUi.acetone.unit} · ${statusLabel(acetoneStatus)}`,
       tone: acetoneStatus === "elevated" ? "attention" : "good",
+    },
+    {
+      id: "pattern",
+      label:
+        locale === "en"
+          ? `${analytics.count} readings · ${analytics.moderateOrHighPercent}% moderate or higher`
+          : `วัด ${analytics.count} ครั้ง · ${analytics.moderateOrHighPercent}% ปานกลางขึ้นไป`,
+      tone: analytics.moderateOrHighPercent >= 50 ? "attention" : "neutral",
     },
   ];
 

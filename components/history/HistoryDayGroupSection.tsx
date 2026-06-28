@@ -1,6 +1,7 @@
 "use client";
 
 import { HistoryMeasurementRow } from "@/components/history/HistoryMeasurementRow";
+import { InsightGroupedCard } from "@/components/ai-insight/insight-ui";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import type { HistoryDayGroup } from "@/lib/history/group-by-day";
 
@@ -16,17 +17,15 @@ export function HistoryDayGroupSection({ group }: HistoryDayGroupSectionProps) {
       : translate("historyTimesMany").replace("{n}", String(group.items.length));
 
   return (
-    <section className="space-y-2">
-      <div className="flex items-baseline justify-between gap-2 px-1">
-        <h3 className="text-xs font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+    <section className="space-y-2.5">
+      <div className="flex items-baseline justify-between gap-2 px-0.5">
+        <h3 className="text-[17px] font-semibold tracking-tight text-[var(--text-primary)]">
           {group.label}
         </h3>
-        <span className="text-xs text-[var(--text-secondary)]">
-          {countLabel}
-        </span>
+        <span className="text-sm text-[var(--text-secondary)]">{countLabel}</span>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-[var(--surface-card-border)] bg-surface shadow-card app-card">
+      <InsightGroupedCard>
         {group.items.map((m, index) => (
           <HistoryMeasurementRow
             key={m.id}
@@ -36,7 +35,7 @@ export function HistoryDayGroupSection({ group }: HistoryDayGroupSectionProps) {
             isLast={index === group.items.length - 1}
           />
         ))}
-      </div>
+      </InsightGroupedCard>
     </section>
   );
 }

@@ -5,6 +5,7 @@ import { ClipboardList } from "lucide-react";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { HistoryDayGroupSection } from "@/components/history/HistoryDayGroupSection";
 import { HistoryPeriodControl } from "@/components/history/HistoryPeriodControl";
+import { HistoryRiskFilterChips } from "@/components/history/HistoryRiskFilterChips";
 import { TrendChart } from "@/components/dashboard/TrendChart";
 import { TrendChartInsight } from "@/components/dashboard/TrendChartInsight";
 import { EmptyState } from "@/components/shared/EmptyState";
@@ -20,8 +21,7 @@ import {
 import { buildTrendPeriodInsight } from "@/lib/dashboard/build-trend-period-insight";
 import { groupMeasurementsByDay } from "@/lib/history/group-by-day";
 import type { Measurement, RiskLevel } from "@/types/measurement";
-import { cn } from "@/lib/utils";
-import { getHistoryPeriodLabel, getPeriodChartTitle, getRiskShortLabels } from "@/lib/i18n/messages";
+import { getHistoryPeriodLabel, getPeriodChartTitle } from "@/lib/i18n/messages";
 
 interface HistoryPageClientProps {
   initialMeasurements: Measurement[];
@@ -33,17 +33,6 @@ export function HistoryPageClient({
   const { locale, translate } = usePreferences();
   const [period, setPeriod] = useState<HistoryPeriod>("last_30");
   const [riskFilter, setRiskFilter] = useState<RiskLevel | "all">("all");
-
-  const riskLabels = getRiskShortLabels(locale);
-  const riskFilterOptions = useMemo(
-    () => [
-      { value: "all" as const, label: translate("filterAll") },
-      { value: "low" as const, label: riskLabels.low },
-      { value: "moderate" as const, label: riskLabels.moderate },
-      { value: "high" as const, label: riskLabels.high },
-    ],
-    [riskLabels, translate]
-  );
 
   const filtered = useMemo(() => {
     const inPeriod = filterMeasurementsByPeriod(initialMeasurements, period);
@@ -111,23 +100,7 @@ export function HistoryPageClient({
           subtitle={listSubtitle}
         />
 
-        <div className="grid grid-cols-4 gap-2">
-          {riskFilterOptions.map(({ value, label }) => (
-            <button
-              key={value}
-              type="button"
-              onClick={() => setRiskFilter(value)}
-              className={cn(
-                "min-h-[44px] rounded-full px-2 text-sm font-medium transition-colors",
-                riskFilter === value
-                  ? "bg-accent-primary text-white"
-                  : "bg-surface text-[var(--text-secondary)] hover:bg-[var(--bg-primary)]"
-              )}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
+        <HistoryRiskFilterChips value={riskFilter} onChange={setRiskFilter} />
 
         {filtered.length === 0 ? (
           <EmptyState

@@ -11,6 +11,7 @@ describe("buildTrendPeriodInsight", () => {
     expect(insight!.narrative.length).toBeGreaterThan(10);
     expect(insight!.latestRiskLabel.length).toBeGreaterThan(0);
     expect(insight!.nextStep.length).toBeGreaterThan(5);
+    expect(insight!.recommendationTone).toBeDefined();
   });
 
   it("returns null when fewer than 2 readings", () => {

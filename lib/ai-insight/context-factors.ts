@@ -1,13 +1,14 @@
 import type { LucideIcon } from "lucide-react";
-import { Activity, ClipboardList, Gauge, Wind } from "lucide-react";
-import { getSensorUILabels } from "@/lib/i18n/labels";
+import { BarChart3, CalendarRange, ClipboardList, Droplets, Gauge, Wind } from "lucide-react";
+import { getRiskFullLabels, getSensorUILabels } from "@/lib/i18n/labels";
 import { t, type MessageKey } from "@/lib/i18n/messages";
 import type { AppLocale } from "@/lib/preferences/profile-preferences";
 import type { DemoRiskFactors } from "@/lib/profile/onboarding-storage";
 import { summarizeRiskFactorLabels } from "@/lib/profile/risk-factor-labels";
-import { formatAcetonePpb, formatAmmoniaPpb } from "@/lib/sensor-labels";
+import { formatAcetonePpb, formatAmmoniaPpb, formatRiskScoreDisplay } from "@/lib/sensor-labels";
 import { analyzeMeasurements } from "@/lib/ai-insight/analyze-measurements";
 import { normalizeMq135, normalizeMq3 } from "@/lib/risk-engine";
+import { scoreToRiskLevel } from "@/lib/risk-engine/risk-level";
 import type { Measurement } from "@/types/measurement";
 
 export type InsightFactorStatus = "good" | "moderate" | "low";
@@ -17,9 +18,11 @@ export interface InsightFactor {
   icon: LucideIcon;
   label: string;
   value: string;
+  detail?: string;
   listItems?: string[];
   status: InsightFactorStatus;
   statusLabel: string;
+  layout?: "compact" | "wide";
 }
 
 const STATUS_KEYS: Record<InsightFactorStatus, MessageKey> = {
@@ -39,6 +42,12 @@ function sensorStatus(normalized: number): InsightFactorStatus {
   if (normalized < 0.4) return "good";
   if (normalized < 0.7) return "moderate";
   return "low";
+}
+
+function moderateShareStatus(percent: number): InsightFactorStatus {
+  if (percent >= 50) return "low";
+  if (percent >= 40) return "moderate";
+  return "good";
 }
 
 function measurementFrequencyStatus(count: number): InsightFactorStatus {
@@ -92,6 +101,18 @@ export function buildInsightContextFactors(input: {
   const weeklyCount = countMeasurementsInDays(measurements, 7);
   const ammoniaStatus = sensorStatus(ammoniaNorm);
   const acetoneStatus = sensorStatus(acetoneNorm);
+  const riskLabels = getRiskFullLabels(locale);
+  const overallRiskLevel = analytics
+    ? scoreToRiskLevel(analytics.avgRiskScore)
+    : "low";
+  const moderateShare = analytics?.moderateOrHighPercent ?? 0;
+  const moderateStatus = moderateShareStatus(moderateShare);
+  const overallRiskStatus: InsightFactorStatus =
+    overallRiskLevel === "low"
+      ? "good"
+      : overallRiskLevel === "high"
+        ? "low"
+        : "moderate";
   const frequencyStatus = measurementFrequencyStatus(weeklyCount);
   const hasRiskFactors =
     (riskFactors.risk_factor_ids?.length ?? 0) > 0 ||
@@ -110,20 +131,47 @@ export function buildInsightContextFactors(input: {
         : `— ${sensorUi.ammonia.unit}`,
       status: ammoniaStatus,
       statusLabel: insightStatusLabel(locale, ammoniaStatus),
+      layout: "compact",
     },
     {
       id: "acetone",
-      icon: Activity,
+      icon: Droplets,
       label: sensorUi.acetone.label,
       value: analytics
         ? `${formatAcetonePpb(avgMq3)} ${sensorUi.acetone.unit}`
         : `— ${sensorUi.acetone.unit}`,
       status: acetoneStatus,
       statusLabel: insightStatusLabel(locale, acetoneStatus),
+      layout: "compact",
+    },
+    {
+      id: "moderate-share",
+      icon: BarChart3,
+      label: t(locale, "insightModerateShareLabel"),
+      value: analytics
+        ? t(locale, "insightModerateShareValue").replace(
+            "{n}",
+            String(moderateShare)
+          )
+        : "—",
+      status: moderateStatus,
+      statusLabel: insightStatusLabel(locale, moderateStatus),
+      layout: "compact",
+    },
+    {
+      id: "avg-risk-score",
+      icon: Gauge,
+      label: t(locale, "insightAvgScoreLabel"),
+      value: analytics
+        ? formatRiskScoreDisplay(analytics.avgRiskScore)
+        : "—",
+      status: overallRiskStatus,
+      statusLabel: riskLabels[overallRiskLevel],
+      layout: "compact",
     },
     {
       id: "measurement-frequency",
-      icon: Gauge,
+      icon: CalendarRange,
       label: t(locale, "insightMeasurementFreq"),
       value: analytics
         ? t(locale, "insightMeasurementFreqAllValue")
@@ -133,8 +181,14 @@ export function buildInsightContextFactors(input: {
             "{n}",
             String(weeklyCount)
           ),
+      detail: analytics
+        ? t(locale, "insightMeasurementFreqDetail")
+            .replace("{weekly}", String(weeklyCount))
+            .replace("{pct}", String(moderateShare))
+        : undefined,
       status: frequencyStatus,
       statusLabel: insightStatusLabel(locale, frequencyStatus),
+      layout: "wide",
     },
     {
       id: "risk-factors",
@@ -150,6 +204,7 @@ export function buildInsightContextFactors(input: {
       statusLabel: hasRiskFactors
         ? t(locale, "insightHasRiskFactors")
         : t(locale, "insightNoRiskSpecified"),
+      layout: "wide",
     },
   ];
 }

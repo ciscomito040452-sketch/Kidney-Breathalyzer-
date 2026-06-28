@@ -17,11 +17,14 @@ import {
 import type { LucideIcon } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { getRiskFullLabels } from "@/lib/i18n/labels";
+import type { MessageKey } from "@/lib/i18n/messages";
 import type { HolisticInsight } from "@/lib/ai-insight/build-holistic-insight";
+import type { HolisticInsightHighlight } from "@/lib/ai-insight/build-holistic-insight";
 import type { InsightHighlightTone } from "@/lib/dashboard/build-dashboard-insight";
 import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
 import {
   InsightGroupedCard,
+  InsightMetricRow,
   parseHighlightLabel,
 } from "@/components/ai-insight/insight-ui";
 import { cn } from "@/lib/utils";
@@ -43,18 +46,72 @@ const statusPill: Record<RiskLevel, string> = {
   high: "bg-risk-moderate/15 text-[var(--risk-meter-end)]",
 };
 
-const tonePill: Record<InsightHighlightTone, string> = {
-  good: "bg-risk-low/15 text-risk-low",
-  attention: "bg-accent-primary/12 text-accent-primary",
-  neutral: "bg-surface-elevated text-[var(--text-secondary)]",
-};
-
 const highlightIcons: Record<string, LucideIcon> = {
   "avg-score": Gauge,
   ammonia: Wind,
-  pattern: BarChart3,
   acetone: Droplets,
+  pattern: BarChart3,
 };
+
+const highlightIconTones: Record<
+  string,
+  "accent" | "good" | "attention" | "neutral"
+> = {
+  "avg-score": "accent",
+  ammonia: "accent",
+  acetone: "good",
+  pattern: "accent",
+};
+
+function parseHolisticMetric(
+  item: HolisticInsightHighlight,
+  translate: (key: MessageKey) => string
+): {
+  label: string;
+  value?: string;
+  statusLabel?: string;
+} {
+  const { title, detail } = parseHighlightLabel(item.label);
+
+  switch (item.id) {
+    case "avg-score": {
+      const score =
+        title.match(/(\d+\/100)/)?.[1] ??
+        formatRiskScoreDisplay(
+          Number(title.match(/(\d+(?:\.\d+)?)/)?.[1] ?? 0) / 100
+        );
+      return {
+        label: translate("insightAvgScoreLabel"),
+        value: score,
+        statusLabel: detail || undefined,
+      };
+    }
+    case "ammonia":
+    case "acetone": {
+      const valueMatch = title.match(/(\d+(?:\.\d+)?)\s*ppb/i);
+      const metricLabel = valueMatch
+        ? title.replace(/\s*\d+(?:\.\d+)?\s*ppb/i, "").trim()
+        : title;
+      return {
+        label: metricLabel,
+        value: valueMatch ? `${valueMatch[1]} ppb` : undefined,
+        statusLabel: detail || undefined,
+      };
+    }
+    case "pattern": {
+      const countMatch = title.match(/(\d+)/);
+      return {
+        label: translate("insightMeasurementFreq"),
+        value: countMatch
+          ? `${countMatch[1]} ${translate("timesUnit")}`
+          : undefined,
+        statusLabel: detail || undefined,
+      };
+    }
+    default:
+      return { label: title, statusLabel: detail || undefined };
+  }
+}
 
 export function HolisticInsightCard({
   insight,
@@ -127,57 +184,19 @@ export function HolisticInsightCard({
 
       <div className="divide-y divide-border-subtle">
         {insight.highlights.map((item) => {
-          const { title, detail } = parseHighlightLabel(item.label);
           const Icon = highlightIcons[item.id] ?? Activity;
-          const valueMatch = title.match(/(\d+(?:\.\d+)?)\s*(ppb|\/100)?/i);
-          const metricLabel = valueMatch
-            ? title.replace(valueMatch[0], "").trim()
-            : title;
-          const metricValue = valueMatch
-            ? `${valueMatch[1]}${valueMatch[2] ? ` ${valueMatch[2]}` : ""}`
-            : "";
+          const metric = parseHolisticMetric(item, translate);
 
           return (
-            <div
+            <InsightMetricRow
               key={item.id}
-              className="flex items-center justify-between gap-3 px-4 py-3.5"
-            >
-              <div className="flex min-w-0 items-center gap-3">
-                <span
-                  className={cn(
-                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
-                    item.tone === "good"
-                      ? "bg-risk-low/15 text-risk-low"
-                      : item.tone === "attention"
-                        ? "bg-accent-primary/12 text-accent-primary"
-                        : "bg-surface-elevated text-[var(--text-secondary)]"
-                  )}
-                  aria-hidden
-                >
-                  <Icon className="h-4 w-4" strokeWidth={1.75} />
-                </span>
-                <p className="min-w-0 text-sm text-[var(--text-secondary)]">
-                  {metricLabel || title}
-                </p>
-              </div>
-              <div className="flex shrink-0 items-center gap-2 text-right">
-                {metricValue && (
-                  <span className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">
-                    {metricValue}
-                  </span>
-                )}
-                {detail && (
-                  <span
-                    className={cn(
-                      "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
-                      tonePill[item.tone]
-                    )}
-                  >
-                    {detail}
-                  </span>
-                )}
-              </div>
-            </div>
+              icon={Icon}
+              iconTone={highlightIconTones[item.id] ?? "accent"}
+              label={metric.label}
+              value={metric.value}
+              statusLabel={metric.statusLabel}
+              statusTone={item.tone as InsightHighlightTone}
+            />
           );
         })}
       </div>

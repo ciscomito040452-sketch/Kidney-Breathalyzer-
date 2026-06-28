@@ -26,43 +26,53 @@ interface LandingStep {
   description: string;
 }
 
-function LandingStepRow({
+const toneStyles = {
+  accent: {
+    icon: "bg-[var(--accent-tint)] text-accent-primary",
+    ring: "ring-accent-primary/10",
+  },
+  good: {
+    icon: "bg-risk-low/15 text-risk-low",
+    ring: "ring-risk-low/15",
+  },
+  attention: {
+    icon: "bg-risk-moderate/15 text-risk-moderate",
+    ring: "ring-risk-moderate/15",
+  },
+} as const;
+
+function LandingStepCard({
   step,
   icon: Icon,
   tone,
   title,
   description,
-  isLast,
-}: LandingStep & { step: number; isLast?: boolean }) {
-  const toneClass = {
-    accent: "bg-[var(--accent-tint)] text-accent-primary",
-    good: "bg-risk-low/15 text-risk-low",
-    attention: "bg-risk-moderate/15 text-risk-moderate",
-  }[tone];
+  stepLabel,
+}: LandingStep & { step: number; stepLabel: string }) {
+  const styles = toneStyles[tone];
 
   return (
     <div
       className={cn(
-        "flex items-start gap-3 px-4 py-4",
-        !isLast && "border-b border-border-subtle"
+        "flex items-center gap-3.5 rounded-2xl border border-[var(--surface-card-border)] bg-surface px-4 py-3.5 shadow-card app-card ring-1",
+        styles.ring
       )}
     >
-      <div className="flex shrink-0 flex-col items-center gap-1.5">
-        <span className="flex h-5 w-5 items-center justify-center rounded-full bg-accent-primary text-[10px] font-bold text-white">
-          {step}
-        </span>
-        <span
-          className={cn(
-            "flex h-10 w-10 items-center justify-center rounded-2xl",
-            toneClass
-          )}
-          aria-hidden
-        >
-          <Icon className="h-5 w-5" strokeWidth={1.75} />
-        </span>
-      </div>
-      <div className="min-w-0 pt-0.5">
-        <p className="text-sm font-semibold text-[var(--text-primary)]">
+      <span
+        className={cn(
+          "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl",
+          styles.icon
+        )}
+        aria-hidden
+      >
+        <Icon className="h-5 w-5" strokeWidth={1.75} />
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
+          {stepLabel} {step}
+        </p>
+        <p className="mt-0.5 text-[15px] font-semibold leading-snug text-[var(--text-primary)]">
           {title}
         </p>
         <p className="mt-1 text-sm leading-relaxed text-[var(--text-secondary)]">
@@ -139,13 +149,13 @@ export function LandingPageClient() {
         <p className="mb-3 text-base font-semibold text-[var(--text-primary)]">
           {translate("landingHowItWorks")}
         </p>
-        <div className="overflow-hidden rounded-2xl border border-[var(--surface-card-border)] bg-surface shadow-card app-card">
+        <div className="space-y-2.5">
           {steps.map((item, index) => (
-            <LandingStepRow
+            <LandingStepCard
               key={item.title}
               step={index + 1}
+              stepLabel={translate("onboardingStep")}
               {...item}
-              isLast={index === steps.length - 1}
             />
           ))}
         </div>

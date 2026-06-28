@@ -2,14 +2,16 @@ import { analyzeMeasurements } from "@/lib/ai-insight/analyze-measurements";
 import { buildTrendNarrativeForPeriod } from "@/lib/ai-insight/trend-narrative";
 import { getRiskFullLabels, getSensorUILabels } from "@/lib/i18n/labels";
 import { t } from "@/lib/i18n/messages";
+import { buildTrendRecommendation } from "@/lib/dashboard/build-trend-recommendation";
+import type { TrendRecommendationTone } from "@/lib/dashboard/build-trend-recommendation";
 import type { AppLocale } from "@/lib/preferences/profile-preferences";
-import { suggestionStepsForLevel } from "@/lib/dashboard/suggestion-steps";
 import type { Measurement } from "@/types/measurement";
 
 export interface TrendPeriodInsight {
   narrative: string;
   latestRiskLabel: string;
   nextStep: string;
+  recommendationTone: TrendRecommendationTone;
 }
 
 export function buildTrendPeriodInsight(
@@ -26,6 +28,11 @@ export function buildTrendPeriodInsight(
   const riskLabels = getRiskFullLabels(locale);
   const ammoniaName = sensorUi.ammonia.label.split(" ")[0];
   const latest = measurements[0];
+  const recommendation = buildTrendRecommendation(
+    locale,
+    latest.risk_level,
+    analytics.ammoniaTrend
+  );
 
   return {
     narrative: buildTrendNarrativeForPeriod(
@@ -35,7 +42,8 @@ export function buildTrendPeriodInsight(
       periodDays
     ),
     latestRiskLabel: riskLabels[latest.risk_level],
-    nextStep: suggestionStepsForLevel(latest.risk_level, locale)[0],
+    nextStep: recommendation.nextStep,
+    recommendationTone: recommendation.tone,
   };
 }
 

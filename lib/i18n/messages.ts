@@ -158,10 +158,28 @@ const messages = {
     trendInsightSubtitle: "จากข้อมูลในช่วงที่เลือก · ไม่ใช่การวินิจฉัย",
     trendInsightStable: "ค่า{sensor}ค่อนข้างคงที่ในช่วง {n} วัน",
     trendInsightRising:
-      "ค่า{sensor}มีแนวโน้มสูงขึ้นประมาณ {pct}% ในช่วง {n} วัน — ควรติดตามใกล้ชิด",
+      "ค่า{sensor}มีแนวโน้มสูงขึ้นประมาณ {pct}% ในช่วง {n} วัน",
     trendInsightFalling:
-      "ค่า{sensor}มีแนวโน้มลดลงประมาณ {pct}% ในช่วง {n} วัน — ควรวัดต่อเนื่อง",
+      "ค่า{sensor}มีแนวโน้มลดลงประมาณ {pct}% ในช่วง {n} วัน",
     trendInsightLatestRisk: "การวัดล่าสุด: {level}",
+    trendRecHighRising:
+      "ควรนัดพบแพทย์เพื่อตรวจเพิ่มเติมโดยเร็ว — ค่าคัดกรองสูงและมีแนวโน้มเพิ่มขึ้น",
+    trendRecHighStable:
+      "ควรปรึกษาแพทย์เพื่อตรวจเพิ่มเติม แม้แนวโน้มจะค่อนข้างคงที่",
+    trendRecHighFalling:
+      "ควรปรึกษาแพทย์เพื่อยืนยันผล — ค่าคัดกรองยังอยู่ในระดับสูง",
+    trendRecModerateRising:
+      "แนะนำให้วัดซ้ำใน 2–3 วัน ดื่มน้ำให้เพียงพอ และปรึกษาแพทย์หากค่ายังสูงต่อเนื่อง",
+    trendRecModerateStable:
+      "ควรวัดซ้ำใน 2–3 วัน และติดตามว่าค่ายังอยู่ในระดับปานกลางหรือไม่",
+    trendRecModerateFalling:
+      "ค่าคัดกรองมีแนวโน้มลดลง — ควรวัดต่อเนื่องเพื่อยืนยันแนวโน้ม",
+    trendRecLowRising:
+      "ค่ามีแนวโน้มสูงขึ้น — แนะนำให้วัดซ้ำและติดตามอีกสักระยะ",
+    trendRecLowStable:
+      "ค่าค่อนข้างคงที่ — รักษาการวัดสม่ำเสมออย่างน้อย 3 ครั้งต่อสัปดาห์",
+    trendRecLowFalling:
+      "แนวโน้มอยู่ในเกณฑ์ที่น่าพอใจ — ควรวัดต่อเนื่องเพื่อเห็นภาพระยะยาว",
     aiSummaryTitle: "สรุปจาก AI",
     aiSummarySubtitle: "การวิเคราะห์เบื้องต้นจากข้อมูลการวัดล่าสุด",
     trendScore7days: "แนวโน้มคะแนน 7 วัน",
@@ -178,7 +196,11 @@ const messages = {
     insightStatusLow: "ควรปรับปรุง",
     insightMeasurementFreq: "ความถี่การวัด",
     insightMeasurementFreqValue: "{n} ครั้ง/7 วัน",
-    insightMeasurementFreqAllValue: "{n} ครั้ง/{days} วัน",
+    insightMeasurementFreqAllValue: "{n} ครั้ง / {days} วัน",
+    insightMeasurementFreqDetail:
+      "สัปดาห์นี้ {weekly} ครั้ง · {pct}% ปานกลางขึ้นไป",
+    insightModerateShareLabel: "ระดับปานกลางขึ้นไป",
+    insightModerateShareValue: "{n}%",
     insightRiskFactorsLabel: "ปัจจัยเสี่ยง (จากที่คุณระบุ)",
     insightNoRiskSpecified: "ไม่มีที่ระบุ",
     insightHasRiskFactors: "มีปัจจัยเสี่ยง",
@@ -369,10 +391,28 @@ const messages = {
     trendInsightSubtitle: "From the selected period · not a diagnosis",
     trendInsightStable: "{sensor} stayed relatively stable over {n} days",
     trendInsightRising:
-      "{sensor} rose about {pct}% over {n} days — monitor closely",
+      "{sensor} rose about {pct}% over {n} days",
     trendInsightFalling:
-      "{sensor} fell about {pct}% over {n} days — keep measuring",
+      "{sensor} fell about {pct}% over {n} days",
     trendInsightLatestRisk: "Latest reading: {level}",
+    trendRecHighRising:
+      "Consider seeing a doctor soon — screening risk is high and rising",
+    trendRecHighStable:
+      "Consider seeing a doctor for follow-up even if the trend is stable",
+    trendRecHighFalling:
+      "Consider seeing a doctor to confirm results — screening risk is still high",
+    trendRecModerateRising:
+      "Re-test in 2–3 days, stay hydrated, and consult a doctor if values stay elevated",
+    trendRecModerateStable:
+      "Re-test in 2–3 days and check whether readings stay in the moderate range",
+    trendRecModerateFalling:
+      "Screening values are trending down — keep measuring to confirm the pattern",
+    trendRecLowRising:
+      "Values are trending up — re-test and monitor over the next few days",
+    trendRecLowStable:
+      "Values are fairly stable — aim for at least 3 readings per week",
+    trendRecLowFalling:
+      "Trend looks reassuring — keep regular measurements for long-term tracking",
     aiSummaryTitle: "AI summary",
     aiSummarySubtitle: "Preliminary analysis from your latest reading",
     trendScore7days: "7-day score trend",
@@ -390,6 +430,10 @@ const messages = {
     insightMeasurementFreq: "Measurement frequency",
     insightMeasurementFreqValue: "{n} readings / 7 days",
     insightMeasurementFreqAllValue: "{n} readings / {days} days",
+    insightMeasurementFreqDetail:
+      "{weekly} readings this week · {pct}% moderate or higher",
+    insightModerateShareLabel: "Moderate or higher",
+    insightModerateShareValue: "{n}%",
     insightRiskFactorsLabel: "Risk factors (your input)",
     insightNoRiskSpecified: "None specified",
     insightHasRiskFactors: "Risk factors recorded",

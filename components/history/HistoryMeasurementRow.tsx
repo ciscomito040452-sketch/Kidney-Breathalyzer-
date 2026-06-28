@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { Activity, ChevronRight } from "lucide-react";
+import { ChevronRight, Droplets, Wind } from "lucide-react";
+import { HistoryScoreBadge } from "@/components/history/HistoryScoreBadge";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { getRiskFullLabels } from "@/lib/i18n/labels";
-import { scorePercent } from "@/lib/risk-engine/risk-zones";
+import { formatAcetonePpb, formatAmmoniaPpb } from "@/lib/sensor-labels";
 import { formatHistoryListTimeLocale, cn } from "@/lib/utils";
-import type { Measurement, RiskLevel } from "@/types/measurement";
+import type { Measurement } from "@/types/measurement";
 
 interface HistoryMeasurementRowProps {
   measurement: Measurement;
@@ -14,12 +15,6 @@ interface HistoryMeasurementRowProps {
   grouped?: boolean;
   isLast?: boolean;
 }
-
-const levelIconWrap: Record<RiskLevel, string> = {
-  low: "bg-risk-moderate/10 text-[var(--risk-meter-mid)]",
-  moderate: "bg-risk-moderate/15 text-risk-moderate",
-  high: "bg-risk-moderate/20 text-[var(--risk-meter-end)]",
-};
 
 export function HistoryMeasurementRow({
   measurement,
@@ -31,53 +26,65 @@ export function HistoryMeasurementRow({
   const isCompact = variant === "compact";
   const riskLabels = getRiskFullLabels(locale);
   const timeLabel = formatHistoryListTimeLocale(locale, measurement.measured_at);
-  const scoreDisplay = scorePercent(measurement.risk_score);
+  const ammoniaPpb = formatAmmoniaPpb(measurement.mq135_value);
+  const acetonePpb = formatAcetonePpb(measurement.mq3_value);
 
   return (
     <Link
       href={`/result/${measurement.id}`}
       className={cn(
-        "flex items-center gap-3 transition-colors active:bg-surface-elevated",
+        "flex items-center gap-3.5 transition-colors active:bg-surface-elevated",
         grouped
           ? cn(
-              "border-b border-border-subtle px-4 py-3.5",
+              "border-b border-border-subtle px-4 py-4",
               isLast && "border-b-0"
             )
           : cn(
-              "rounded-2xl border border-border-subtle bg-surface px-3.5 hover:bg-surface-elevated",
-              isCompact ? "py-3" : "py-3.5"
+              "rounded-2xl border border-[var(--surface-card-border)] bg-surface px-4 shadow-card app-card hover:bg-surface-elevated",
+              isCompact ? "py-3.5" : "py-4"
             )
       )}
     >
-      <span
-        className={cn(
-          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
-          levelIconWrap[measurement.risk_level]
-        )}
-        aria-hidden
-      >
-        <Activity className="h-5 w-5" strokeWidth={1.75} />
-      </span>
+      <HistoryScoreBadge
+        riskScore={measurement.risk_score}
+        riskLevel={measurement.risk_level}
+        size={isCompact ? 46 : 50}
+      />
 
       <div className="min-w-0 flex-1">
-        <p className="truncate text-sm font-medium text-[var(--text-primary)]">
+        <p className="truncate text-[15px] font-semibold leading-snug text-[var(--text-primary)]">
           {riskLabels[measurement.risk_level]}
         </p>
-        <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-          {timeLabel}
-        </p>
+
+        <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-[var(--text-secondary)]">
+          <span className="font-medium tabular-nums">{timeLabel}</span>
+          <span aria-hidden className="text-border-subtle">
+            ·
+          </span>
+          <span className="inline-flex items-center gap-1 tabular-nums">
+            <Wind
+              className="h-3.5 w-3.5 shrink-0 text-risk-low"
+              strokeWidth={1.75}
+              aria-hidden
+            />
+            NH₃ {ammoniaPpb}
+          </span>
+          <span className="inline-flex items-center gap-1 tabular-nums">
+            <Droplets
+              className="h-3.5 w-3.5 shrink-0 text-risk-moderate"
+              strokeWidth={1.75}
+              aria-hidden
+            />
+            {acetonePpb} ppb
+          </span>
+        </div>
       </div>
 
-      <div className="flex shrink-0 items-center gap-1.5">
-        <span className="text-sm font-medium tabular-nums text-[var(--text-secondary)]">
-          {scoreDisplay}
-        </span>
-        <ChevronRight
-          className="h-4 w-4 text-[var(--text-secondary)] opacity-50"
-          strokeWidth={2}
-          aria-hidden
-        />
-      </div>
+      <ChevronRight
+        className="h-4 w-4 shrink-0 text-[var(--text-secondary)] opacity-40"
+        strokeWidth={2}
+        aria-hidden
+      />
     </Link>
   );
 }
