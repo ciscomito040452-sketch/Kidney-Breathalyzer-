@@ -37,7 +37,7 @@ Version: 1.1 (MVP — aligned with Example UX-UI.png)
   --accent-primary: #2563EB;
   --accent-secondary: #7DD3FC;
   --risk-low: #60A5FA;
-  --risk-moderate: #2563EB;
+  --risk-moderate: #3b82f6;
   --risk-high: #1E3A8A;
   --text-primary: #1D1D1F;
   --text-secondary: #86868B;
@@ -63,7 +63,7 @@ Version: 1.1 (MVP — aligned with Example UX-UI.png)
 | `--accent-primary` | Primary CTA, active nav, links |
 | `--accent-secondary` | Gradients, highlights, secondary buttons |
 | `--risk-low` | Risk ต่ำ — ฟ้าอ่อน (monochrome blue scale) |
-| `--risk-moderate` | Risk ปานกลาง — ฟ้าหลัก |
+| `--risk-moderate` | Risk ปานกลาง — ฟ้ากลาง (แยกจาก accent) |
 | `--risk-high` | Risk สูง — น้ำเงินเข้ม |
 | `--text-primary` | Headings, body text |
 | `--text-secondary` | Captions, labels, timestamps |
@@ -293,8 +293,36 @@ Card เดียว — ไม่ใช่ chat
 
 ### History (`/history`) — P1
 
-1. **HistoryFilters** — วันที่, risk level
-2. **MeasurementList** — รายการแต่ละครั้ง → link `/result/:id`
+1. **HistoryPeriodControl** — วันนี้ / สัปดาห์นี้ / เดือนนี้ / 7 / 30 / 90 วัน (scroll แนวนอน)
+2. **TrendChart** — แนวโน้มตามช่วงที่เลือก
+3. **Risk level filters** — ทั้งหมด / ต่ำ / ปานกลาง / สูง
+4. **HistoryDayGroup** — จัดกลุ่มตามวัน (วันนี้, เมื่อวาน, วันที่)
+5. **HistoryMeasurementRow** compact — เวลา + คะแนน + RiskMeter → link `/result/:id`
+
+---
+
+## Status Components (MVP)
+
+### RiskMeter
+
+- แถบช่วง 3 ระดับ (0–39 / 40–69 / 70–100) + ตัวชี้คะแนน
+- **ไม่ใช่** progress bar เป้าหมาย (ต่างจาก Weekly Goal)
+- Variants: `full` (การ์ดหลัก), `compact` (ประวัติ)
+
+### SensorStatusPill + SensorLevelBar
+
+| สถานะ | Pill | แถบ |
+|--------|------|-----|
+| ปกติ | เทา outline | ฟ้าอ่อน |
+| สูงกว่าปกติ | ฟ้า filled | ฟ้าหลัก + เส้นเกณฑ์ |
+
+เกณฑ์ PoC: แอมโมเนีย ≥280 ppb, อะซิโทน ≥225 ppb
+
+### SensorEducationSheet
+
+- ไอคอน `CircleHelp` บนการ์ดเซนเซอร์และคะแนนความเสี่ยง
+- Bottom sheet อธิบายความหมาย / เกณฑ์อ้างอิง / แหล่งข้อมูล / disclaimer
+- หน้า Result: ลิงก์ "ทำความเข้าใจค่าเซนเซอร์และเกณฑ์"
 
 ---
 

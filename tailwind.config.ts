@@ -17,7 +17,7 @@ const config: Config = {
         surface: "#F5F5F7",
         risk: {
           low: "#60A5FA",
-          moderate: "#2563EB",
+          moderate: "#3B82F6",
           high: "#1E3A8A",
         },
         border: {

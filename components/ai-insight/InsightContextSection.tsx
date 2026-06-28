@@ -55,6 +55,7 @@ export function InsightContextSection({
               label={factor.label}
               value={factor.value}
               statusLabel={factor.statusLabel}
+              insightStatus={factor.status}
             />
           );
         })}

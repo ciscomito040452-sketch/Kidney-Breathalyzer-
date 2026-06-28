@@ -6,7 +6,7 @@ describe("seedDemoMeasurements", () => {
   it("seeds a realistic number of measurements within 30 days", () => {
     const data = seedDemoMeasurements(30);
     expect(data.length).toBeGreaterThanOrEqual(14);
-    expect(data.length).toBeLessThanOrEqual(28);
+    expect(data.length).toBeLessThanOrEqual(35);
   });
 
   it("uses deterministic ids across runs", () => {
@@ -24,10 +24,21 @@ describe("seedDemoMeasurements", () => {
     expect(latest.ai_explanation.length).toBeGreaterThan(20);
   });
 
+  it("produces varied measurement times", () => {
+    const data = seedDemoMeasurements(30);
+    const times = new Set(
+      data.map((m) => {
+        const d = new Date(m.measured_at);
+        return `${d.getHours()}:${d.getMinutes()}`;
+      })
+    );
+    expect(times.size).toBeGreaterThanOrEqual(3);
+  });
+
   it("produces believable gamification stats", () => {
     const stats = computeGamificationStats(seedDemoMeasurements(30));
     expect(stats.current_streak).toBeLessThanOrEqual(7);
-    expect(stats.weekly_count).toBeLessThanOrEqual(7);
+    expect(stats.weekly_count).toBeLessThanOrEqual(14);
     expect(stats.challenge_days.filter(Boolean).length).toBeLessThan(14);
   });
 });

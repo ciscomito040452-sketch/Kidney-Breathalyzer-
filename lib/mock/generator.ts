@@ -31,8 +31,32 @@ function randomInRangeSeeded(
   return Math.round((min + rand() * (max - min)) * 100) / 100;
 }
 
-function demoMeasurementId(dayIndex: number): string {
-  return `00000000-0000-4000-8000-${String(dayIndex).padStart(12, "0")}`;
+function demoMeasurementId(recordIndex: number): string {
+  return `00000000-0000-4000-8000-${String(recordIndex).padStart(12, "0")}`;
+}
+
+function pickMeasurementTime(
+  rand: () => number,
+  slotIndex: number
+): { hours: number; minutes: number } {
+  const presets = [
+    { hMin: 7, hMax: 9, mMax: 59 },
+    { hMin: 11, hMax: 13, mMax: 59 },
+    { hMin: 18, hMax: 21, mMax: 30 },
+  ];
+  const preset = presets[slotIndex % presets.length];
+  const hours =
+    preset.hMin + Math.floor(rand() * (preset.hMax - preset.hMin + 1));
+  const minutes = Math.floor(rand() * (preset.mMax + 1));
+  return { hours, minutes };
+}
+
+function measurementSlotsForDay(
+  daysFromLatest: number,
+  rand: () => number
+): number {
+  if (daysFromLatest <= 6 && rand() > 0.4) return 2;
+  return 1;
 }
 
 const DEMO_RISK_CYCLE: RiskLevel[] = ["low", "moderate", "high"];
@@ -147,46 +171,54 @@ export function seedDemoMeasurements(
   for (let i = 0; i < days; i++) {
     if (!shouldRecordDay(i, days, rand)) continue;
 
-    const date = new Date(now);
-    date.setDate(date.getDate() - (days - 1 - i));
+    const daysFromLatest = days - 1 - i;
+    const slotCount = measurementSlotsForDay(daysFromLatest, rand);
 
-    const { mq135_value, mq3_value } = sensorValuesForDay(i, days, rand);
+    for (let slot = 0; slot < slotCount; slot++) {
+      const date = new Date(now);
+      date.setDate(date.getDate() - daysFromLatest);
+      const { hours, minutes } = pickMeasurementTime(rand, slot);
+      date.setHours(hours, minutes, 0, 0);
 
-    const historyForDay = [...measurements].sort(
-      (a, b) =>
-        new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime()
-    );
+      const { mq135_value, mq3_value } = sensorValuesForDay(i, days, rand);
 
-    const { risk_score, risk_level } = calculateRiskScore({
-      mq135_value,
-      mq3_value,
-      riskFactors,
-      history: historyForDay,
-    });
+      const historyForDay = [...measurements].sort(
+        (a, b) =>
+          new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime()
+      );
 
-    const trend = computeTrendContext(historyForDay, mq135_value);
-    const measured_at = date.toISOString();
-
-    measurements.push({
-      id: demoMeasurementId(i),
-      user_id: DEMO_USER_ID,
-      measured_at,
-      mq135_value,
-      mq3_value,
-      risk_score,
-      risk_level,
-      is_mock: true,
-      ai_explanation: generateExplanation({
-        risk_level,
+      const { risk_score, risk_level } = calculateRiskScore({
         mq135_value,
         mq3_value,
         riskFactors,
-        avgMq135: trend.avgMq135,
-        trendPercent: trend.trendPercent,
-        consecutiveHighDays: trend.consecutiveHighDays,
-      }),
-      created_at: measured_at,
-    });
+        history: historyForDay,
+      });
+
+      const trend = computeTrendContext(historyForDay, mq135_value);
+      const measured_at = date.toISOString();
+      const recordIndex = i * 10 + slot;
+
+      measurements.push({
+        id: demoMeasurementId(recordIndex),
+        user_id: DEMO_USER_ID,
+        measured_at,
+        mq135_value,
+        mq3_value,
+        risk_score,
+        risk_level,
+        is_mock: true,
+        ai_explanation: generateExplanation({
+          risk_level,
+          mq135_value,
+          mq3_value,
+          riskFactors,
+          avgMq135: trend.avgMq135,
+          trendPercent: trend.trendPercent,
+          consecutiveHighDays: trend.consecutiveHighDays,
+        }),
+        created_at: measured_at,
+      });
+    }
   }
 
   return measurements.sort(

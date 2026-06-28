@@ -10,8 +10,13 @@ import {
 import {
   getAcetoneStatus,
   getAmmoniaStatus,
-  SENSOR_STATUS_LABELS,
 } from "@/lib/sensors/status";
+import {
+  acetoneBarPercent,
+  acetoneThresholdPercent,
+  ammoniaBarPercent,
+  ammoniaThresholdPercent,
+} from "@/lib/sensors/sensor-zones";
 import { formatDateTimeThai } from "@/lib/utils";
 import type { RiskLevel } from "@/types/measurement";
 
@@ -34,6 +39,16 @@ export function DashboardLatestSection({
 }: DashboardLatestSectionProps) {
   const ammoniaPpb = formatAmmoniaPpb(mq135);
   const acetonePpb = formatAcetonePpb(mq3);
+  const ammoniaStatus = getAmmoniaStatus(mq135);
+  const acetoneStatus = getAcetoneStatus(mq3);
+
+  const educationContext = {
+    ammoniaPpb,
+    acetonePpb,
+    riskScore,
+    ammoniaStatus,
+    acetoneStatus,
+  };
 
   return (
     <section className="space-y-3">
@@ -46,6 +61,7 @@ export function DashboardLatestSection({
         riskLevel={riskLevel}
         riskScore={riskScore}
         riskDelta={riskDelta}
+        educationContext={educationContext}
       />
 
       <div className="flex gap-3">
@@ -59,7 +75,11 @@ export function DashboardLatestSection({
           label={SENSOR_UI.ammonia.label}
           value={ammoniaPpb}
           unit={SENSOR_UI.ammonia.unit}
-          statusLabel={SENSOR_STATUS_LABELS[getAmmoniaStatus(mq135)]}
+          status={ammoniaStatus}
+          barPercent={ammoniaBarPercent(ammoniaPpb)}
+          thresholdPercent={ammoniaThresholdPercent()}
+          educationTopic="ammonia"
+          educationContext={educationContext}
         />
         <SensorValueCard
           icon={
@@ -71,7 +91,11 @@ export function DashboardLatestSection({
           label={SENSOR_UI.acetone.label}
           value={acetonePpb}
           unit={SENSOR_UI.acetone.unit}
-          statusLabel={SENSOR_STATUS_LABELS[getAcetoneStatus(mq3)]}
+          status={acetoneStatus}
+          barPercent={acetoneBarPercent(acetonePpb)}
+          thresholdPercent={acetoneThresholdPercent()}
+          educationTopic="acetone"
+          educationContext={educationContext}
         />
       </div>
     </section>
