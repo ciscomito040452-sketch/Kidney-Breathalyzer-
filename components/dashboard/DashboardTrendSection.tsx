@@ -2,8 +2,10 @@
 
 import { useMemo, useState } from "react";
 import { TrendChart } from "@/components/dashboard/TrendChart";
+import { TrendChartInsight } from "@/components/dashboard/TrendChartInsight";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { SegmentedControl } from "@/components/shared/SegmentedControl";
+import { buildTrendPeriodInsight } from "@/lib/dashboard/build-trend-period-insight";
 import { DASHBOARD_TREND_DAY_OPTIONS, type DashboardTrendDays } from "@/lib/constants";
 import type { Measurement } from "@/types/measurement";
 
@@ -14,24 +16,31 @@ interface DashboardTrendSectionProps {
 export function DashboardTrendSection({
   measurements,
 }: DashboardTrendSectionProps) {
-  const { translate } = usePreferences();
+  const { locale, translate } = usePreferences();
   const [days, setDays] = useState<DashboardTrendDays>(7);
 
-  const trendData = useMemo(() => {
+  const filteredMeasurements = useMemo(() => {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - days);
+    return measurements.filter((m) => new Date(m.measured_at) >= cutoff);
+  }, [measurements, days]);
 
-    return measurements
+  const trendData = useMemo(() => {
+    return filteredMeasurements
       .slice()
       .reverse()
-      .filter((m) => new Date(m.measured_at) >= cutoff)
       .map((m) => ({
         date: m.measured_at,
         mq135_value: m.mq135_value,
         mq3_value: m.mq3_value,
         risk_score: m.risk_score,
       }));
-  }, [measurements, days]);
+  }, [filteredMeasurements]);
+
+  const trendInsight = useMemo(
+    () => buildTrendPeriodInsight(filteredMeasurements, locale, days),
+    [filteredMeasurements, locale, days]
+  );
 
   return (
     <div className="space-y-3">
@@ -47,6 +56,7 @@ export function DashboardTrendSection({
         compact
         showDualLine
       />
+      {trendInsight && <TrendChartInsight insight={trendInsight} />}
     </div>
   );
 }

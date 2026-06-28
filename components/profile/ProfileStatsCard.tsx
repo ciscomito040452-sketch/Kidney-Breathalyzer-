@@ -27,10 +27,10 @@ function StatIconBadge({
   return (
     <div
       className={cn(
-        "mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ring-1",
+        "mb-4 flex h-14 w-14 items-center justify-center rounded-2xl",
         variant === "measure"
-          ? "bg-accent-primary/10 text-accent-primary ring-accent-primary/15"
-          : "bg-accent-secondary/15 text-accent-primary ring-accent-primary/10"
+          ? "bg-[var(--accent-tint)] text-accent-primary"
+          : "bg-[var(--accent-tint-strong)] text-accent-primary"
       )}
       aria-hidden
     >
@@ -41,7 +41,7 @@ function StatIconBadge({
 
 function StatTile({ icon, value, label, variant }: StatTileProps) {
   return (
-    <div className="rounded-2xl border border-border-subtle bg-surface p-4 shadow-card">
+    <div className="bg-surface p-4">
       <StatIconBadge icon={icon} variant={variant} />
       <p className="text-3xl font-semibold tabular-nums leading-none tracking-tight">
         {value}
@@ -62,7 +62,7 @@ export function ProfileStatsCard({
   return (
     <section aria-label={translate("healthSummary")}>
       <p className="mb-3 text-base font-semibold">{translate("healthSummary")}</p>
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[var(--surface-card-border)] bg-border-subtle shadow-card app-card">
         <StatTile
           icon={Wind}
           value={String(totalMeasurements)}

@@ -7,6 +7,14 @@ import {
 } from "@/lib/mock/demo-store";
 import { createMockMeasurement } from "@/lib/mock/generator";
 import { getEffectiveRiskFactors } from "@/lib/profile/effective-risk-factors";
+import {
+  formatAcetonePpb,
+  formatAmmoniaPpb,
+} from "@/lib/sensor-labels";
+import {
+  getAcetoneStatus,
+  getAmmoniaStatus,
+} from "@/lib/sensors/status";
 
 export interface IngestMeasurementInput {
   mq135_value: number;
@@ -47,6 +55,10 @@ export function ingestMeasurement(
     avgMq135: trend.avgMq135,
     trendPercent: trend.trendPercent,
     consecutiveHighDays: trend.consecutiveHighDays,
+    ammoniaPpb: formatAmmoniaPpb(mq135_value),
+    acetonePpb: formatAcetonePpb(mq3_value),
+    ammoniaStatus: getAmmoniaStatus(mq135_value),
+    acetoneStatus: getAcetoneStatus(mq3_value),
   });
 
   const measurement = addDemoMeasurement(

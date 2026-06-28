@@ -50,7 +50,7 @@ export function ProfileAvatar({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-accent-primary/10",
+        "flex shrink-0 items-center justify-center overflow-hidden rounded-full bg-[var(--accent-tint)]",
         dimension,
         className
       )}

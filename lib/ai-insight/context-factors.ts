@@ -17,6 +17,7 @@ export interface InsightFactor {
   icon: LucideIcon;
   label: string;
   value: string;
+  listItems?: string[];
   status: InsightFactorStatus;
   statusLabel: string;
 }
@@ -46,28 +47,23 @@ function measurementFrequencyStatus(count: number): InsightFactorStatus {
   return "low";
 }
 
-function formatRiskFactorSummary(
+function getRiskFactorLabels(
   locale: AppLocale,
   factors: DemoRiskFactors
-): string {
+): string[] {
   if (factors.risk_factor_ids?.length) {
-    const labels = summarizeRiskFactorLabels(
+    return summarizeRiskFactorLabels(
       locale,
       factors.risk_factor_ids,
       factors.risk_factor_other ?? null
     );
-    return labels.length > 0
-      ? labels.join(", ")
-      : t(locale, "insightNoRiskSpecified");
   }
 
   const items: string[] = [];
   if (factors.has_diabetes) items.push(t(locale, "riskFactorDiabetes"));
   if (factors.has_hypertension) items.push(t(locale, "riskFactorHypertension"));
   if (factors.has_family_history) items.push(t(locale, "riskFactorFamily"));
-  return items.length > 0
-    ? items.join(", ")
-    : t(locale, "insightNoRiskSpecified");
+  return items;
 }
 
 function countMeasurementsInDays(
@@ -102,6 +98,7 @@ export function buildInsightContextFactors(input: {
     riskFactors.has_diabetes ||
     riskFactors.has_hypertension ||
     riskFactors.has_family_history;
+  const riskFactorLabels = getRiskFactorLabels(locale, riskFactors);
 
   return [
     {
@@ -143,7 +140,12 @@ export function buildInsightContextFactors(input: {
       id: "risk-factors",
       icon: ClipboardList,
       label: t(locale, "insightRiskFactorsLabel"),
-      value: formatRiskFactorSummary(locale, riskFactors),
+      value:
+        riskFactorLabels.length > 0
+          ? String(riskFactorLabels.length)
+          : t(locale, "insightNoRiskSpecified"),
+      listItems:
+        riskFactorLabels.length > 0 ? riskFactorLabels : undefined,
       status: hasRiskFactors ? "moderate" : "good",
       statusLabel: hasRiskFactors
         ? t(locale, "insightHasRiskFactors")

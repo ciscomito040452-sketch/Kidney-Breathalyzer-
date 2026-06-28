@@ -13,6 +13,8 @@ export interface MeasurementAnalytics {
   riskLevelCounts: Record<RiskLevel, number>;
   ammoniaTrend: TrendDirection;
   ammoniaTrendPercent: number;
+  acetoneTrend: TrendDirection;
+  acetoneTrendPercent: number;
   riskScoreTrend: TrendDirection;
   riskScoreTrendPercent: number;
   elevatedAmmoniaPercent: number;
@@ -86,6 +88,17 @@ export function analyzeMeasurements(
       ? ((recentMq135Avg - olderMq135Avg) / olderMq135Avg) * 100
       : 0;
 
+  const olderMq3Avg =
+    olderHalf.reduce((sum, m) => sum + m.mq3_value, 0) / olderHalf.length;
+  const recentMq3Avg =
+    recentHalf.length > 0
+      ? recentHalf.reduce((sum, m) => sum + m.mq3_value, 0) / recentHalf.length
+      : olderMq3Avg;
+  const acetoneTrendPercent =
+    olderMq3Avg > 0
+      ? ((recentMq3Avg - olderMq3Avg) / olderMq3Avg) * 100
+      : 0;
+
   const olderRiskAvg =
     olderHalf.reduce((sum, m) => sum + m.risk_score, 0) / olderHalf.length;
   const recentRiskAvg =
@@ -116,6 +129,8 @@ export function analyzeMeasurements(
     riskLevelCounts,
     ammoniaTrend: trendFromPercent(ammoniaTrendPercent),
     ammoniaTrendPercent,
+    acetoneTrend: trendFromPercent(acetoneTrendPercent),
+    acetoneTrendPercent,
     riskScoreTrend: trendFromPercent(riskScoreTrendPercent),
     riskScoreTrendPercent,
     elevatedAmmoniaPercent: Math.round((elevatedAmmonia / count) * 100),

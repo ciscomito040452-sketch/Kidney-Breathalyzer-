@@ -3,6 +3,10 @@ import {
   type MeasurementAnalytics,
   type TrendDirection,
 } from "@/lib/ai-insight/analyze-measurements";
+import {
+  buildMetricTrendNarrativeForPeriod,
+} from "@/lib/ai-insight/trend-narrative";
+import { suggestionStepsForLevel } from "@/lib/dashboard/suggestion-steps";
 import type { InsightHighlightTone } from "@/lib/dashboard/build-dashboard-insight";
 import {
   getRiskFullLabels,
@@ -31,16 +35,26 @@ export interface HolisticInsightHighlight {
   tone: InsightHighlightTone;
 }
 
+export interface HolisticTrendLine {
+  id: "ammonia" | "acetone" | "risk-score";
+  label: string;
+  narrative: string;
+}
+
 export interface HolisticInsight {
   summary: string;
+  summaryBullets: string[];
   highlights: HolisticInsightHighlight[];
   researchNote: string;
   suggestion: string;
+  suggestionSteps: string[];
   periodCaption: string;
   overallRiskLevel: RiskLevel;
   avgRiskScore: number;
   analytics: MeasurementAnalytics;
   trendNarrative: string;
+  trendLines: HolisticTrendLine[];
+  latestRiskLabel: string;
 }
 
 const RESEARCH_NOTE_TH =
@@ -96,42 +110,46 @@ function suggestionForLevel(
   }
 }
 
-function buildSummaryTh(
+function buildSummaryBulletsTh(
   analytics: MeasurementAnalytics,
   overallRiskLevel: RiskLevel,
   riskFactors?: RiskFactors
-): string {
+): string[] {
   const avgDisplay = scorePercent(analytics.avgRiskScore);
-  const parts: string[] = [];
+  const bullets: string[] = [];
 
-  parts.push(
+  bullets.push(
     `จากการวัด ${analytics.count} ครั้งใน ${analytics.daySpan} วัน ค่าแอมโมเนียในลมหายใจ${trendPhraseTh(analytics.ammoniaTrend)}เมื่อเทียบช่วงต้นและปลายของข้อมูล`
   );
 
   if (analytics.moderateOrHighPercent >= 40) {
-    parts.push(
+    bullets.push(
       `การวัดส่วนใหญ่ (${analytics.moderateOrHighPercent}%) อยู่ในระดับความเสี่ยงปานกลางขึ้นไป`
     );
   } else {
-    parts.push(
-      `ส่วนใหญ่อยู่ในระดับความเสี่ยงต่ำถึงปานกลาง`
-    );
+    bullets.push(`ส่วนใหญ่อยู่ในระดับความเสี่ยงต่ำถึงปานกลาง`);
   }
 
   if (analytics.elevatedAmmoniaPercent >= 30) {
-    parts.push(
+    bullets.push(
       `แอมโมเนียสูงกว่าเกณฑ์อ้างอิงใน ${analytics.elevatedAmmoniaPercent}% ของการวัด`
     );
   }
 
+  if (analytics.elevatedAcetonePercent >= 30) {
+    bullets.push(
+      `อะซิโทนสูงกว่าเกณฑ์อ้างอิงใน ${analytics.elevatedAcetonePercent}% ของการวัด`
+    );
+  }
+
   if (riskFactors?.has_diabetes) {
-    parts.push("ประกอบกับประวัติโรคเบาหวานที่คุณระบุ");
+    bullets.push("ประกอบกับประวัติโรคเบาหวานที่คุณระบุ");
   }
   if (riskFactors?.has_hypertension) {
-    parts.push("ประกอบกับประวัติความดันโลหิตสูง");
+    bullets.push("ประกอบกับประวัติความดันโลหิตสูง");
   }
   if (riskFactors?.has_family_history) {
-    parts.push("ประกอบกับประวัติโรคไตในครอบครัว");
+    bullets.push("ประกอบกับประวัติโรคไตในครอบครัว");
   }
 
   const levelText: Record<RiskLevel, string> = {
@@ -140,30 +158,38 @@ function buildSummaryTh(
     high: `คะแนนความเสี่ยงเฉลี่ย ${avgDisplay}/100 — ภาพรวมอยู่ในระดับสูง ควรปรึกษาแพทย์`,
   };
 
-  parts.push(levelText[overallRiskLevel]);
-  return parts.join(" ");
+  bullets.push(levelText[overallRiskLevel]);
+  return bullets;
 }
 
-function buildSummaryEn(
+function buildSummaryBulletsEn(
   analytics: MeasurementAnalytics,
   overallRiskLevel: RiskLevel
-): string {
+): string[] {
   const avgDisplay = scorePercent(analytics.avgRiskScore);
-  const parts: string[] = [];
+  const bullets: string[] = [];
 
-  parts.push(
+  bullets.push(
     `Across ${analytics.count} readings over ${analytics.daySpan} days, breath ammonia is ${trendPhraseEn(analytics.ammoniaTrend)} compared with earlier vs. later in your history.`
   );
 
   if (analytics.moderateOrHighPercent >= 40) {
-    parts.push(
+    bullets.push(
       `${analytics.moderateOrHighPercent}% of readings were moderate risk or higher.`
     );
+  } else {
+    bullets.push("Most readings were in the low to moderate risk range.");
   }
 
   if (analytics.elevatedAmmoniaPercent >= 30) {
-    parts.push(
+    bullets.push(
       `Ammonia was above the reference threshold in ${analytics.elevatedAmmoniaPercent}% of readings.`
+    );
+  }
+
+  if (analytics.elevatedAcetonePercent >= 30) {
+    bullets.push(
+      `Acetone was above the reference threshold in ${analytics.elevatedAcetonePercent}% of readings.`
     );
   }
 
@@ -173,8 +199,75 @@ function buildSummaryEn(
     high: `Average risk score ${avgDisplay}/100 — overall pattern is elevated; consider seeing a doctor.`,
   };
 
-  parts.push(levelText[overallRiskLevel]);
-  return parts.join(" ");
+  bullets.push(levelText[overallRiskLevel]);
+  return bullets;
+}
+
+function buildSummaryTh(
+  analytics: MeasurementAnalytics,
+  overallRiskLevel: RiskLevel,
+  riskFactors?: RiskFactors
+): string {
+  return buildSummaryBulletsTh(
+    analytics,
+    overallRiskLevel,
+    riskFactors
+  ).join(" ");
+}
+
+function buildSummaryEn(
+  analytics: MeasurementAnalytics,
+  overallRiskLevel: RiskLevel
+): string {
+  return buildSummaryBulletsEn(analytics, overallRiskLevel).join(" ");
+}
+
+function buildTrendLines(
+  locale: AppLocale,
+  analytics: MeasurementAnalytics,
+  sensorUi: ReturnType<typeof getSensorUILabels>
+): HolisticTrendLine[] {
+  const periodDays = analytics.daySpan;
+  const ammoniaName = sensorUi.ammonia.label.split(" ")[0];
+  const acetoneName = sensorUi.acetone.label.split(" ")[0];
+  const riskScoreName =
+    locale === "en" ? "Risk score" : "คะแนนความเสี่ยง";
+
+  return [
+    {
+      id: "ammonia",
+      label: sensorUi.ammonia.label,
+      narrative: buildMetricTrendNarrativeForPeriod(
+        locale,
+        ammoniaName,
+        periodDays,
+        analytics.ammoniaTrend,
+        analytics.ammoniaTrendPercent
+      ),
+    },
+    {
+      id: "acetone",
+      label: sensorUi.acetone.label,
+      narrative: buildMetricTrendNarrativeForPeriod(
+        locale,
+        acetoneName,
+        periodDays,
+        analytics.acetoneTrend,
+        analytics.acetoneTrendPercent
+      ),
+    },
+    {
+      id: "risk-score",
+      label: riskScoreName,
+      narrative: buildMetricTrendNarrativeForPeriod(
+        locale,
+        riskScoreName,
+        periodDays,
+        analytics.riskScoreTrend,
+        analytics.riskScoreTrendPercent
+      ),
+    },
+  ];
 }
 
 function buildTrendNarrative(
@@ -214,6 +307,11 @@ export function buildHolisticInsight(input: {
   const acetonePpb = formatAcetonePpb(analytics.avgMq3);
   const ammoniaStatus = getAmmoniaStatus(analytics.avgMq135);
   const acetoneStatus = getAcetoneStatus(analytics.avgMq3);
+
+  const summaryBullets =
+    locale === "en"
+      ? buildSummaryBulletsEn(analytics, overallRiskLevel)
+      : buildSummaryBulletsTh(analytics, overallRiskLevel, input.riskFactors);
 
   const summary =
     locale === "en"
@@ -268,16 +366,23 @@ export function buildHolisticInsight(input: {
     .replace("{days}", String(analytics.daySpan));
 
   const ammoniaName = sensorUi.ammonia.label.split(" ")[0];
+  const latest = input.measurements[0];
+  const latestRiskLevel = latest?.risk_level ?? overallRiskLevel;
+  const suggestionSteps = suggestionStepsForLevel(latestRiskLevel, locale);
 
   return {
     summary,
+    summaryBullets,
     highlights,
     researchNote: locale === "en" ? RESEARCH_NOTE_EN : RESEARCH_NOTE_TH,
     suggestion: suggestionForLevel(overallRiskLevel, locale),
+    suggestionSteps,
     periodCaption,
     overallRiskLevel,
     avgRiskScore: analytics.avgRiskScore,
     analytics,
     trendNarrative: buildTrendNarrative(locale, analytics, ammoniaName),
+    trendLines: buildTrendLines(locale, analytics, sensorUi),
+    latestRiskLabel: riskLabels[latestRiskLevel],
   };
 }

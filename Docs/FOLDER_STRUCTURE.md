@@ -258,7 +258,7 @@ locales/
 
 ```
 scripts/
-└── seed-demo.ts                 # seed 30 วัน demo data
+└── inspect-demo.ts              # CLI: log demo seed summary (no DB)
 ```
 
 ---

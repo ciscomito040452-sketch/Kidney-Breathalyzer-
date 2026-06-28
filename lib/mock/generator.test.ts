@@ -24,6 +24,32 @@ describe("seedDemoMeasurements", () => {
     expect(latest.risk_score).toBeLessThan(0.95);
     expect(latest.risk_level).toBe("moderate");
     expect(latest.ai_explanation.length).toBeGreaterThan(20);
+    expect(latest.ai_explanation).toContain("แอมโมเนีย");
+    expect(latest.ai_explanation).not.toContain(
+      "อยู่ในแนวโน้มที่ควรติดตามอย่างต่อเนื่อง"
+    );
+  });
+
+  it("curated last 3 days keep acetone below elevated threshold", () => {
+    const data = seedDemoMeasurements(30);
+    const curated = data.filter((m) =>
+      [308, 288, 268].includes(m.mq135_value)
+    );
+    expect(curated.length).toBeGreaterThanOrEqual(3);
+    for (const m of curated) {
+      expect(Math.round(m.mq3_value * 500)).toBeLessThan(225);
+    }
+    const mq135Values = new Set(curated.map((m) => m.mq135_value));
+    expect(mq135Values.has(308)).toBe(true);
+    expect(mq135Values.has(288)).toBe(true);
+    expect(mq135Values.has(268)).toBe(true);
+  });
+
+  it("includes low, moderate, and high risk levels across 30 days", () => {
+    const levels = new Set(seedDemoMeasurements(30).map((m) => m.risk_level));
+    expect(levels.has("low")).toBe(true);
+    expect(levels.has("moderate")).toBe(true);
+    expect(levels.has("high")).toBe(true);
   });
 
   it("produces varied measurement times", () => {

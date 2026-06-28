@@ -13,6 +13,8 @@ describe("analyzeMeasurements", () => {
     expect(analytics!.daySpan).toBeGreaterThanOrEqual(7);
     expect(analytics!.avgRiskScore).toBeGreaterThan(0);
     expect(analytics!.avgMq135).toBeGreaterThan(0);
+    expect(analytics!.acetoneTrend).toBeDefined();
+    expect(["rising", "stable", "falling"]).toContain(analytics!.acetoneTrend);
   });
 });
 
@@ -26,11 +28,15 @@ describe("buildHolisticInsight", () => {
 
     expect(insight).not.toBeNull();
     expect(insight!.summary).toContain("จากการวัด");
+    expect(insight!.summaryBullets.length).toBeGreaterThanOrEqual(3);
+    expect(insight!.trendLines).toHaveLength(3);
+    expect(insight!.suggestionSteps.length).toBeGreaterThanOrEqual(2);
     expect(insight!.summary).not.toContain(measurements[0].ai_explanation);
     expect(insight!.highlights.length).toBeGreaterThanOrEqual(4);
     expect(insight!.periodCaption).toMatch(/\d+/);
     expect(insight!.researchNote).toContain("งานวิจัย");
     expect(insight!.trendNarrative.length).toBeGreaterThan(10);
+    expect(insight!.latestRiskLabel.length).toBeGreaterThan(0);
   });
 
   it("returns English copy when locale is en", () => {

@@ -16,6 +16,11 @@ Production: https://kidney-breathalyzer.vercel.app
 | 10 | Profile — สถานะอุปกรณ์ | PASS | redeploy | |
 | 11 | Onboarding → scoring cookie | PASS | redeploy | enterDemoMode หลังจบ |
 | 12 | `/result/invalid` — 404 ไทย | PASS | redeploy | not-found.tsx |
+| 13 | Result ล่าสุด — AI text vs sensor badge | — | — | ต้องกล่าวถึงแอมโมเนีย (ไม่ใช่ข้อความ generic อย่างเดียว) |
+| 14 | History — กรอง "ต่ำ" / "สูง" | — | — | ต้องมีอย่างน้อย 1 รายการแต่ละระดับใน 30 วัน |
+| 15 | Dashboard summary vs Result AI | — | — | เนื้อหาหลักสอดคล้องกัน (ไม่ generic ฝั่ง Result) |
+| 16 | Trend 3 วัน — กราฟ ammonia | — | — | ขึ้นต่อเนื่อง 268→288→308 |
+| 17 | Acetone 3 วันล่าสุด | — | — | ทุกวัน curated < 225 ppb (ปกติ) |
 
 ## Viewport (375px / 320px)
 

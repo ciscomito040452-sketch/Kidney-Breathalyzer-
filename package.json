@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "seed:demo": "tsx scripts/seed-demo.ts"
+    "inspect:demo": "tsx scripts/inspect-demo.ts"
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.10",

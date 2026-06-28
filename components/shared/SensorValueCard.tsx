@@ -22,6 +22,7 @@ interface SensorValueCardProps {
   thresholdPercent?: number;
   statusLabel?: string;
   insightStatus?: InsightFactorStatus;
+  listItems?: string[];
   educationTopic?: EducationTopic;
   educationContext?: EducationContext;
   className?: string;
@@ -44,6 +45,7 @@ export function SensorValueCard({
   thresholdPercent,
   statusLabel,
   insightStatus,
+  listItems,
   educationTopic,
   educationContext,
   className,
@@ -79,14 +81,31 @@ export function SensorValueCard({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          <p className="text-3xl font-semibold tabular-nums tracking-tight">
-            {value}
-            {unit && (
-              <span className="ml-1 text-base font-normal text-[var(--text-secondary)]">
-                {unit}
-              </span>
-            )}
-          </p>
+          {listItems && listItems.length > 0 ? (
+            <ul className="space-y-2.5" aria-label={label}>
+              {listItems.map((item) => (
+                <li
+                  key={item}
+                  className="flex items-start gap-2.5 text-sm leading-snug text-[var(--text-primary)]"
+                >
+                  <span
+                    className="mt-[0.45rem] h-1.5 w-1.5 shrink-0 rounded-full bg-accent-primary"
+                    aria-hidden
+                  />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-3xl font-semibold tabular-nums tracking-tight">
+              {value}
+              {unit && (
+                <span className="ml-1 text-base font-normal text-[var(--text-secondary)]">
+                  {unit}
+                </span>
+              )}
+            </p>
+          )}
           {status != null && barPercent != null && (
             <SensorLevelBar
               percent={barPercent}

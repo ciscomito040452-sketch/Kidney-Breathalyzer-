@@ -7,6 +7,7 @@ import { SensorValueCard } from "@/components/shared/SensorValueCard";
 import { buildInsightContextFactors } from "@/lib/ai-insight/context-factors";
 import { getDefaultDemoRiskFactors } from "@/lib/mock/demo-user";
 import { getRiskFactorsFromStorage } from "@/lib/profile/onboarding-storage";
+import { cn } from "@/lib/utils";
 import type { Measurement } from "@/types/measurement";
 
 interface InsightContextSectionProps {
@@ -45,7 +46,10 @@ export function InsightContextSection({
           return (
             <SensorValueCard
               key={factor.id}
-              className="min-w-0"
+              className={cn(
+                "min-w-0",
+                factor.id === "risk-factors" && "col-span-2"
+              )}
               icon={
                 <Icon
                   className="h-4 w-4 shrink-0 text-accent-primary"
@@ -54,6 +58,7 @@ export function InsightContextSection({
               }
               label={factor.label}
               value={factor.value}
+              listItems={factor.listItems}
               statusLabel={factor.statusLabel}
               insightStatus={factor.status}
             />

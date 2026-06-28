@@ -84,3 +84,18 @@ export function periodChartTitle(period: HistoryPeriod): string {
       return `แนวโน้ม ${HISTORY_PERIOD_LABELS[period]}`;
   }
 }
+
+export function periodDaysApprox(period: HistoryPeriod): number {
+  switch (period) {
+    case "today":
+      return 1;
+    case "this_week":
+    case "last_7":
+      return 7;
+    case "this_month":
+    case "last_30":
+      return 30;
+    case "last_90":
+      return 90;
+  }
+}

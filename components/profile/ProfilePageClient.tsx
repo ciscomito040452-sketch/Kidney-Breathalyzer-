@@ -20,7 +20,6 @@ import { LanguageSelector } from "@/components/profile/LanguageSelector";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileStatsCard } from "@/components/profile/ProfileStatsCard";
 import { AppLogo } from "@/components/shared/AppLogo";
-import { FlagIcon } from "@/components/shared/FlagIcon";
 import { Card, CardContent } from "@/components/ui/card";
 import { ROUTE_DEVICE_GUIDE, ROUTE_PROFILE_EDIT } from "@/lib/constants";
 import { formatGender } from "@/lib/i18n/messages";
@@ -177,10 +176,11 @@ export function ProfilePageClient({
               <Globe className="h-5 w-5 text-accent-primary" />
               <span className="text-sm">{translate("language")}</span>
             </div>
-            <div className="flex items-center gap-1.5 text-sm text-[var(--text-secondary)]">
-              <FlagIcon locale={locale} />
-              <span>{locale === "th" ? "TH" : "ENG"}</span>
-            </div>
+            <span className="text-sm text-[var(--text-secondary)]">
+              {locale === "th"
+                ? translate("languageTh")
+                : translate("languageEn")}
+            </span>
           </div>
           <LanguageSelector />
         </div>

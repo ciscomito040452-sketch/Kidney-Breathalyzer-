@@ -27,7 +27,7 @@ export function DashboardDeviceInfo({
   const status = resolveDeviceStatus(lastMeasuredAt, isDemo);
 
   return (
-    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-border-subtle bg-surface px-4 py-3 shadow-card">
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-[var(--surface-card-border)] bg-surface px-4 py-3 shadow-card app-card">
       <div className="space-y-1">
         <p className="text-xs text-[var(--text-secondary)]">
           {translate("deviceStatus")}

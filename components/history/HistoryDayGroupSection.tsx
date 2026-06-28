@@ -26,7 +26,7 @@ export function HistoryDayGroupSection({ group }: HistoryDayGroupSectionProps) {
         </span>
       </div>
 
-      <div className="overflow-hidden rounded-2xl border border-border-subtle bg-surface shadow-card">
+      <div className="overflow-hidden rounded-2xl border border-[var(--surface-card-border)] bg-surface shadow-card app-card">
         {group.items.map((m, index) => (
           <HistoryMeasurementRow
             key={m.id}

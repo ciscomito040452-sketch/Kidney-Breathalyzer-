@@ -20,6 +20,10 @@ import {
 } from "@/lib/sensors/status";
 import type { Measurement } from "@/types/measurement";
 import type { RiskFactors } from "@/lib/risk-engine/calculate-score";
+import {
+  suggestionForLevel,
+  suggestionStepsForLevel,
+} from "@/lib/dashboard/suggestion-steps";
 
 export type InsightHighlightTone = "good" | "attention" | "neutral";
 
@@ -34,6 +38,7 @@ export interface DashboardInsight {
   highlights: DashboardInsightHighlight[];
   researchNote: string;
   suggestion: string;
+  suggestionSteps: string[];
   trendCaption: string | null;
 }
 
@@ -42,31 +47,6 @@ const RESEARCH_NOTE_TH =
 
 const RESEARCH_NOTE_EN =
   "Breath research suggests ammonia and protein metabolism markers may reflect kidney excretion in some contexts. This PoC uses MQ-135/MQ-3 sensors for trend monitoring only — not a substitute for blood or urine tests.";
-
-function suggestionForLevel(
-  riskLevel: Measurement["risk_level"],
-  locale: AppLocale
-): string {
-  if (locale === "en") {
-    switch (riskLevel) {
-      case "high":
-        return "Consider seeing a doctor for further evaluation and keep measuring regularly.";
-      case "moderate":
-        return "Re-test in 2–3 days, stay hydrated, and consult a doctor if values stay elevated.";
-      default:
-        return "Keep measuring regularly for long-term trends — at least 3 times per week.";
-    }
-  }
-
-  switch (riskLevel) {
-    case "high":
-      return "ควรนัดพบแพทย์เพื่อตรวจเพิ่มเติม และวัดติดตามอย่างสม่ำเสมอ";
-    case "moderate":
-      return "แนะนำให้วัดซ้ำใน 2–3 วัน ดื่มน้ำให้เพียงพอ และปรึกษาแพทย์หากค่ายังสูงต่อเนื่อง";
-    default:
-      return "รักษาการวัดสม่ำเสมอเพื่อเห็นแนวโน้มระยะยาว — อย่างน้อย 3 ครั้งต่อสัปดาห์";
-  }
-}
 
 export function buildDashboardInsight(input: {
   latest: Measurement;
@@ -142,6 +122,7 @@ export function buildDashboardInsight(input: {
     highlights,
     researchNote: locale === "en" ? RESEARCH_NOTE_EN : RESEARCH_NOTE_TH,
     suggestion: suggestionForLevel(latest.risk_level, locale),
+    suggestionSteps: suggestionStepsForLevel(latest.risk_level, locale),
     trendCaption,
   };
 }

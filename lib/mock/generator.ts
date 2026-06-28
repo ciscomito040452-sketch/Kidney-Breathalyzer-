@@ -3,8 +3,17 @@ import type { DemoRiskFactors } from "@/lib/profile/onboarding-storage";
 import type { Measurement, RiskLevel } from "@/types/measurement";
 import { calculateRiskScore } from "@/lib/risk-engine";
 import { generateExplanation } from "@/lib/risk-engine/explanations";
+import type { ExplanationInput } from "@/lib/risk-engine/explanations";
 import { computeTrendContext } from "@/lib/risk-engine/trend-context";
 import { getDefaultDemoRiskFactors } from "@/lib/mock/demo-user";
+import {
+  formatAcetonePpb,
+  formatAmmoniaPpb,
+} from "@/lib/sensor-labels";
+import {
+  getAcetoneStatus,
+  getAmmoniaStatus,
+} from "@/lib/sensors/status";
 
 export { DEMO_USER_ID };
 
@@ -71,10 +80,10 @@ function curatedSensorValues(daysFromLatest: number): {
     return { mq135_value: 308, mq3_value: 0.36 };
   }
   if (daysFromLatest === 1) {
-    return { mq135_value: 288, mq3_value: 0.46 };
+    return { mq135_value: 288, mq3_value: 0.4 };
   }
   if (daysFromLatest === 2) {
-    return { mq135_value: 268, mq3_value: 0.42 };
+    return { mq135_value: 268, mq3_value: 0.38 };
   }
   return null;
 }
@@ -102,19 +111,35 @@ function sensorValuesForDay(
   const cycleLevel = DEMO_RISK_CYCLE[dayIndex % DEMO_RISK_CYCLE.length];
   const mq135 =
     cycleLevel === "low"
-      ? randomInRangeSeeded(rand, 150, 220)
+      ? randomInRangeSeeded(rand, 150, 190)
       : cycleLevel === "moderate"
         ? randomInRangeSeeded(rand, 220, 320)
         : randomInRangeSeeded(rand, 320, 400);
 
   const mq3 =
     cycleLevel === "low"
-      ? randomInRangeSeeded(rand, 0.1, 0.3)
+      ? randomInRangeSeeded(rand, 0.1, 0.2)
       : cycleLevel === "moderate"
         ? randomInRangeSeeded(rand, 0.3, 0.55)
         : randomInRangeSeeded(rand, 0.55, 0.8);
 
   return { mq135_value: mq135, mq3_value: mq3 };
+}
+
+function buildExplanationInput(
+  input: Omit<
+    ExplanationInput,
+    "ammoniaStatus" | "acetoneStatus" | "ammoniaPpb" | "acetonePpb"
+  > &
+    Pick<ExplanationInput, "mq135_value" | "mq3_value">
+): ExplanationInput {
+  return {
+    ...input,
+    ammoniaPpb: formatAmmoniaPpb(input.mq135_value),
+    acetonePpb: formatAcetonePpb(input.mq3_value),
+    ammoniaStatus: getAmmoniaStatus(input.mq135_value),
+    acetoneStatus: getAcetoneStatus(input.mq3_value),
+  };
 }
 
 export function generateMockSensorValues(): {
@@ -150,12 +175,14 @@ export function createMockMeasurement(
     risk_score,
     risk_level,
     is_mock: true,
-    ai_explanation: generateExplanation({
-      risk_level,
-      mq135_value,
-      mq3_value,
-      riskFactors,
-    }),
+    ai_explanation: generateExplanation(
+      buildExplanationInput({
+        risk_level,
+        mq135_value,
+        mq3_value,
+        riskFactors,
+      })
+    ),
     created_at: now,
     ...overrides,
   };
@@ -208,15 +235,17 @@ export function seedDemoMeasurements(
         risk_score,
         risk_level,
         is_mock: true,
-        ai_explanation: generateExplanation({
-          risk_level,
-          mq135_value,
-          mq3_value,
-          riskFactors,
-          avgMq135: trend.avgMq135,
-          trendPercent: trend.trendPercent,
-          consecutiveHighDays: trend.consecutiveHighDays,
-        }),
+        ai_explanation: generateExplanation(
+          buildExplanationInput({
+            risk_level,
+            mq135_value,
+            mq3_value,
+            riskFactors,
+            avgMq135: trend.avgMq135,
+            trendPercent: trend.trendPercent,
+            consecutiveHighDays: trend.consecutiveHighDays,
+          })
+        ),
         created_at: measured_at,
       });
     }

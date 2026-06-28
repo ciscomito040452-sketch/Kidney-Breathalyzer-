@@ -25,7 +25,7 @@ export function AppLogo({
       className={cn(
         "object-cover",
         isMark
-          ? "rounded-xl bg-surface ring-1 ring-border-subtle"
+          ? "app-logo-mark rounded-xl bg-surface ring-1 ring-border-subtle"
           : "rounded-[22px] shadow-card",
         className
       )}

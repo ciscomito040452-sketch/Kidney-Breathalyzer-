@@ -27,7 +27,7 @@ export function DisplayModeToggle() {
 
   return (
     <div className="space-y-2">
-      <div className="relative flex rounded-xl bg-surface-elevated p-1">
+      <div className="relative flex rounded-xl bg-surface-elevated p-1 segmented-track">
         {options.map(({ mode, icon: Icon, label }) => {
           const active = displayMode === mode;
           return (

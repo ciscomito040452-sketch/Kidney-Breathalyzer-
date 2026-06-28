@@ -108,7 +108,7 @@ Judge can: open URL → click "ดู Demo" → see dashboard with preloaded dev
 
 ## Mock Mode Requirements
 
-- Demo account: **30 days pre-loaded history**, alternating risk levels (no in-app measurement UI)
+- Demo account: **30 days pre-loaded history** with low/moderate/high risk levels across history; latest 3 days curated rising ammonia trend at moderate (no in-app measurement UI)
 - Device status badge shows **"โหมดสาธิต"** on dashboard when in demo mode
 - Landing **"ดู Demo"** button bypasses login
 - New readings in production come from **ESP32 via `POST /api/device/ingest`** — not from the app UI

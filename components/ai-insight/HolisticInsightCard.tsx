@@ -6,12 +6,24 @@ import {
   ResponsiveContainer,
   YAxis,
 } from "recharts";
-import { Sparkles } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
+import {
+  Activity,
+  BarChart3,
+  Droplets,
+  Gauge,
+  Sparkles,
+  Wind,
+} from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { getRiskFullLabels } from "@/lib/i18n/labels";
 import type { HolisticInsight } from "@/lib/ai-insight/build-holistic-insight";
+import type { InsightHighlightTone } from "@/lib/dashboard/build-dashboard-insight";
 import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
+import {
+  InsightGroupedCard,
+  parseHighlightLabel,
+} from "@/components/ai-insight/insight-ui";
 import { cn } from "@/lib/utils";
 import type { RiskLevel } from "@/types/measurement";
 
@@ -26,16 +38,23 @@ interface HolisticInsightCardProps {
 }
 
 const statusPill: Record<RiskLevel, string> = {
-  low: "bg-risk-moderate/12 text-[var(--risk-meter-end)]",
+  low: "bg-risk-low/15 text-risk-low",
   moderate: "bg-risk-moderate/15 text-risk-moderate",
   high: "bg-risk-moderate/15 text-[var(--risk-meter-end)]",
 };
 
-const toneDot = {
-  good: "bg-[var(--risk-meter-end)]",
-  attention: "bg-risk-moderate",
-  neutral: "bg-[var(--text-secondary)]",
-} as const;
+const tonePill: Record<InsightHighlightTone, string> = {
+  good: "bg-risk-low/15 text-risk-low",
+  attention: "bg-accent-primary/12 text-accent-primary",
+  neutral: "bg-surface-elevated text-[var(--text-secondary)]",
+};
+
+const highlightIcons: Record<string, LucideIcon> = {
+  "avg-score": Gauge,
+  ammonia: Wind,
+  pattern: BarChart3,
+  acetone: Droplets,
+};
 
 export function HolisticInsightCard({
   insight,
@@ -52,38 +71,32 @@ export function HolisticInsightCard({
   const hasChart = chartData.length >= 2;
 
   return (
-    <Card className="overflow-hidden">
-      <CardContent className="space-y-4 p-4 pt-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-primary/10">
-              <Sparkles
-                className="h-4 w-4 text-accent-primary"
-                strokeWidth={1.75}
-                aria-hidden
-              />
-            </span>
-            <div className="min-w-0">
-              <p className="text-sm font-semibold text-[var(--text-primary)]">
-                {translate("insightHolisticTitle")}
-              </p>
-              <p className="text-xs text-[var(--text-secondary)]">
-                {insight.periodCaption}
-              </p>
-            </div>
+    <InsightGroupedCard>
+      <div className="border-b border-border-subtle px-4 py-4">
+        <div className="flex items-start gap-3">
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[var(--accent-tint)] text-accent-primary">
+            <Sparkles className="h-5 w-5" strokeWidth={1.75} aria-hidden />
+          </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-medium uppercase tracking-wide text-[var(--text-secondary)]">
+              {translate("insightHolisticTitle")}
+            </p>
+            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
+              {insight.periodCaption}
+            </p>
           </div>
         </div>
 
-        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-          <p className="text-3xl font-semibold tabular-nums tracking-tight">
+        <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-2">
+          <p className="text-4xl font-semibold tabular-nums tracking-tight">
             {formatRiskScoreDisplay(insight.avgRiskScore)}
           </p>
-          <span className="text-xs font-medium text-[var(--text-secondary)]">
+          <span className="text-sm font-medium text-[var(--text-secondary)]">
             {translate("insightAvgScoreLabel")}
           </span>
           <span
             className={cn(
-              "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
+              "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
               statusPill[insight.overallRiskLevel]
             )}
           >
@@ -93,7 +106,7 @@ export function HolisticInsightCard({
 
         {hasChart && (
           <div
-            className="h-14 w-full rounded-xl bg-surface-elevated px-1 py-1"
+            className="mt-4 h-16 w-full rounded-xl bg-surface-elevated px-1 py-1"
             aria-hidden
           >
             <ResponsiveContainer width="100%" height="100%">
@@ -102,7 +115,7 @@ export function HolisticInsightCard({
                 <Line
                   type="monotone"
                   dataKey="score"
-                  stroke="var(--accent-primary, #2563EB)"
+                  stroke="var(--accent-primary)"
                   strokeWidth={2}
                   dot={false}
                 />
@@ -110,29 +123,64 @@ export function HolisticInsightCard({
             </ResponsiveContainer>
           </div>
         )}
+      </div>
 
-        <p className="text-sm leading-relaxed text-[var(--text-primary)]">
-          {insight.summary}
-        </p>
+      <div className="divide-y divide-border-subtle">
+        {insight.highlights.map((item) => {
+          const { title, detail } = parseHighlightLabel(item.label);
+          const Icon = highlightIcons[item.id] ?? Activity;
+          const valueMatch = title.match(/(\d+(?:\.\d+)?)\s*(ppb|\/100)?/i);
+          const metricLabel = valueMatch
+            ? title.replace(valueMatch[0], "").trim()
+            : title;
+          const metricValue = valueMatch
+            ? `${valueMatch[1]}${valueMatch[2] ? ` ${valueMatch[2]}` : ""}`
+            : "";
 
-        <ul className="space-y-2 border-t border-border-subtle pt-3">
-          {insight.highlights.map((item) => (
-            <li
+          return (
+            <div
               key={item.id}
-              className="flex items-start gap-2 text-sm text-[var(--text-secondary)]"
+              className="flex items-center justify-between gap-3 px-4 py-3.5"
             >
-              <span
-                className={cn(
-                  "mt-1.5 h-2 w-2 shrink-0 rounded-full",
-                  toneDot[item.tone]
+              <div className="flex min-w-0 items-center gap-3">
+                <span
+                  className={cn(
+                    "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl",
+                    item.tone === "good"
+                      ? "bg-risk-low/15 text-risk-low"
+                      : item.tone === "attention"
+                        ? "bg-accent-primary/12 text-accent-primary"
+                        : "bg-surface-elevated text-[var(--text-secondary)]"
+                  )}
+                  aria-hidden
+                >
+                  <Icon className="h-4 w-4" strokeWidth={1.75} />
+                </span>
+                <p className="min-w-0 text-sm text-[var(--text-secondary)]">
+                  {metricLabel || title}
+                </p>
+              </div>
+              <div className="flex shrink-0 items-center gap-2 text-right">
+                {metricValue && (
+                  <span className="text-sm font-semibold tabular-nums text-[var(--text-primary)]">
+                    {metricValue}
+                  </span>
                 )}
-                aria-hidden
-              />
-              <span>{item.label}</span>
-            </li>
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
+                {detail && (
+                  <span
+                    className={cn(
+                      "inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium",
+                      tonePill[item.tone]
+                    )}
+                  >
+                    {detail}
+                  </span>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </InsightGroupedCard>
   );
 }

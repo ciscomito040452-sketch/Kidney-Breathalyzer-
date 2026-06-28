@@ -133,9 +133,11 @@ lib/risk-engine/
 
 ```
 lib/mock/
-  generator.ts    # สุ่ม MQ-135 (150-400), MQ-3 (0.1-0.8)
-  seed-demo.ts    # seed 30 วัน, risk level สลับ
+  generator.ts    # seed 30 วัน, cycle low/moderate/high + curated latest trend
+  demo-store.ts   # in-memory cache
   demo-user.ts    # demo user constants
+scripts/
+  inspect-demo.ts # CLI: log seed summary (ไม่ persist DB)
 ```
 
 ---
@@ -212,7 +214,7 @@ Customize ให้ตรง `UI_UX_SPECIFICATION.md`
   "build": "next build",
   "start": "next start",
   "lint": "next lint",
-  "seed:demo": "tsx scripts/seed-demo.ts"
+  "inspect:demo": "tsx scripts/inspect-demo.ts"
 }
 ```
 

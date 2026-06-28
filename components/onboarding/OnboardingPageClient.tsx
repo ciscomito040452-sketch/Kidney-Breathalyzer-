@@ -4,8 +4,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ONBOARDING_DEVICE_STEPS } from "@/lib/device-guide/content";
+import { OnboardingDisclaimerStep } from "@/components/onboarding/OnboardingDisclaimerStep";
 import { OnboardingStepIndicator } from "@/components/onboarding/OnboardingStepIndicator";
-import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { RiskFactorPicker } from "@/components/profile/RiskFactorPicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -100,7 +100,7 @@ export function OnboardingPageClient() {
         </div>
       </header>
 
-      <div className="flex-1 space-y-5">
+      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain">
         {step === 1 && (
           <Card>
             <CardContent className="space-y-4 pt-4">
@@ -170,23 +170,10 @@ export function OnboardingPageClient() {
         )}
 
         {step === 3 && (
-          <Card>
-            <CardContent className="space-y-4 pt-4">
-              <p className="text-sm font-medium">ข้อจำกัดความรับผิดชอบ</p>
-              <DisclaimerBanner compact />
-              <label className="flex cursor-pointer items-start gap-3">
-                <input
-                  type="checkbox"
-                  checked={disclaimerAccepted}
-                  onChange={(e) => setDisclaimerAccepted(e.target.checked)}
-                  className="mt-1 h-4 w-4 accent-[var(--accent-primary)]"
-                />
-                <span className="text-sm">
-                  ฉันเข้าใจและยอมรับว่าระบบนี้เป็นการคัดกรองความเสี่ยงเท่านั้น
-                </span>
-              </label>
-            </CardContent>
-          </Card>
+          <OnboardingDisclaimerStep
+            accepted={disclaimerAccepted}
+            onAcceptedChange={setDisclaimerAccepted}
+          />
         )}
 
         {step === 4 && (

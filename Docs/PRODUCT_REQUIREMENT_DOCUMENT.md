@@ -85,7 +85,7 @@ Project type: Web application (mobile-first, deployed บน Vercel)
 เนื่องจากกรรมการไม่มีอุปกรณ์จริง ระบบต้องรองรับ Demo Mode ดังนี้
 
 * Pre-load ข้อมูลย้อนหลัง 30 วันสำหรับ demo account เพื่อให้กราฟ trend ดูมีข้อมูล  
-* Demo account มี risk level สลับกัน (Low → Moderate → High) เพื่อให้เห็นทุก state  
+* Demo account มี risk level กระจายครบ Low / Moderate / High ในประวัติ 30 วัน (3 วันล่าสุด curated เป็น moderate พร้อมแนวโน้มแอมโมเนียขึ้น) เพื่อให้เห็นทุก state  
 * Device Status Badge แสดง "โหมดสาธิต" บน Dashboard  
 * **ไม่มี** in-app measurement UI — การวัดใหม่ใน production มาจาก ESP32 ผ่าน `/api/device/ingest`  
 * `POST /api/mock/generate` สำหรับ dev/firmware testing เท่านั้น (ไม่ expose ใน UI)

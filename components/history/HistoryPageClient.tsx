@@ -6,6 +6,7 @@ import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { HistoryDayGroupSection } from "@/components/history/HistoryDayGroupSection";
 import { HistoryPeriodControl } from "@/components/history/HistoryPeriodControl";
 import { TrendChart } from "@/components/dashboard/TrendChart";
+import { TrendChartInsight } from "@/components/dashboard/TrendChartInsight";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
 import { TabPageHeader } from "@/components/shared/TabPageHeader";
@@ -13,8 +14,10 @@ import { usePreferences } from "@/components/providers/PreferencesProvider";
 import {
   filterMeasurementsByPeriod,
   HISTORY_PERIOD_OPTIONS,
+  periodDaysApprox,
   type HistoryPeriod,
 } from "@/lib/history/date-range";
+import { buildTrendPeriodInsight } from "@/lib/dashboard/build-trend-period-insight";
 import { groupMeasurementsByDay } from "@/lib/history/group-by-day";
 import type { Measurement, RiskLevel } from "@/types/measurement";
 import { cn } from "@/lib/utils";
@@ -64,6 +67,16 @@ export function HistoryPageClient({
       risk_score: m.risk_score,
     }));
 
+  const trendInsight = useMemo(
+    () =>
+      buildTrendPeriodInsight(
+        filtered,
+        locale,
+        periodDaysApprox(period)
+      ),
+    [filtered, locale, period]
+  );
+
   const periodLabel = getHistoryPeriodLabel(locale, period);
   const listSubtitle =
     filtered.length > 0
@@ -89,6 +102,8 @@ export function HistoryPageClient({
         title={getPeriodChartTitle(locale, period)}
         showDualLine
       />
+
+      {trendInsight && <TrendChartInsight insight={trendInsight} />}
 
       <section className="space-y-3">
         <PageSectionHeader

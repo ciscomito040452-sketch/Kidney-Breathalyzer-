@@ -28,6 +28,10 @@
   --shadow-mobile: 0 0 0 1px rgba(43, 127, 212, 0.08),
     0 24px 48px -12px rgba(30, 58, 95, 0.18);
   --nav-backdrop: rgba(255, 255, 255, 0.92);
+  --nav-border: rgba(0, 0, 0, 0.06);
+  --surface-card-border: var(--border-subtle);
+  --accent-tint: rgb(var(--accent-primary-rgb) / 0.1);
+  --accent-tint-strong: rgb(var(--accent-primary-rgb) / 0.15);
 }
 
 html[data-display="comfort"] {
@@ -44,13 +48,14 @@ html[data-display="comfort"] {
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
-/* iOS-style dark: layered grays, system blue, minimal harsh contrast */
+/* Apple Health–style dark: layered grays, no card outlines, system blue */
 html[data-display="dark"] {
+  color-scheme: dark;
   --bg-primary: #000000;
   --bg-canvas: #000000;
   --bg-surface: #1c1c1e;
   --bg-surface-elevated: #2c2c2e;
-  --bg-fill: #3a3a3c;
+  --bg-fill: #636366;
   --accent-primary: #0a84ff;
   --accent-primary-rgb: 10 132 255;
   --accent-secondary: #64d2ff;
@@ -59,18 +64,22 @@ html[data-display="dark"] {
   --risk-low-rgb: 100 210 255;
   --risk-moderate: #0a84ff;
   --risk-moderate-rgb: 10 132 255;
-  --risk-high: #7eb8ff;
-  --risk-high-rgb: 126 184 255;
-  --risk-meter-start: #3d4f6e;
-  --risk-meter-mid: #3d7cc9;
+  --risk-high: #5e9eff;
+  --risk-high-rgb: 94 158 255;
+  --risk-meter-start: #2c3e5c;
+  --risk-meter-mid: #2563a8;
   --risk-meter-end: #0a84ff;
-  --text-primary: #ffffff;
-  --text-secondary: #8e8e93;
-  --border-subtle: rgba(255, 255, 255, 0.1);
-  --shadow-card: 0 0 0 1px rgba(255, 255, 255, 0.06);
-  --shadow-mobile: 0 0 0 1px rgba(255, 255, 255, 0.08),
-    0 24px 48px -12px rgba(0, 0, 0, 0.65);
-  --nav-backdrop: rgba(28, 28, 30, 0.88);
+  --text-primary: #f5f5f7;
+  --text-secondary: #98989d;
+  --border-subtle: #38383a;
+  --surface-card-border: transparent;
+  --accent-tint: rgb(var(--accent-primary-rgb) / 0.18);
+  --accent-tint-strong: rgb(var(--accent-primary-rgb) / 0.24);
+  --shadow-card: none;
+  --shadow-mobile: 0 0 0 1px rgba(255, 255, 255, 0.04),
+    0 24px 48px -12px rgba(0, 0, 0, 0.55);
+  --nav-backdrop: rgba(28, 28, 30, 0.78);
+  --nav-border: rgba(255, 255, 255, 0.06);
 }
 
 @layer base {
@@ -103,6 +112,17 @@ html[data-display="dark"] {
       var(--risk-meter-mid) 50%,
       var(--risk-meter-end) 100%
     );
+  }
+
+  /* Segmented controls — iOS-style inset track in dark */
+  html[data-display="dark"] .segmented-track {
+    background-color: rgb(118 118 128 / 0.24);
+  }
+
+  html[data-display="dark"] .app-logo-mark {
+    background-color: var(--bg-surface-elevated) !important;
+    --tw-ring-width: 0px;
+    box-shadow: none;
   }
 }
 
