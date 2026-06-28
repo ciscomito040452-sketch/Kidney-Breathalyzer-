@@ -23,7 +23,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var r=localStorage.getItem("kidney-breathalyzer-preferences");if(r){var p=JSON.parse(r);var d=p.displayMode==="standard"?"mobile":p.displayMode;if(d)document.documentElement.dataset.display=d;if(p.locale){document.documentElement.lang=p.locale==="th"?"th":"en";document.cookie="kb-locale="+p.locale+";path=/;max-age=31536000;SameSite=Lax";}}}catch(e){}`,
+            __html: `try{var r=localStorage.getItem("kidney-breathalyzer-preferences");if(r){var p=JSON.parse(r);var d=p.displayMode;if(d==="standard")d="comfort";if(d==="mobile")d="dark";if(d==="comfort"||d==="dark")document.documentElement.dataset.display=d;if(p.locale){document.documentElement.lang=p.locale==="th"?"th":"en";document.cookie="kb-locale="+p.locale+";path=/;max-age=31536000;SameSite=Lax";}}}catch(e){}`,
           }}
         />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

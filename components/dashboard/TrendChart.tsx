@@ -10,9 +10,11 @@ import {
   YAxis,
 } from "recharts";
 import { BarChart3 } from "lucide-react";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { SENSOR_UI } from "@/lib/sensor-labels";
+import { getSensorUILabels } from "@/lib/i18n/labels";
+import { formatChartAxisDate } from "@/lib/utils";
 
 export interface TrendDataPoint {
   date: string;
@@ -31,18 +33,20 @@ interface TrendChartProps {
 
 export function TrendChart({
   data,
-  title = "แนวโน้ม 7 วัน",
+  title,
   subtitle,
   compact = false,
   showDualLine = false,
 }: TrendChartProps) {
+  const { locale, translate } = usePreferences();
+  const sensorUi = getSensorUILabels(locale);
+  const chartTitle =
+    title ?? translate("trendTitle").replace("{n}", "7");
+
   const chartData = data.map((d) => ({
     ...d,
     acetone_ppb: d.mq3_value != null ? Math.round(d.mq3_value * 500) : undefined,
-    label: new Date(d.date).toLocaleDateString("th-TH", {
-      day: "numeric",
-      month: "short",
-    }),
+    label: formatChartAxisDate(locale, d.date),
   }));
 
   const hasDualData =
@@ -51,17 +55,14 @@ export function TrendChart({
   return (
     <Card>
       <CardHeader className={compact ? "space-y-1 pb-2" : "space-y-1"}>
-        <CardTitle className="text-base">{title}</CardTitle>
+        <CardTitle className="text-base">{chartTitle}</CardTitle>
         {subtitle && (
           <p className="text-xs text-[var(--text-secondary)]">{subtitle}</p>
         )}
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
-          <EmptyState
-            icon={BarChart3}
-            message="ยังไม่มีข้อมูลเพียงพอ"
-          />
+          <EmptyState icon={BarChart3} message={translate("chartNoData")} />
         ) : (
           <ResponsiveContainer width="100%" height={compact ? 140 : hasDualData ? 220 : 200}>
             <LineChart data={chartData}>
@@ -94,7 +95,7 @@ export function TrendChart({
                 stroke="var(--accent-primary, #2563EB)"
                 strokeWidth={2}
                 dot={false}
-                name={SENSOR_UI.ammonia.label}
+                name={sensorUi.ammonia.label}
               />
               {hasDualData && (
                 <Line
@@ -103,7 +104,7 @@ export function TrendChart({
                   stroke="var(--accent-secondary, #7DD3FC)"
                   strokeWidth={2}
                   dot={false}
-                  name={SENSOR_UI.acetone.label}
+                  name={sensorUi.acetone.label}
                 />
               )}
             </LineChart>

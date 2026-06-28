@@ -1,7 +1,7 @@
 export const PREFERENCES_STORAGE_KEY = "kidney-breathalyzer-preferences";
 
 export type AppLocale = "th" | "en";
-export type DisplayMode = "comfort" | "mobile";
+export type DisplayMode = "comfort" | "dark";
 export type AvatarType = "initials" | "emoji" | "photo";
 
 export interface AvatarPreference {
@@ -19,7 +19,7 @@ export interface ProfilePreferences {
 
 export const DEFAULT_PREFERENCES: ProfilePreferences = {
   locale: "th",
-  displayMode: "mobile",
+  displayMode: "comfort",
   notificationsEnabled: true,
   avatar: { type: "initials" },
 };
@@ -49,10 +49,12 @@ export function getStoredPreferences(): ProfilePreferences {
     if (!raw) return DEFAULT_PREFERENCES;
     const parsed = JSON.parse(raw) as Partial<ProfilePreferences>;
     const displayMode =
-      parsed.displayMode === "comfort" || parsed.displayMode === "mobile"
+      parsed.displayMode === "comfort" || parsed.displayMode === "dark"
         ? parsed.displayMode
-        : parsed.displayMode === "standard"
-          ? "mobile"
+        : parsed.displayMode === "mobile" || parsed.displayMode === "standard"
+          ? parsed.displayMode === "mobile"
+            ? "dark"
+            : "comfort"
           : DEFAULT_PREFERENCES.displayMode;
     return {
       ...DEFAULT_PREFERENCES,

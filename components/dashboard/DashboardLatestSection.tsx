@@ -8,8 +8,8 @@ import { SensorValueCard } from "@/components/shared/SensorValueCard";
 import {
   formatAcetonePpb,
   formatAmmoniaPpb,
-  SENSOR_UI,
 } from "@/lib/sensor-labels";
+import { getSensorUILabels } from "@/lib/i18n/labels";
 import {
   getAcetoneStatus,
   getAmmoniaStatus,
@@ -20,7 +20,7 @@ import {
   ammoniaBarPercent,
   ammoniaThresholdPercent,
 } from "@/lib/sensors/sensor-zones";
-import { formatDateTimeThai } from "@/lib/utils";
+import { formatDateTimeLocale } from "@/lib/utils";
 import type { RiskLevel } from "@/types/measurement";
 
 interface DashboardLatestSectionProps {
@@ -40,7 +40,8 @@ export function DashboardLatestSection({
   measuredAt,
   riskDelta,
 }: DashboardLatestSectionProps) {
-  const { translate } = usePreferences();
+  const { locale, translate } = usePreferences();
+  const sensorUi = getSensorUILabels(locale);
   const ammoniaPpb = formatAmmoniaPpb(mq135);
   const acetonePpb = formatAcetonePpb(mq3);
   const ammoniaStatus = getAmmoniaStatus(mq135);
@@ -59,7 +60,7 @@ export function DashboardLatestSection({
     <section className="space-y-3">
       <PageSectionHeader
         title={translate("latestResults")}
-        subtitle={formatDateTimeThai(measuredAt)}
+        subtitle={formatDateTimeLocale(locale, measuredAt)}
       />
 
       <RiskScoreCard
@@ -77,9 +78,9 @@ export function DashboardLatestSection({
               strokeWidth={1.75}
             />
           }
-          label={SENSOR_UI.ammonia.label}
+          label={sensorUi.ammonia.label}
           value={ammoniaPpb}
-          unit={SENSOR_UI.ammonia.unit}
+          unit={sensorUi.ammonia.unit}
           status={ammoniaStatus}
           barPercent={ammoniaBarPercent(ammoniaPpb)}
           thresholdPercent={ammoniaThresholdPercent()}
@@ -93,9 +94,9 @@ export function DashboardLatestSection({
               strokeWidth={1.75}
             />
           }
-          label={SENSOR_UI.acetone.label}
+          label={sensorUi.acetone.label}
           value={acetonePpb}
-          unit={SENSOR_UI.acetone.unit}
+          unit={sensorUi.acetone.unit}
           status={acetoneStatus}
           barPercent={acetoneBarPercent(acetonePpb)}
           thresholdPercent={acetoneThresholdPercent()}

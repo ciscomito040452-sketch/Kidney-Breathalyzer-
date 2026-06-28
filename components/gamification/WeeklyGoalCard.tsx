@@ -1,4 +1,6 @@
-import { Target } from "lucide-react";
+"use client";
+
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
@@ -8,29 +10,32 @@ interface WeeklyGoalCardProps {
 }
 
 export function WeeklyGoalCard({ count, target }: WeeklyGoalCardProps) {
+  const { translate } = usePreferences();
   const met = count >= target;
   const displayCount = met ? target : count;
-  const progressPercent = Math.min(100, Math.round((count / target) * 100));
+  const progressPercent = Math.min(100, (count / target) * 100);
 
   return (
-    <Card className="flex-1">
+    <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="flex items-center gap-2 text-sm font-medium text-[var(--text-secondary)]">
-          <Target className="h-4 w-4 text-accent-primary" strokeWidth={1.75} />
-          เป้าหมายรายสัปดาห์
+        <CardTitle className="text-sm font-medium text-[var(--text-secondary)]">
+          {translate("weeklyGoalTitle")}
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-3xl font-semibold tabular-nums tracking-tight">
+      <CardContent className="space-y-2">
+        <p className="text-2xl font-semibold tabular-nums">
           {displayCount}/{target}
           <span className="ml-1 text-base font-normal text-[var(--text-secondary)]">
-            ครั้ง
+            {translate("timesUnit")}
           </span>
         </p>
         {met && (
-          <p className="text-xs text-accent-primary">บรรลุเป้าแล้ว</p>
+          <p className="text-xs text-accent-primary">{translate("goalMet")}</p>
         )}
-        <Progress value={progressPercent} aria-label="ความคืบหน้าเป้าหมายรายสัปดาห์" />
+        <Progress
+          value={progressPercent}
+          aria-label={translate("weeklyGoalTitle")}
+        />
       </CardContent>
     </Card>
   );

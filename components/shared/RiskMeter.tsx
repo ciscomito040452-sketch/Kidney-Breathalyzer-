@@ -1,8 +1,8 @@
-import { RISK_SHORT_LABELS } from "@/lib/constants";
-import {
-  RISK_ZONE_BOUNDS,
-  scorePercent,
-} from "@/lib/risk-engine/risk-zones";
+"use client";
+
+import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { getRiskShortLabels } from "@/lib/i18n/messages";
+import { scorePercent } from "@/lib/risk-engine/risk-zones";
 import type { RiskLevel } from "@/types/measurement";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +16,12 @@ const markerRing: Record<RiskLevel, string> = {
   low: "ring-risk-low/30",
   moderate: "ring-risk-moderate/35",
   high: "ring-risk-high/40",
+};
+
+const statusPill: Record<RiskLevel, string> = {
+  low: "bg-risk-low/15 text-risk-low",
+  moderate: "bg-risk-moderate/15 text-risk-moderate",
+  high: "bg-risk-high/15 text-risk-high",
 };
 
 interface RiskMeterProps {
@@ -35,8 +41,9 @@ export function RiskMeter({
   showStatusLabel = true,
   className,
 }: RiskMeterProps) {
+  const { locale, translate } = usePreferences();
+  const riskLabels = getRiskShortLabels(locale);
   const pct = scorePercent(riskScore);
-  const { lowMax, moderateMax } = RISK_ZONE_BOUNDS;
 
   return (
     <div
@@ -45,88 +52,49 @@ export function RiskMeter({
       aria-valuenow={pct}
       aria-valuemin={0}
       aria-valuemax={100}
-      aria-label={`คะแนนความเสี่ยง ${pct} จาก 100 — ${RISK_SHORT_LABELS[riskLevel]}`}
+      aria-label={`${translate("riskScoreLabel")} ${pct}/100 — ${riskLabels[riskLevel]}`}
     >
       {showZoneLabels && !compact && (
-        <div className="relative mb-2.5 h-4 text-[11px] font-medium text-[var(--text-secondary)]">
-          <span className="absolute left-0 top-0">{RISK_SHORT_LABELS.low}</span>
-          <span
-            className="absolute top-0 -translate-x-1/2"
-            style={{ left: `${lowMax}%` }}
-          >
-            {RISK_SHORT_LABELS.moderate}
-          </span>
-          <span className="absolute right-0 top-0">{RISK_SHORT_LABELS.high}</span>
+        <div className="mb-2 grid grid-cols-3 text-center text-[11px] font-medium text-[var(--text-secondary)]">
+          <span>{riskLabels.low}</span>
+          <span>{riskLabels.moderate}</span>
+          <span>{riskLabels.high}</span>
         </div>
       )}
 
-      <div
-        className={cn(
-          "relative w-full",
-          compact ? "h-2" : "h-3"
-        )}
-      >
-        {/* Track */}
+      <div className={cn("relative", compact ? "h-2" : "h-2.5")}>
         <div
-          className={cn(
-            "absolute inset-x-0 top-1/2 -translate-y-1/2 overflow-hidden rounded-full bg-[#E8ECF1]",
-            compact ? "h-1.5" : "h-2.5"
-          )}
-        >
-          <div
-            className="h-full w-full rounded-full bg-gradient-to-r from-risk-low/30 via-risk-moderate/45 to-risk-high/55"
-            aria-hidden
-          />
-        </div>
-
-        {/* Zone tick marks */}
-        {!compact && (
-          <>
-            <div
-              className="absolute top-1/2 h-3 w-px -translate-y-1/2 bg-white/70"
-              style={{ left: `${lowMax}%` }}
-              aria-hidden
-            />
-            <div
-              className="absolute top-1/2 h-3 w-px -translate-y-1/2 bg-white/70"
-              style={{ left: `${moderateMax}%` }}
-              aria-hidden
-            />
-          </>
-        )}
-
-        {/* Position marker */}
-        <div
-          className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2"
-          style={{ left: `${pct}%` }}
+          className="flex h-full gap-px overflow-hidden rounded-full bg-[var(--bg-primary)] p-px shadow-inner"
           aria-hidden
         >
-          <div
-            className={cn(
-              "rounded-full bg-white shadow-[0_1px_3px_rgba(0,0,0,0.12),0_2px_8px_rgba(37,99,235,0.18)] ring-[3px]",
-              markerRing[riskLevel],
-              compact ? "h-3 w-3 p-0.5" : "h-[18px] w-[18px] p-[3px]"
-            )}
-          >
-            <div
-              className={cn("h-full w-full rounded-full", markerFill[riskLevel])}
-            />
-          </div>
+          <div className="min-w-0 flex-1 rounded-l-full bg-risk-low" />
+          <div className="min-w-0 flex-1 bg-risk-moderate" />
+          <div className="min-w-0 flex-1 rounded-r-full bg-risk-high" />
         </div>
+
+        <div
+          className={cn(
+            "pointer-events-none absolute top-1/2 rounded-full border-2 border-[var(--bg-primary)] shadow-card ring-2",
+            compact ? "h-3 w-3" : "h-4 w-4",
+            markerFill[riskLevel],
+            markerRing[riskLevel]
+          )}
+          style={{
+            left: `clamp(${compact ? 6 : 8}px, ${pct}%, calc(100% - ${compact ? 6 : 8}px))`,
+            transform: "translate(-50%, -50%)",
+          }}
+        />
       </div>
 
-      {showStatusLabel && (
-        <div className={cn(compact ? "mt-1.5" : "mt-3")}>
+      {showStatusLabel && !compact && (
+        <div className="mt-2.5 flex justify-center">
           <span
             className={cn(
-              "inline-flex rounded-full px-2.5 py-0.5 font-medium",
-              riskLevel === "low" && "bg-risk-low/10 text-risk-low",
-              riskLevel === "moderate" && "bg-risk-moderate/10 text-risk-moderate",
-              riskLevel === "high" && "bg-risk-high/10 text-risk-high",
-              compact ? "text-[11px]" : "text-xs"
+              "rounded-full px-3 py-1 text-xs font-semibold",
+              statusPill[riskLevel]
             )}
           >
-            {RISK_SHORT_LABELS[riskLevel]}
+            {riskLabels[riskLevel]}
           </span>
         </div>
       )}

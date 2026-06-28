@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
 import { SensorValueCard } from "@/components/shared/SensorValueCard";
 import { buildInsightContextFactors } from "@/lib/ai-insight/context-factors";
@@ -17,6 +18,7 @@ export function InsightContextSection({
   latest,
   measurements,
 }: InsightContextSectionProps) {
+  const { translate } = usePreferences();
   const [riskFactors, setRiskFactors] = useState(getDefaultDemoRiskFactors());
 
   useEffect(() => {
@@ -36,8 +38,8 @@ export function InsightContextSection({
   return (
     <section className="space-y-3">
       <PageSectionHeader
-        title="ข้อมูลที่ใช้วิเคราะห์"
-        subtitle="จากเซนเซอร์ลมหายใจ ความถี่การใช้งาน และปัจจัยเสี่ยงที่คุณกรอก — ไม่ใช่การวินิจฉัยโรค"
+        title={translate("insightContextTitle")}
+        subtitle={translate("insightContextSubtitle")}
       />
       <div className="grid grid-cols-2 gap-3">
         {factors.map((factor) => {

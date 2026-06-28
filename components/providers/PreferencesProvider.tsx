@@ -9,6 +9,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import { t, type MessageKey } from "@/lib/i18n/messages";
 import {
   applyDisplayMode,
@@ -36,16 +37,16 @@ interface PreferencesContextValue {
 const PreferencesContext = createContext<PreferencesContextValue | null>(null);
 
 export function PreferencesProvider({ children }: { children: ReactNode }) {
-  const [preferences, setPreferences] = useState<ProfilePreferences>(
-    DEFAULT_PREFERENCES
-  );
+  const router = useRouter();
+  const [preferences, setPreferences] = useState<ProfilePreferences>(() => {
+    if (typeof window === "undefined") return DEFAULT_PREFERENCES;
+    return getStoredPreferences();
+  });
 
   useEffect(() => {
-    const stored = getStoredPreferences();
-    setPreferences(stored);
-    applyDisplayMode(stored.displayMode);
-    applyLocale(stored.locale);
-  }, []);
+    applyDisplayMode(preferences.displayMode);
+    applyLocale(preferences.locale);
+  }, [preferences.displayMode, preferences.locale]);
 
   const persist = useCallback((patch: Parameters<typeof savePreferences>[0]) => {
     const next = savePreferences(patch);
@@ -58,11 +59,12 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   const setLocale = useCallback(
     (locale: AppLocale) => {
       persist({ locale });
+      router.refresh();
       if (typeof window !== "undefined") {
         window.dispatchEvent(new CustomEvent("kb-locale-change"));
       }
     },
-    [persist]
+    [persist, router]
   );
 
   const setDisplayMode = useCallback(

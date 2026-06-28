@@ -2,6 +2,7 @@
 
 import { useState, type ReactNode } from "react";
 import { CircleHelp } from "lucide-react";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { SensorEducationSheet } from "@/components/shared/SensorEducationSheet";
 import { SensorLevelBar } from "@/components/shared/SensorLevelBar";
 import { SensorStatusPill } from "@/components/shared/SensorStatusPill";
@@ -47,6 +48,7 @@ export function SensorValueCard({
   educationContext,
   className,
 }: SensorValueCardProps) {
+  const { translate } = usePreferences();
   const [educationOpen, setEducationOpen] = useState(false);
   const elevated = status === "elevated";
 
@@ -69,7 +71,7 @@ export function SensorValueCard({
                 type="button"
                 onClick={() => setEducationOpen(true)}
                 className="shrink-0 rounded-full p-0.5 text-[var(--text-secondary)] hover:bg-surface hover:text-accent-primary"
-                aria-label="อธิบายข้อมูลนี้"
+                aria-label={translate("explainDataAria")}
               >
                 <CircleHelp className="h-4 w-4" strokeWidth={1.75} />
               </button>

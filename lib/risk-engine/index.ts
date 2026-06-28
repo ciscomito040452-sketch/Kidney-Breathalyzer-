@@ -13,5 +13,6 @@ export {
 export {
   generateExplanation,
   HEALTH_TIPS,
+  getHealthTips,
   type ExplanationInput,
 } from "./explanations";

@@ -15,7 +15,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CTA_VIEW_DETAIL } from "@/lib/constants";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import type {
   DashboardInsight,
   InsightHighlightTone,
@@ -44,6 +44,7 @@ export function DashboardInsightCard({
   resultId,
   sparklineData = [],
 }: DashboardInsightCardProps) {
+  const { translate } = usePreferences();
   const chartData = sparklineData.map((d) => ({
     ...d,
     score: Math.round(d.risk_score * 100),
@@ -54,10 +55,10 @@ export function DashboardInsightCard({
       <CardHeader className="space-y-1">
         <CardTitle className="flex items-center gap-2 text-base">
           <Sparkles className="h-4 w-4 text-accent-primary" strokeWidth={1.75} />
-          สรุปจาก AI
+          {translate("aiSummaryTitle")}
         </CardTitle>
         <p className="text-sm text-[var(--text-secondary)]">
-          การวิเคราะห์เบื้องต้นจากข้อมูลการวัดล่าสุด
+          {translate("aiSummarySubtitle")}
         </p>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -78,7 +79,7 @@ export function DashboardInsightCard({
         {chartData.length >= 2 && (
           <div className="rounded-2xl bg-surface px-3 py-3">
             <p className="mb-2 text-xs font-medium text-[var(--text-secondary)]">
-              แนวโน้มคะแนน 7 วัน
+              {translate("trendScore7days")}
               {insight.trendCaption && (
                 <span className="text-[var(--text-primary)]">
                   {" "}
@@ -95,7 +96,10 @@ export function DashboardInsightCard({
                     border: "1px solid var(--border-subtle, #E5E5EA)",
                     fontSize: 12,
                   }}
-                  formatter={(value) => [`${value ?? 0}/100`, "คะแนน"]}
+                  formatter={(value) => [
+                    `${value ?? 0}/100`,
+                    translate("scoreChartLabel"),
+                  ]}
                   labelFormatter={() => ""}
                 />
                 <Line
@@ -121,7 +125,7 @@ export function DashboardInsightCard({
             </span>
             <div className="space-y-1">
               <p className="text-sm font-semibold text-[var(--text-primary)]">
-                อ้างอิงจากงานวิจัย
+                {translate("researchNoteTitle")}
               </p>
               <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
                 {insight.researchNote}
@@ -135,7 +139,7 @@ export function DashboardInsightCard({
             </span>
             <div className="space-y-1">
               <p className="text-sm font-semibold text-[var(--text-primary)]">
-                ขั้นตอนถัดไป
+                {translate("nextStepsTitle")}
               </p>
               <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
                 {insight.suggestion}
@@ -149,7 +153,7 @@ export function DashboardInsightCard({
             href={`/result/${resultId}`}
             className="inline-flex items-center gap-1 text-sm font-medium text-accent-primary"
           >
-            {CTA_VIEW_DETAIL}
+            {translate("viewDetail")}
             <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
           </Link>
         )}

@@ -13,13 +13,12 @@ import { usePreferences } from "@/components/providers/PreferencesProvider";
 import {
   filterMeasurementsByPeriod,
   HISTORY_PERIOD_OPTIONS,
-  periodChartTitle,
   type HistoryPeriod,
 } from "@/lib/history/date-range";
-import { getHistoryPeriodLabel, getRiskShortLabels } from "@/lib/i18n/messages";
 import { groupMeasurementsByDay } from "@/lib/history/group-by-day";
 import type { Measurement, RiskLevel } from "@/types/measurement";
 import { cn } from "@/lib/utils";
+import { getHistoryPeriodLabel, getPeriodChartTitle, getRiskShortLabels } from "@/lib/i18n/messages";
 
 interface HistoryPageClientProps {
   initialMeasurements: Measurement[];
@@ -51,8 +50,8 @@ export function HistoryPageClient({
   }, [initialMeasurements, period, riskFilter]);
 
   const groups = useMemo(
-    () => groupMeasurementsByDay(filtered),
-    [filtered]
+    () => groupMeasurementsByDay(filtered, locale),
+    [filtered, locale]
   );
 
   const trendData = filtered
@@ -87,7 +86,7 @@ export function HistoryPageClient({
 
       <TrendChart
         data={trendData}
-        title={periodChartTitle(period)}
+        title={getPeriodChartTitle(locale, period)}
         showDualLine
       />
 

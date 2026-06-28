@@ -8,6 +8,7 @@ describe("buildDashboardInsight", () => {
     const insight = buildDashboardInsight({
       latest: measurements[0],
       measurements,
+      locale: "th",
     });
 
     expect(insight.highlights.length).toBeGreaterThanOrEqual(3);

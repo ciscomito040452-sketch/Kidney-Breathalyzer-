@@ -1,5 +1,8 @@
+"use client";
+
+import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { getSensorStatusLabel } from "@/lib/i18n/labels";
 import type { SensorStatus } from "@/lib/sensors/status";
-import { SENSOR_STATUS_LABELS } from "@/lib/sensors/status";
 import { cn } from "@/lib/utils";
 
 interface SensorStatusPillProps {
@@ -8,6 +11,7 @@ interface SensorStatusPillProps {
 }
 
 export function SensorStatusPill({ status, className }: SensorStatusPillProps) {
+  const { locale } = usePreferences();
   const elevated = status === "elevated";
 
   return (
@@ -20,7 +24,7 @@ export function SensorStatusPill({ status, className }: SensorStatusPillProps) {
         className
       )}
     >
-      {SENSOR_STATUS_LABELS[status]}
+      {getSensorStatusLabel(locale, status)}
     </span>
   );
 }

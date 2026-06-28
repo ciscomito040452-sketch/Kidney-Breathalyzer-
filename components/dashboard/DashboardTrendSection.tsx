@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { TrendChart } from "@/components/dashboard/TrendChart";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { SegmentedControl } from "@/components/shared/SegmentedControl";
 import { DASHBOARD_TREND_DAY_OPTIONS, type DashboardTrendDays } from "@/lib/constants";
 import type { Measurement } from "@/types/measurement";
@@ -13,6 +14,7 @@ interface DashboardTrendSectionProps {
 export function DashboardTrendSection({
   measurements,
 }: DashboardTrendSectionProps) {
+  const { translate } = usePreferences();
   const [days, setDays] = useState<DashboardTrendDays>(7);
 
   const trendData = useMemo(() => {
@@ -37,12 +39,12 @@ export function DashboardTrendSection({
         options={DASHBOARD_TREND_DAY_OPTIONS}
         value={days}
         onChange={setDays}
-        formatLabel={(d) => `${d} วัน`}
+        formatLabel={(d) => translate("trendDays").replace("{n}", String(d))}
       />
       <TrendChart
         data={trendData}
-        title={`แนวโน้ม ${days} วัน`}
-        subtitle="เส้นน้ำเงิน = แอมโมเนีย · เส้นฟ้าอ่อน = อะซิโทน"
+        title={translate("trendTitle").replace("{n}", String(days))}
+        subtitle={translate("trendSubtitle")}
         compact
         showDualLine
       />

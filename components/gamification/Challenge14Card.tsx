@@ -1,4 +1,7 @@
+"use client";
+
 import { CalendarCheck } from "lucide-react";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface Challenge14CardProps {
@@ -6,6 +9,7 @@ interface Challenge14CardProps {
 }
 
 export function Challenge14Card({ challengeDays }: Challenge14CardProps) {
+  const { translate } = usePreferences();
   const completedCount = challengeDays.filter(Boolean).length;
 
   return (
@@ -16,14 +20,14 @@ export function Challenge14Card({ challengeDays }: Challenge14CardProps) {
             className="h-4 w-4 text-accent-primary"
             strokeWidth={1.75}
           />
-          ตรวจต่อเนื่อง 14 วัน
+          {translate("challenge14Title")}
         </CardTitle>
       </CardHeader>
       <CardContent>
         <p className="text-3xl font-semibold tabular-nums tracking-tight">
           {completedCount}
           <span className="ml-1 text-base font-normal text-[var(--text-secondary)]">
-            /{challengeDays.length} วัน
+            /{challengeDays.length} {translate("daysUnit")}
           </span>
         </p>
       </CardContent>

@@ -1,11 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { RiskMeter } from "@/components/shared/RiskMeter";
 import { Card, CardContent } from "@/components/ui/card";
 import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
-import { formatHistoryListTime } from "@/lib/utils";
+import { formatHistoryListTimeLocale, cn } from "@/lib/utils";
 import type { Measurement } from "@/types/measurement";
-import { cn } from "@/lib/utils";
 
 interface HistoryMeasurementRowProps {
   measurement: Measurement;
@@ -16,6 +18,7 @@ export function HistoryMeasurementRow({
   measurement,
   variant = "default",
 }: HistoryMeasurementRowProps) {
+  const { locale } = usePreferences();
   const isCompact = variant === "compact";
 
   return (
@@ -38,7 +41,7 @@ export function HistoryMeasurementRow({
           <div className="min-w-0 flex-1 space-y-2">
             {isCompact && (
               <p className="text-xs font-medium tabular-nums text-[var(--text-secondary)]">
-                {formatHistoryListTime(measurement.measured_at)}
+                {formatHistoryListTimeLocale(locale, measurement.measured_at)}
               </p>
             )}
             <p

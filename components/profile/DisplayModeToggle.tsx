@@ -1,6 +1,6 @@
 "use client";
 
-import { Hand, Moon } from "lucide-react";
+import { Moon, MoonStar } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import type { DisplayMode } from "@/lib/preferences/profile-preferences";
 import { cn } from "@/lib/utils";
@@ -19,9 +19,9 @@ export function DisplayModeToggle() {
       label: translate("displayComfort"),
     },
     {
-      mode: "mobile",
-      icon: Hand,
-      label: translate("displayMobile"),
+      mode: "dark",
+      icon: MoonStar,
+      label: translate("displayDark"),
     },
   ];
 
@@ -55,7 +55,7 @@ export function DisplayModeToggle() {
           className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[var(--bg-primary)] shadow-card transition-transform duration-200 ease-out"
           style={{
             transform:
-              displayMode === "mobile" ? "translateX(100%)" : "translateX(0)",
+              displayMode === "dark" ? "translateX(100%)" : "translateX(0)",
           }}
           aria-hidden
         />
@@ -63,7 +63,7 @@ export function DisplayModeToggle() {
       <p className="text-xs text-[var(--text-secondary)]">
         {displayMode === "comfort"
           ? translate("displayComfortHint")
-          : translate("displayMobileHint")}
+          : translate("displayDarkHint")}
       </p>
     </div>
   );

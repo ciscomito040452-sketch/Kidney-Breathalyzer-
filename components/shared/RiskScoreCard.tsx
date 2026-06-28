@@ -4,9 +4,10 @@ import { useState } from "react";
 import { Activity, CircleHelp } from "lucide-react";
 import { RiskMeter } from "@/components/shared/RiskMeter";
 import { SensorEducationSheet } from "@/components/shared/SensorEducationSheet";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { RISK_LABELS } from "@/lib/constants";
-import { formatRiskDeltaThai } from "@/lib/measurements/risk-delta";
+import { formatRiskDelta } from "@/lib/i18n/labels";
+import { getRiskFullLabels } from "@/lib/i18n/labels";
 import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
 import type { EducationContext } from "@/lib/sensors/sensor-education";
 import type { RiskLevel } from "@/types/measurement";
@@ -26,13 +27,15 @@ export function RiskScoreCard({
   showEducation = true,
   educationContext = {},
 }: RiskScoreCardProps) {
+  const { locale, translate } = usePreferences();
   const [educationOpen, setEducationOpen] = useState(false);
+  const riskLabels = getRiskFullLabels(locale);
 
   const context: EducationContext = {
     ...educationContext,
     riskScore,
     riskLevel,
-    riskLevelLabel: RISK_LABELS[riskLevel],
+    riskLevelLabel: riskLabels[riskLevel],
   };
 
   return (
@@ -45,14 +48,14 @@ export function RiskScoreCard({
                 className="h-4 w-4 text-accent-primary"
                 strokeWidth={1.75}
               />
-              คะแนนความเสี่ยง
+              {translate("riskScoreLabel")}
             </span>
             {showEducation && (
               <button
                 type="button"
                 onClick={() => setEducationOpen(true)}
                 className="shrink-0 rounded-full p-0.5 text-[var(--text-secondary)] hover:bg-surface hover:text-accent-primary"
-                aria-label="อธิบายข้อมูลนี้"
+                aria-label={translate("explainDataAria")}
               >
                 <CircleHelp className="h-4 w-4" strokeWidth={1.75} />
               </button>
@@ -72,7 +75,7 @@ export function RiskScoreCard({
           />
           {riskDelta != null && (
             <p className="text-xs text-[var(--text-secondary)]">
-              {formatRiskDeltaThai(riskDelta)}
+              {formatRiskDelta(locale, riskDelta)}
             </p>
           )}
         </CardContent>

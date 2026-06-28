@@ -1,4 +1,7 @@
+"use client";
+
 import { HistoryMeasurementRow } from "@/components/history/HistoryMeasurementRow";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import type { HistoryDayGroup } from "@/lib/history/group-by-day";
 
 interface HistoryDayGroupSectionProps {
@@ -6,8 +9,11 @@ interface HistoryDayGroupSectionProps {
 }
 
 export function HistoryDayGroupSection({ group }: HistoryDayGroupSectionProps) {
+  const { translate } = usePreferences();
   const countLabel =
-    group.items.length === 1 ? "1 ครั้ง" : `${group.items.length} ครั้ง`;
+    group.items.length === 1
+      ? translate("historyTimesOne")
+      : translate("historyTimesMany").replace("{n}", String(group.items.length));
 
   return (
     <section className="space-y-2">

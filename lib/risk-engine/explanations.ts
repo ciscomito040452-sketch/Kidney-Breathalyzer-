@@ -1,9 +1,9 @@
 import type { RiskLevel } from "@/types/measurement";
 import type { RiskFactors } from "./calculate-score";
+import type { AppLocale } from "@/lib/preferences/profile-preferences";
 import {
   formatAcetonePpb,
   formatAmmoniaPpb,
-  SENSOR_UI,
 } from "@/lib/sensor-labels";
 import type { SensorStatus } from "@/lib/sensors/status";
 
@@ -21,7 +21,14 @@ export interface ExplanationInput {
   acetonePpb?: number;
 }
 
-export function generateExplanation(input: ExplanationInput): string {
+export function generateExplanation(
+  input: ExplanationInput,
+  locale: AppLocale = "th"
+): string {
+  if (locale === "en") {
+    return generateExplanationEn(input);
+  }
+
   const parts: string[] = [];
   const ammoniaPpb = input.ammoniaPpb ?? formatAmmoniaPpb(input.mq135_value);
   const acetonePpb = input.acetonePpb ?? formatAcetonePpb(input.mq3_value);
@@ -42,15 +49,15 @@ export function generateExplanation(input: ExplanationInput): string {
     );
   } else if (ammoniaElevated && acetoneElevated) {
     parts.push(
-      `แอมโมเนีย (${ammoniaPpb} ${SENSOR_UI.ammonia.unit}) และอะซิโทน (${acetonePpb} ${SENSOR_UI.acetone.unit}) อยู่สูงกว่าเกณฑ์อ้างอิงสำหรับการคัดกรอง`
+      `แอมโมเนีย (${ammoniaPpb} ppb) และอะซิโทน (${acetonePpb} ppb) อยู่สูงกว่าเกณฑ์อ้างอิงสำหรับการคัดกรอง`
     );
   } else if (ammoniaElevated) {
     parts.push(
-      `แอมโมเนียในลมหายใจ (${ammoniaPpb} ${SENSOR_UI.ammonia.unit}) สูงกว่าเกณฑ์อ้างอิง ขณะที่อะซิโทน (${acetonePpb} ${SENSOR_UI.acetone.unit}) อยู่ในช่วงปกติ`
+      `แอมโมเนียในลมหายใจ (${ammoniaPpb} ppb) สูงกว่าเกณฑ์อ้างอิง ขณะที่อะซิโทน (${acetonePpb} ppb) อยู่ในช่วงปกติ`
     );
   } else if (acetoneElevated) {
     parts.push(
-      `อะซิโทนในลมหายใจ (${acetonePpb} ${SENSOR_UI.acetone.unit}) สูงกว่าเกณฑ์อ้างอิง ขณะที่แอมโมเนียอยู่ในช่วงปกติ`
+      `อะซิโทนในลมหายใจ (${acetonePpb} ppb) สูงกว่าเกณฑ์อ้างอิง ขณะที่แอมโมเนียอยู่ในช่วงปกติ`
     );
   } else {
     parts.push(
@@ -78,9 +85,44 @@ export function generateExplanation(input: ExplanationInput): string {
   return parts.join(" ");
 }
 
+function generateExplanationEn(input: ExplanationInput): string {
+  const ammoniaPpb = input.ammoniaPpb ?? formatAmmoniaPpb(input.mq135_value);
+  const acetonePpb = input.acetonePpb ?? formatAcetonePpb(input.mq3_value);
+  const ammoniaElevated = input.ammoniaStatus === "elevated";
+  const acetoneElevated = input.acetoneStatus === "elevated";
+
+  let lead = "Ammonia and acetone in breath are within a range worth monitoring.";
+  if (ammoniaElevated && acetoneElevated) {
+    lead = `Ammonia (${ammoniaPpb} ppb) and acetone (${acetonePpb} ppb) are above reference screening thresholds.`;
+  } else if (ammoniaElevated) {
+    lead = `Ammonia (${ammoniaPpb} ppb) is elevated while acetone (${acetonePpb} ppb) is normal.`;
+  } else if (acetoneElevated) {
+    lead = `Acetone (${acetonePpb} ppb) is elevated while ammonia is normal.`;
+  }
+
+  const levelText: Record<RiskLevel, string> = {
+    low: "Overall screening risk is assessed as low.",
+    moderate: "Overall screening risk is assessed as moderate.",
+    high: "Overall screening risk is assessed as high — consider seeing a doctor.",
+  };
+
+  return `${lead} ${levelText[input.risk_level]}`;
+}
+
 export const HEALTH_TIPS = [
   "ดื่มน้ำให้เพียงพอตามที่ร่างกายต้องการ",
   "ลดการบริโภคโปรตีนในปริมาณที่มากเกินไป",
   "ออกกำลังกายสม่ำเสมอตามความเหมาะสม",
   "ตรวจสุขภาพกับแพทย์เป็นระยะ",
 ];
+
+export const HEALTH_TIPS_EN = [
+  "Stay well hydrated",
+  "Avoid excessive protein intake",
+  "Exercise regularly as appropriate",
+  "See your doctor for routine checkups",
+];
+
+export function getHealthTips(locale: AppLocale): string[] {
+  return locale === "en" ? HEALTH_TIPS_EN : HEALTH_TIPS;
+}

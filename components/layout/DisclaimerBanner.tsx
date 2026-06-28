@@ -1,4 +1,6 @@
-import { MEDICAL_DISCLAIMER } from "@/lib/constants";
+"use client";
+
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { cn } from "@/lib/utils";
 
 interface DisclaimerBannerProps {
@@ -10,6 +12,8 @@ export function DisclaimerBanner({
   className,
   compact = false,
 }: DisclaimerBannerProps) {
+  const { translate } = usePreferences();
+
   return (
     <div
       className={cn(
@@ -18,9 +22,9 @@ export function DisclaimerBanner({
         className
       )}
       role="note"
-      aria-label="คำเตือนทางการแพทย์"
+      aria-label={translate("medicalDisclaimerAria")}
     >
-      {MEDICAL_DISCLAIMER}
+      {translate("medicalDisclaimer")}
     </div>
   );
 }
