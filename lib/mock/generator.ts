@@ -37,21 +37,33 @@ function demoMeasurementId(dayIndex: number): string {
 
 const DEMO_RISK_CYCLE: RiskLevel[] = ["low", "moderate", "high"];
 
-/** Curated rising trend for the last 3 days (video narrative). */
+/** Curated rising trend — believable high risk (~72–78), not maxed at 100 */
 function curatedSensorValues(daysFromLatest: number): {
   mq135_value: number;
   mq3_value: number;
 } | null {
   if (daysFromLatest === 0) {
-    return { mq135_value: 385, mq3_value: 0.72 };
+    return { mq135_value: 308, mq3_value: 0.5 };
   }
   if (daysFromLatest === 1) {
-    return { mq135_value: 350, mq3_value: 0.65 };
+    return { mq135_value: 288, mq3_value: 0.46 };
   }
   if (daysFromLatest === 2) {
-    return { mq135_value: 310, mq3_value: 0.58 };
+    return { mq135_value: 268, mq3_value: 0.42 };
   }
   return null;
+}
+
+function shouldRecordDay(
+  dayIndex: number,
+  totalDays: number,
+  rand: () => number
+): boolean {
+  const daysFromLatest = totalDays - 1 - dayIndex;
+  if (daysFromLatest <= 2) return true;
+  if (daysFromLatest < 7) return rand() > 0.3;
+  if (daysFromLatest < 14) return rand() > 0.42;
+  return rand() > 0.58;
 }
 
 function sensorValuesForDay(
@@ -134,6 +146,8 @@ export function seedDemoMeasurements(
   const rand = createSeededRandom(42);
 
   for (let i = 0; i < days; i++) {
+    if (!shouldRecordDay(i, days, rand)) continue;
+
     const date = new Date(now);
     date.setDate(date.getDate() - (days - 1 - i));
 

@@ -11,39 +11,44 @@ export function OnboardingStepIndicator({
   totalSteps,
 }: OnboardingStepIndicatorProps) {
   return (
-    <div className="flex items-center gap-2">
-      {Array.from({ length: totalSteps }, (_, i) => {
-        const stepNumber = i + 1;
-        const isCompleted = stepNumber < currentStep;
-        const isActive = stepNumber === currentStep;
+    <div className="flex justify-center px-2">
+      <div className="flex items-center">
+        {Array.from({ length: totalSteps }, (_, i) => {
+          const stepNumber = i + 1;
+          const isCompleted = stepNumber < currentStep;
+          const isActive = stepNumber === currentStep;
+          const isDone = isCompleted || isActive;
 
-        return (
-          <div key={stepNumber} className="flex flex-1 items-center gap-2">
-            <div
-              className={cn(
-                "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors",
-                isCompleted && "bg-risk-low text-white",
-                isActive && "bg-accent-primary text-white",
-                !isCompleted && !isActive && "bg-surface text-[var(--text-secondary)]"
-              )}
-            >
-              {isCompleted ? (
-                <Check className="h-4 w-4" strokeWidth={2.5} />
-              ) : (
-                stepNumber
-              )}
-            </div>
-            {stepNumber < totalSteps && (
+          return (
+            <div key={stepNumber} className="flex items-center">
               <div
                 className={cn(
-                  "h-0.5 flex-1 rounded-full",
-                  isCompleted ? "bg-risk-low" : "bg-border-subtle"
+                  "flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-semibold transition-colors",
+                  isDone
+                    ? "bg-accent-primary text-white"
+                    : "bg-surface text-[var(--text-secondary)] ring-1 ring-border-subtle"
                 )}
-              />
-            )}
-          </div>
-        );
-      })}
+                aria-current={isActive ? "step" : undefined}
+              >
+                {isCompleted ? (
+                  <Check className="h-4 w-4" strokeWidth={2.5} />
+                ) : (
+                  stepNumber
+                )}
+              </div>
+              {stepNumber < totalSteps && (
+                <div
+                  className={cn(
+                    "h-0.5 w-10 rounded-full sm:w-12",
+                    isCompleted ? "bg-accent-primary" : "bg-border-subtle"
+                  )}
+                  aria-hidden
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

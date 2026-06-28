@@ -8,10 +8,10 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default: "border-transparent bg-accent-primary/10 text-accent-primary",
-        low: "border-risk-low/20 bg-risk-low/10 text-risk-low",
+        low: "border-risk-low/30 bg-risk-low/15 text-risk-low",
         moderate:
-          "border-risk-moderate/20 bg-risk-moderate/10 text-risk-moderate",
-        high: "border-risk-high/20 bg-risk-high/10 text-risk-high",
+          "border-risk-moderate/30 bg-risk-moderate/15 text-risk-moderate",
+        high: "border-risk-high/30 bg-risk-high/15 text-risk-high",
         outline: "border-border-subtle text-[var(--text-secondary)]",
       },
     },

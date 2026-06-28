@@ -8,6 +8,8 @@ interface WeeklyGoalCardProps {
 }
 
 export function WeeklyGoalCard({ count, target }: WeeklyGoalCardProps) {
+  const met = count >= target;
+  const displayCount = met ? target : count;
   const progressPercent = Math.min(100, Math.round((count / target) * 100));
 
   return (
@@ -20,11 +22,14 @@ export function WeeklyGoalCard({ count, target }: WeeklyGoalCardProps) {
       </CardHeader>
       <CardContent className="space-y-3">
         <p className="text-3xl font-semibold tabular-nums tracking-tight">
-          {count}/{target}
+          {displayCount}/{target}
           <span className="ml-1 text-base font-normal text-[var(--text-secondary)]">
             ครั้ง
           </span>
         </p>
+        {met && (
+          <p className="text-xs text-risk-low">บรรลุเป้าแล้ว</p>
+        )}
         <Progress value={progressPercent} aria-label="ความคืบหน้าเป้าหมายรายสัปดาห์" />
       </CardContent>
     </Card>

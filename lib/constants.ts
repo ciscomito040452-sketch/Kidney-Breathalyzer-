@@ -18,6 +18,12 @@ export const RISK_LABELS = {
   high: "ความเสี่ยงสูง",
 } as const;
 
+export const RISK_SHORT_LABELS = {
+  low: "ต่ำ",
+  moderate: "ปานกลาง",
+  high: "สูง",
+} as const;
+
 export const DEVICE_STATUS_LABELS = {
   connected: "เชื่อมต่อแล้ว",
   disconnected: "ไม่ได้เชื่อมต่อ",

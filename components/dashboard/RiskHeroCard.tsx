@@ -1,4 +1,4 @@
-import { AppLogo } from "@/components/shared/AppLogo";
+import { Wind } from "lucide-react";
 import { RiskBadge } from "@/components/shared/RiskBadge";
 import { SensorChipRow } from "@/components/shared/SensorChipRow";
 import { formatRiskDeltaThai } from "@/lib/measurements/risk-delta";
@@ -34,7 +34,15 @@ export function RiskHeroCard({
     >
       <div className="relative z-10">
         <div className="flex items-start gap-3">
-          <AppLogo size={48} className="h-12 w-12 shrink-0 shadow-none" />
+          <div
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-accent-primary/10"
+            aria-hidden
+          >
+            <Wind
+              className="h-6 w-6 text-accent-primary"
+              strokeWidth={1.75}
+            />
+          </div>
           <div className="min-w-0 flex-1">
             <RiskBadge level={riskLevel} />
             <p className="mt-3 text-[32px] font-semibold leading-tight tabular-nums tracking-tight">
