@@ -2,6 +2,8 @@
 
 Web app สำหรับคัดกรองความเสี่ยงโรคไตจากลมหายใจ (Hackathon PoC)
 
+**Live Demo:** [https://kidney-breathalyzer.vercel.app](https://kidney-breathalyzer.vercel.app)
+
 ## Quick Start
 
 ```bash
@@ -12,6 +14,8 @@ npm run dev
 เปิด [http://localhost:3000](http://localhost:3000) แล้วกด **ดู Demo**
 
 ## Demo Script (สำหรับกรรมการ)
+
+เปิด [https://kidney-breathalyzer.vercel.app](https://kidney-breathalyzer.vercel.app) แล้วทำตามขั้นตอน:
 
 1. Landing → อธิบาย tagline + disclaimer
 2. กด **ดู Demo** → Dashboard: สถานะอุปกรณ์, risk, gamification, trend (สลับ 7/30 วัน)
