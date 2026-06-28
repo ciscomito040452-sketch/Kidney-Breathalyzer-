@@ -18,6 +18,9 @@
   --risk-moderate-rgb: 59 130 246;
   --risk-high: #1e3a8a;
   --risk-high-rgb: 30 58 138;
+  --risk-meter-start: #b6c9f2;
+  --risk-meter-mid: #91aae8;
+  --risk-meter-end: #6389d7;
   --text-primary: #1d1d1f;
   --text-secondary: #86868b;
   --border-subtle: #e5e5ea;
@@ -58,6 +61,9 @@ html[data-display="dark"] {
   --risk-moderate-rgb: 10 132 255;
   --risk-high: #7eb8ff;
   --risk-high-rgb: 126 184 255;
+  --risk-meter-start: #3d4f6e;
+  --risk-meter-mid: #3d7cc9;
+  --risk-meter-end: #0a84ff;
   --text-primary: #ffffff;
   --text-secondary: #8e8e93;
   --border-subtle: rgba(255, 255, 255, 0.1);
@@ -88,6 +94,15 @@ html[data-display="dark"] {
 
   .shadow-card {
     box-shadow: var(--shadow-card);
+  }
+
+  .risk-meter-track {
+    background: linear-gradient(
+      90deg,
+      var(--risk-meter-start) 0%,
+      var(--risk-meter-mid) 50%,
+      var(--risk-meter-end) 100%
+    );
   }
 }
 

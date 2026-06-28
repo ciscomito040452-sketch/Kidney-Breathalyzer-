@@ -12,21 +12,15 @@ import { cn } from "@/lib/utils";
 const ZONES: RiskLevel[] = ["low", "moderate", "high"];
 
 const markerFill: Record<RiskLevel, string> = {
-  low: "bg-risk-low",
+  low: "bg-[var(--risk-meter-mid)]",
   moderate: "bg-risk-moderate",
-  high: "bg-risk-high",
-};
-
-const markerRing: Record<RiskLevel, string> = {
-  low: "ring-risk-low/30",
-  moderate: "ring-risk-moderate/35",
-  high: "ring-risk-high/40",
+  high: "bg-[var(--risk-meter-end)]",
 };
 
 const statusPill: Record<RiskLevel, string> = {
-  low: "bg-risk-low/15 text-risk-low",
+  low: "bg-risk-moderate/12 text-[var(--risk-meter-end)]",
   moderate: "bg-risk-moderate/15 text-risk-moderate",
-  high: "bg-risk-high/15 text-risk-high",
+  high: "bg-risk-moderate/15 text-[var(--risk-meter-end)]",
 };
 
 interface RiskMeterProps {
@@ -77,19 +71,19 @@ export function RiskMeter({
 
       <div className={cn("relative", compact ? "h-2" : "h-2.5")}>
         <div
-          className="h-full overflow-hidden rounded-full bg-gradient-to-r from-risk-low via-risk-moderate to-risk-high shadow-inner"
+          className="risk-meter-track h-full overflow-hidden rounded-full shadow-inner"
           aria-hidden
         />
 
         {!compact && (
           <>
             <div
-              className="pointer-events-none absolute inset-y-0 w-px bg-[var(--bg-primary)]/35"
+              className="pointer-events-none absolute inset-y-0 w-px bg-white/45"
               style={{ left: "33.333%" }}
               aria-hidden
             />
             <div
-              className="pointer-events-none absolute inset-y-0 w-px bg-[var(--bg-primary)]/35"
+              className="pointer-events-none absolute inset-y-0 w-px bg-white/45"
               style={{ left: "66.666%" }}
               aria-hidden
             />
@@ -98,10 +92,9 @@ export function RiskMeter({
 
         <div
           className={cn(
-            "pointer-events-none absolute top-1/2 z-10 rounded-full border-2 border-[var(--bg-primary)] shadow-card ring-2",
+            "pointer-events-none absolute top-1/2 z-10 rounded-full border-2 border-[var(--bg-primary)] shadow-[0_0_0_2px_rgba(59,130,246,0.22)]",
             compact ? "h-3 w-3" : "h-4 w-4",
-            markerFill[riskLevel],
-            markerRing[riskLevel]
+            markerFill[riskLevel]
           )}
           style={{
             left: `clamp(${compact ? 6 : 8}px, ${markerLeft}%, calc(100% - ${compact ? 6 : 8}px))`,

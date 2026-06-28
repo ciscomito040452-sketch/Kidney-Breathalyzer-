@@ -31,9 +31,9 @@ interface DashboardInsightCardProps {
 }
 
 const statusPill: Record<RiskLevel, string> = {
-  low: "bg-risk-low/15 text-risk-low",
+  low: "bg-risk-moderate/12 text-[var(--risk-meter-end)]",
   moderate: "bg-risk-moderate/15 text-risk-moderate",
-  high: "bg-risk-high/15 text-risk-high",
+  high: "bg-risk-moderate/15 text-[var(--risk-meter-end)]",
 };
 
 export function DashboardInsightCard({
@@ -52,6 +52,8 @@ export function DashboardInsightCard({
     score: Math.round(d.risk_score * 100),
   }));
 
+  const hasChart = chartData.length >= 2;
+
   return (
     <>
       <Card className="overflow-hidden">
@@ -61,65 +63,68 @@ export function DashboardInsightCard({
           className="w-full text-left transition-opacity active:opacity-90"
           aria-label={`${translate("aiSummaryTitle")} — ${translate("viewDetail")}`}
         >
-          <CardContent className="space-y-4 p-4 pt-5">
-            <div className="flex items-center gap-2">
-              <Sparkles
-                className="h-4 w-4 text-accent-primary"
-                strokeWidth={1.75}
+          <CardContent className="space-y-3 p-4 pt-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex min-w-0 items-center gap-2.5">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-primary/10">
+                  <Sparkles
+                    className="h-4 w-4 text-accent-primary"
+                    strokeWidth={1.75}
+                    aria-hidden
+                  />
+                </span>
+                <span className="text-sm font-semibold text-[var(--text-primary)]">
+                  {translate("aiSummaryTitle")}
+                </span>
+              </div>
+              <ChevronRight
+                className="h-4 w-4 shrink-0 text-[var(--text-secondary)]"
+                strokeWidth={2}
                 aria-hidden
               />
-              <span className="text-base font-semibold text-[var(--text-primary)]">
-                {translate("aiSummaryTitle")}
+            </div>
+
+            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+              <p className="text-3xl font-semibold tabular-nums tracking-tight">
+                {formatRiskScoreDisplay(riskScore)}
+              </p>
+              <span
+                className={cn(
+                  "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                  statusPill[riskLevel]
+                )}
+              >
+                {riskLabels[riskLevel]}
               </span>
             </div>
 
-            <div className="flex items-center justify-between gap-4">
-              <div className="min-w-0 space-y-2">
-                <p className="text-4xl font-semibold tabular-nums tracking-tight">
-                  {formatRiskScoreDisplay(riskScore)}
-                </p>
-                <span
-                  className={cn(
-                    "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
-                    statusPill[riskLevel]
-                  )}
-                >
-                  {riskLabels[riskLevel]}
-                </span>
+            {hasChart && (
+              <div
+                className="h-12 w-full rounded-xl bg-surface-elevated px-1 py-1"
+                aria-hidden
+              >
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData}>
+                    <YAxis hide domain={["dataMin - 5", "dataMax + 5"]} />
+                    <Line
+                      type="monotone"
+                      dataKey="score"
+                      stroke="var(--accent-primary, #2563EB)"
+                      strokeWidth={2}
+                      dot={false}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
               </div>
-
-              {chartData.length >= 2 && (
-                <div className="h-12 w-28 shrink-0 opacity-90" aria-hidden>
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={chartData}>
-                      <YAxis hide domain={["dataMin - 5", "dataMax + 5"]} />
-                      <Line
-                        type="monotone"
-                        dataKey="score"
-                        stroke="var(--accent-primary, #2563EB)"
-                        strokeWidth={2}
-                        dot={false}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              )}
-            </div>
+            )}
 
             <p className="line-clamp-2 text-sm leading-relaxed text-[var(--text-secondary)]">
               {insight.summary}
             </p>
 
-            <div className="flex items-center justify-between border-t border-border-subtle pt-3">
-              <span className="text-sm font-medium text-accent-primary">
-                {translate("viewDetail")}
-              </span>
-              <ChevronRight
-                className="h-4 w-4 text-accent-primary"
-                strokeWidth={2}
-                aria-hidden
-              />
-            </div>
+            <p className="text-xs font-medium text-accent-primary">
+              {translate("viewDetail")}
+            </p>
           </CardContent>
         </button>
       </Card>
