@@ -56,7 +56,12 @@ export function PreferencesProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const setLocale = useCallback(
-    (locale: AppLocale) => persist({ locale }),
+    (locale: AppLocale) => {
+      persist({ locale });
+      if (typeof window !== "undefined") {
+        window.dispatchEvent(new CustomEvent("kb-locale-change"));
+      }
+    },
     [persist]
   );
 

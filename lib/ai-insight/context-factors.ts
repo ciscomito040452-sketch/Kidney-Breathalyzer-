@@ -1,6 +1,7 @@
 import type { LucideIcon } from "lucide-react";
 import { Activity, ClipboardList, Gauge, Wind } from "lucide-react";
 import type { DemoRiskFactors } from "@/lib/profile/onboarding-storage";
+import { summarizeRiskFactorLabels } from "@/lib/profile/risk-factor-labels";
 import {
   formatAcetonePpb,
   formatAmmoniaPpb,
@@ -39,6 +40,15 @@ function measurementFrequencyStatus(count: number): InsightFactorStatus {
 }
 
 function formatRiskFactorSummary(factors: DemoRiskFactors): string {
+  if (factors.risk_factor_ids?.length) {
+    const labels = summarizeRiskFactorLabels(
+      "th",
+      factors.risk_factor_ids,
+      factors.risk_factor_other ?? null
+    );
+    return labels.length > 0 ? labels.join(", ") : "ไม่มีที่ระบุ";
+  }
+
   const items: string[] = [];
   if (factors.has_diabetes) items.push("เบาหวาน");
   if (factors.has_hypertension) items.push("ความดันโลหิตสูง");
@@ -68,6 +78,7 @@ export function buildInsightContextFactors(input: {
   const acetoneStatus = sensorStatus(acetoneNorm);
   const frequencyStatus = measurementFrequencyStatus(weeklyCount);
   const hasRiskFactors =
+    (riskFactors.risk_factor_ids?.length ?? 0) > 0 ||
     riskFactors.has_diabetes ||
     riskFactors.has_hypertension ||
     riskFactors.has_family_history;

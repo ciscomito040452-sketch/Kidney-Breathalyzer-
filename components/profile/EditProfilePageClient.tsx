@@ -7,6 +7,7 @@ import { ArrowLeft } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileAvatarSheet } from "@/components/profile/ProfileAvatarSheet";
+import { RiskFactorPicker } from "@/components/profile/RiskFactorPicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/input";
@@ -24,12 +25,12 @@ export function EditProfilePageClient() {
   const [avatarOpen, setAvatarOpen] = useState(false);
   const [initials, setInitials] = useState("KB");
   const [form, setForm] = useState<ProfileFormValues>({
+    displayName: "",
     age: "",
     gender: "",
     weight: "",
-    hasDiabetes: false,
-    hasHypertension: false,
-    hasFamilyHistory: false,
+    riskFactorIds: [],
+    riskFactorOther: "",
   });
 
   useEffect(() => {
@@ -42,6 +43,26 @@ export function EditProfilePageClient() {
     value: ProfileFormValues[K]
   ) {
     setForm((prev) => ({ ...prev, [key]: value }));
+    if (key === "displayName" && typeof value === "string") {
+      const trimmed = value.trim();
+      if (trimmed) {
+        const parts = trimmed.split(/\s+/);
+        setInitials(
+          parts.length >= 2
+            ? `${parts[0][0] ?? ""}${parts[1][0] ?? ""}`.toUpperCase()
+            : trimmed.slice(0, 2).toUpperCase()
+        );
+      }
+    }
+  }
+
+  function handleRiskToggle(id: string, checked: boolean) {
+    setForm((prev) => ({
+      ...prev,
+      riskFactorIds: checked
+        ? [...prev.riskFactorIds, id]
+        : prev.riskFactorIds.filter((item) => item !== id),
+    }));
   }
 
   function handleSave() {
@@ -50,27 +71,6 @@ export function EditProfilePageClient() {
     router.push("/profile");
     router.refresh();
   }
-
-  const riskOptions = [
-    {
-      id: "diabetes",
-      label: translate("riskFactorDiabetes"),
-      checked: form.hasDiabetes,
-      onChange: (checked: boolean) => updateForm("hasDiabetes", checked),
-    },
-    {
-      id: "hypertension",
-      label: translate("riskFactorHypertension"),
-      checked: form.hasHypertension,
-      onChange: (checked: boolean) => updateForm("hasHypertension", checked),
-    },
-    {
-      id: "family",
-      label: translate("riskFactorFamily"),
-      checked: form.hasFamilyHistory,
-      onChange: (checked: boolean) => updateForm("hasFamilyHistory", checked),
-    },
-  ] as const;
 
   return (
     <main className="space-y-6 px-4 py-6">
@@ -90,17 +90,41 @@ export function EditProfilePageClient() {
         </div>
       </header>
 
-      <div className="flex justify-center">
-        <ProfileAvatar
-          initials={initials}
-          onEdit={() => setAvatarOpen(true)}
-        />
+      <div className="flex flex-col items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setAvatarOpen(true)}
+          className="rounded-full outline-none ring-accent-primary/30 focus-visible:ring-2"
+          aria-label={translate("editAvatar")}
+        >
+          <ProfileAvatar initials={initials} />
+        </button>
+        <button
+          type="button"
+          onClick={() => setAvatarOpen(true)}
+          className="text-sm font-medium text-accent-primary"
+        >
+          {translate("editAvatar")}
+        </button>
       </div>
 
       <Card>
         <CardContent className="space-y-4 pt-4">
           <label className="block space-y-1">
-            <span className="text-sm font-medium">{translate("ageLabel")}</span>
+            <span className="text-sm font-medium">{translate("displayNameLabel")}</span>
+            <Input
+              value={form.displayName}
+              onChange={(e) => updateForm("displayName", e.target.value)}
+              placeholder={translate("displayNamePlaceholder")}
+            />
+          </label>
+          <label className="block space-y-1">
+            <span className="text-sm font-medium">
+              {translate("ageLabel")}{" "}
+              <span className="font-normal text-[var(--text-secondary)]">
+                ({translate("optionalField")})
+              </span>
+            </span>
             <Input
               type="number"
               min={1}
@@ -110,7 +134,12 @@ export function EditProfilePageClient() {
             />
           </label>
           <label className="block space-y-1">
-            <span className="text-sm font-medium">{translate("genderLabel")}</span>
+            <span className="text-sm font-medium">
+              {translate("genderLabel")}{" "}
+              <span className="font-normal text-[var(--text-secondary)]">
+                ({translate("optionalField")})
+              </span>
+            </span>
             <Select
               value={form.gender}
               onChange={(e) => updateForm("gender", e.target.value)}
@@ -122,7 +151,12 @@ export function EditProfilePageClient() {
             </Select>
           </label>
           <label className="block space-y-1">
-            <span className="text-sm font-medium">{translate("weightLabel")}</span>
+            <span className="text-sm font-medium">
+              {translate("weightLabel")}{" "}
+              <span className="font-normal text-[var(--text-secondary)]">
+                ({translate("optionalField")})
+              </span>
+            </span>
             <Input
               type="number"
               min={1}
@@ -135,27 +169,13 @@ export function EditProfilePageClient() {
       </Card>
 
       <Card>
-        <CardContent className="space-y-3 pt-4">
-          <div>
-            <p className="text-sm font-medium">{translate("riskFactorsTitle")}</p>
-            <p className="text-sm text-[var(--text-secondary)]">
-              {translate("riskFactorsHint")}
-            </p>
-          </div>
-          {riskOptions.map((item) => (
-            <label
-              key={item.id}
-              className="flex cursor-pointer items-center gap-3 rounded-xl border border-border-subtle bg-[var(--bg-primary)] px-4 py-3"
-            >
-              <input
-                type="checkbox"
-                checked={item.checked}
-                onChange={(e) => item.onChange(e.target.checked)}
-                className="h-4 w-4 accent-[var(--accent-primary)]"
-              />
-              <span className="text-sm">{item.label}</span>
-            </label>
-          ))}
+        <CardContent className="pt-4">
+          <RiskFactorPicker
+            selectedIds={form.riskFactorIds}
+            otherNote={form.riskFactorOther}
+            onToggle={handleRiskToggle}
+            onOtherNoteChange={(value) => updateForm("riskFactorOther", value)}
+          />
         </CardContent>
       </Card>
 

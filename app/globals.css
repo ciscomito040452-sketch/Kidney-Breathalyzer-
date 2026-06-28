@@ -35,6 +35,22 @@ html[data-display="comfort"] {
   --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.04);
 }
 
+html[data-display="mobile"] {
+  --shadow-card: 0 2px 10px rgba(0, 0, 0, 0.07);
+}
+
+html[data-display="mobile"] body {
+  font-size: 17px;
+}
+
+html[data-display="mobile"] .text-xs {
+  font-size: 0.8125rem;
+}
+
+html[data-display="mobile"] .text-sm {
+  font-size: 0.9375rem;
+}
+
 @layer base {
   * {
     @apply border-border-subtle;

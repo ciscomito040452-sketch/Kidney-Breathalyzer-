@@ -1,6 +1,6 @@
 "use client";
 
-import { Moon, Sun } from "lucide-react";
+import { Hand, Moon } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import type { DisplayMode } from "@/lib/preferences/profile-preferences";
 import { cn } from "@/lib/utils";
@@ -10,21 +10,18 @@ export function DisplayModeToggle() {
 
   const options: {
     mode: DisplayMode;
-    icon: typeof Sun;
+    icon: typeof Moon;
     label: string;
-    hint: string;
   }[] = [
-    {
-      mode: "standard",
-      icon: Sun,
-      label: translate("displayStandard"),
-      hint: translate("displayStandardHint"),
-    },
     {
       mode: "comfort",
       icon: Moon,
       label: translate("displayComfort"),
-      hint: translate("displayComfortHint"),
+    },
+    {
+      mode: "mobile",
+      icon: Hand,
+      label: translate("displayMobile"),
     },
   ];
 
@@ -58,15 +55,15 @@ export function DisplayModeToggle() {
           className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[var(--bg-primary)] shadow-card transition-transform duration-200 ease-out"
           style={{
             transform:
-              displayMode === "comfort" ? "translateX(100%)" : "translateX(0)",
+              displayMode === "mobile" ? "translateX(100%)" : "translateX(0)",
           }}
           aria-hidden
         />
       </div>
       <p className="text-xs text-[var(--text-secondary)]">
-        {displayMode === "standard"
-          ? translate("displayStandardHint")
-          : translate("displayComfortHint")}
+        {displayMode === "comfort"
+          ? translate("displayComfortHint")
+          : translate("displayMobileHint")}
       </p>
     </div>
   );

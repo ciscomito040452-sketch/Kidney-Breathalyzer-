@@ -1,5 +1,9 @@
 import type { DemoRiskFactors } from "@/lib/profile/onboarding-storage";
 import {
+  legacyBooleansFromIds,
+  OTHER_RISK_FACTOR_ID,
+} from "@/lib/profile/risk-factor-catalog";
+import {
   buildRiskFactorsCookieValue,
   RISK_FACTORS_COOKIE,
 } from "@/lib/profile/risk-factors-cookie";
@@ -9,12 +13,12 @@ import {
 } from "@/lib/profile/onboarding-storage";
 
 export interface ProfileFormValues {
+  displayName: string;
   age: string;
   gender: string;
   weight: string;
-  hasDiabetes: boolean;
-  hasHypertension: boolean;
-  hasFamilyHistory: boolean;
+  riskFactorIds: string[];
+  riskFactorOther: string;
 }
 
 export function profileFormFromStorage(): ProfileFormValues {
@@ -25,54 +29,63 @@ export function profileFormFromStorage(): ProfileFormValues {
   const stored = getStoredOnboardingProfile();
   if (!stored) {
     return {
+      displayName: "",
       age: "45",
       gender: "other",
       weight: "70",
-      hasDiabetes: true,
-      hasHypertension: false,
-      hasFamilyHistory: true,
+      riskFactorIds: ["diabetes", "family_kidney"],
+      riskFactorOther: "",
     };
   }
 
   return {
+    displayName: stored.display_name ?? "",
     age: stored.age != null ? String(stored.age) : "",
     gender: stored.gender ?? "",
     weight: stored.weight_kg != null ? String(stored.weight_kg) : "",
-    hasDiabetes: stored.has_diabetes,
-    hasHypertension: stored.has_hypertension,
-    hasFamilyHistory: stored.has_family_history,
+    riskFactorIds: stored.risk_factor_ids ?? [],
+    riskFactorOther: stored.risk_factor_other ?? "",
   };
 }
 
 function emptyForm(): ProfileFormValues {
   return {
+    displayName: "",
     age: "",
     gender: "",
     weight: "",
-    hasDiabetes: false,
-    hasHypertension: false,
-    hasFamilyHistory: false,
+    riskFactorIds: [],
+    riskFactorOther: "",
   };
 }
 
 export function persistProfileForm(values: ProfileFormValues): void {
+  const legacy = legacyBooleansFromIds(values.riskFactorIds);
+  const otherNote =
+    values.riskFactorIds.includes(OTHER_RISK_FACTOR_ID) &&
+    values.riskFactorOther.trim()
+      ? values.riskFactorOther.trim()
+      : null;
+
   saveOnboardingProfile({
+    display_name: values.displayName.trim() || null,
     age: values.age ? Number(values.age) : null,
     gender: values.gender || null,
     weight_kg: values.weight ? Number(values.weight) : null,
-    has_diabetes: values.hasDiabetes,
-    has_hypertension: values.hasHypertension,
-    has_family_history: values.hasFamilyHistory,
+    risk_factor_ids: values.riskFactorIds,
+    risk_factor_other: otherNote,
+    ...legacy,
   });
 
   const factors: DemoRiskFactors = {
-    has_diabetes: values.hasDiabetes,
-    has_hypertension: values.hasHypertension,
-    has_family_history: values.hasFamilyHistory,
+    ...legacy,
+    risk_factor_ids: values.riskFactorIds,
+    risk_factor_other: otherNote,
+    display_name: values.displayName.trim() || null,
   };
   document.cookie = `${RISK_FACTORS_COOKIE}=${buildRiskFactorsCookieValue(factors)};path=/;max-age=31536000;SameSite=Lax`;
 }
 
 export function isProfileFormValid(values: ProfileFormValues): boolean {
-  return Boolean(values.age && values.gender && values.weight);
+  return values.displayName.trim().length >= 1;
 }

@@ -1,5 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/utils";
-import { DEVICE_STATUS_LABELS } from "@/lib/constants";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import type { DeviceStatus } from "@/types/measurement";
 
 interface DeviceStatusBadgeProps {
@@ -13,7 +15,15 @@ const statusStyles: Record<DeviceStatus, string> = {
   demo: "bg-accent-primary/10 text-accent-primary",
 };
 
+const statusKeys = {
+  connected: "connected",
+  disconnected: "disconnected",
+  demo: "demoMode",
+} as const;
+
 export function DeviceStatusBadge({ status, className }: DeviceStatusBadgeProps) {
+  const { translate } = usePreferences();
+
   return (
     <span
       className={cn(
@@ -22,7 +32,7 @@ export function DeviceStatusBadge({ status, className }: DeviceStatusBadgeProps)
         className
       )}
     >
-      {DEVICE_STATUS_LABELS[status]}
+      {translate(statusKeys[status])}
     </span>
   );
 }

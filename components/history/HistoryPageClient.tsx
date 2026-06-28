@@ -9,14 +9,14 @@ import { TrendChart } from "@/components/dashboard/TrendChart";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
 import { TabPageHeader } from "@/components/shared/TabPageHeader";
-import { RISK_SHORT_LABELS } from "@/lib/constants";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import {
   filterMeasurementsByPeriod,
-  HISTORY_PERIOD_LABELS,
   HISTORY_PERIOD_OPTIONS,
   periodChartTitle,
   type HistoryPeriod,
 } from "@/lib/history/date-range";
+import { getHistoryPeriodLabel, getRiskShortLabels } from "@/lib/i18n/messages";
 import { groupMeasurementsByDay } from "@/lib/history/group-by-day";
 import type { Measurement, RiskLevel } from "@/types/measurement";
 import { cn } from "@/lib/utils";
@@ -25,18 +25,23 @@ interface HistoryPageClientProps {
   initialMeasurements: Measurement[];
 }
 
-const RISK_FILTER_OPTIONS = [
-  { value: "all" as const, label: "ทั้งหมด" },
-  { value: "low" as const, label: RISK_SHORT_LABELS.low },
-  { value: "moderate" as const, label: RISK_SHORT_LABELS.moderate },
-  { value: "high" as const, label: RISK_SHORT_LABELS.high },
-];
-
 export function HistoryPageClient({
   initialMeasurements,
 }: HistoryPageClientProps) {
+  const { locale, translate } = usePreferences();
   const [period, setPeriod] = useState<HistoryPeriod>("last_30");
   const [riskFilter, setRiskFilter] = useState<RiskLevel | "all">("all");
+
+  const riskLabels = getRiskShortLabels(locale);
+  const riskFilterOptions = useMemo(
+    () => [
+      { value: "all" as const, label: translate("filterAll") },
+      { value: "low" as const, label: riskLabels.low },
+      { value: "moderate" as const, label: riskLabels.moderate },
+      { value: "high" as const, label: riskLabels.high },
+    ],
+    [riskLabels, translate]
+  );
 
   const filtered = useMemo(() => {
     const inPeriod = filterMeasurementsByPeriod(initialMeasurements, period);
@@ -60,23 +65,24 @@ export function HistoryPageClient({
       risk_score: m.risk_score,
     }));
 
+  const periodLabel = getHistoryPeriodLabel(locale, period);
   const listSubtitle =
     filtered.length > 0
-      ? `${filtered.length} รายการ · ${HISTORY_PERIOD_LABELS[period]}`
-      : `ไม่มีรายการ · ${HISTORY_PERIOD_LABELS[period]}`;
+      ? `${filtered.length} ${translate("itemsCount")} · ${periodLabel}`
+      : `${translate("noItems")} · ${periodLabel}`;
 
   return (
     <main className="space-y-6 px-4 py-6">
       <TabPageHeader
-        title="ประวัติการวัด"
-        subtitle="ติดตามแนวโน้มและผลย้อนหลัง"
+        title={translate("historyTitle")}
+        subtitle={translate("historySubtitle")}
       />
 
       <HistoryPeriodControl
         options={HISTORY_PERIOD_OPTIONS}
         value={period}
         onChange={setPeriod}
-        formatLabel={(p) => HISTORY_PERIOD_LABELS[p]}
+        formatLabel={(p) => getHistoryPeriodLabel(locale, p)}
       />
 
       <TrendChart
@@ -86,10 +92,13 @@ export function HistoryPageClient({
       />
 
       <section className="space-y-3">
-        <PageSectionHeader title="รายการวัด" subtitle={listSubtitle} />
+        <PageSectionHeader
+          title={translate("historyListTitle")}
+          subtitle={listSubtitle}
+        />
 
         <div className="grid grid-cols-4 gap-2">
-          {RISK_FILTER_OPTIONS.map(({ value, label }) => (
+          {riskFilterOptions.map(({ value, label }) => (
             <button
               key={value}
               type="button"
@@ -109,7 +118,7 @@ export function HistoryPageClient({
         {filtered.length === 0 ? (
           <EmptyState
             icon={ClipboardList}
-            message="ไม่พบข้อมูลในช่วงที่เลือก"
+            message={translate("historyEmpty")}
           />
         ) : (
           <div className="space-y-5">

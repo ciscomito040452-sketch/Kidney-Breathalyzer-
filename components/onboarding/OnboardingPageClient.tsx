@@ -6,22 +6,17 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { ONBOARDING_DEVICE_STEPS } from "@/lib/device-guide/content";
 import { OnboardingStepIndicator } from "@/components/onboarding/OnboardingStepIndicator";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
+import { RiskFactorPicker } from "@/components/profile/RiskFactorPicker";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/input";
-import {
-  ONBOARDING_STORAGE_KEY,
-  type DemoRiskFactors,
-  type StoredOnboardingProfile,
-} from "@/lib/profile/onboarding-storage";
-import {
-  buildRiskFactorsCookieValue,
-  RISK_FACTORS_COOKIE,
-} from "@/lib/profile/risk-factors-cookie";
 import { useDemo } from "@/components/providers/DemoProvider";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { persistProfileForm } from "@/lib/profile/profile-form";
+import type { StoredOnboardingProfile } from "@/lib/profile/onboarding-storage";
+import { saveOnboardingProfile } from "@/lib/profile/onboarding-storage";
 
 const DEVICE_STEPS = ONBOARDING_DEVICE_STEPS;
-
 const TOTAL_STEPS = 4;
 
 export type { StoredOnboardingProfile as OnboardingProfile };
@@ -30,18 +25,19 @@ export function OnboardingPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { enterDemoMode } = useDemo();
+  const { translate } = usePreferences();
   const initialStep = Math.min(
     Math.max(Number(searchParams.get("step")) || 1, 1),
     TOTAL_STEPS
   );
 
   const [step, setStep] = useState(initialStep);
+  const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
   const [weight, setWeight] = useState("");
-  const [hasDiabetes, setHasDiabetes] = useState(false);
-  const [hasHypertension, setHasHypertension] = useState(false);
-  const [hasFamilyHistory, setHasFamilyHistory] = useState(false);
+  const [riskFactorIds, setRiskFactorIds] = useState<string[]>([]);
+  const [riskFactorOther, setRiskFactorOther] = useState("");
   const [disclaimerAccepted, setDisclaimerAccepted] = useState(false);
 
   useEffect(() => {
@@ -55,45 +51,42 @@ export function OnboardingPageClient() {
   }, [searchParams]);
 
   const saveAndFinish = useCallback(() => {
-    const profile: StoredOnboardingProfile = {
-      age: age ? Number(age) : null,
-      gender: gender || null,
-      weight_kg: weight ? Number(weight) : null,
-      has_diabetes: hasDiabetes,
-      has_hypertension: hasHypertension,
-      has_family_history: hasFamilyHistory,
-      disclaimer_accepted: disclaimerAccepted,
-      completed_at: new Date().toISOString(),
-    };
-    localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(profile));
-
-    const factors: DemoRiskFactors = {
-      has_diabetes: hasDiabetes,
-      has_hypertension: hasHypertension,
-      has_family_history: hasFamilyHistory,
-    };
-    document.cookie = `${RISK_FACTORS_COOKIE}=${buildRiskFactorsCookieValue(factors)};path=/;max-age=31536000;SameSite=Lax`;
+    persistProfileForm({
+      displayName,
+      age,
+      gender,
+      weight,
+      riskFactorIds,
+      riskFactorOther,
+    });
+    saveOnboardingProfile({ disclaimer_accepted: disclaimerAccepted });
 
     enterDemoMode();
     router.push("/dashboard");
   }, [
     age,
-    gender,
-    weight,
-    hasDiabetes,
-    hasHypertension,
-    hasFamilyHistory,
     disclaimerAccepted,
+    displayName,
     enterDemoMode,
+    gender,
+    riskFactorIds,
+    riskFactorOther,
     router,
+    weight,
   ]);
 
   const canProceed =
     step === 1
-      ? age && gender && weight
+      ? displayName.trim().length > 0
       : step === 3
         ? disclaimerAccepted
         : true;
+
+  function handleRiskToggle(id: string, checked: boolean) {
+    setRiskFactorIds((prev) =>
+      checked ? [...prev, id] : prev.filter((item) => item !== id)
+    );
+  }
 
   return (
     <main className="flex min-h-[calc(100vh-2rem)] flex-col px-4 py-6">
@@ -101,9 +94,9 @@ export function OnboardingPageClient() {
         <OnboardingStepIndicator currentStep={step} totalSteps={TOTAL_STEPS} />
         <div>
           <p className="text-xs text-[var(--text-secondary)]">
-            ขั้นตอน {step}/{TOTAL_STEPS}
+            {translate("onboardingStep")} {step}/{TOTAL_STEPS}
           </p>
-          <h1 className="text-xl font-semibold">ตั้งค่าเบื้องต้น</h1>
+          <h1 className="text-xl font-semibold">{translate("onboardingTitle")}</h1>
         </div>
       </header>
 
@@ -112,10 +105,22 @@ export function OnboardingPageClient() {
           <Card>
             <CardContent className="space-y-4 pt-4">
               <p className="text-sm text-[var(--text-secondary)]">
-                ข้อมูลส่วนตัว (ไม่เก็บชื่อ-นามสกุล)
+                {translate("onboardingPersonalHint")}
               </p>
               <label className="block space-y-1">
-                <span className="text-sm">อายุ</span>
+                <span className="text-sm font-medium">
+                  {translate("displayNameLabel")}
+                </span>
+                <Input
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
+                  placeholder={translate("displayNamePlaceholder")}
+                />
+              </label>
+              <label className="block space-y-1">
+                <span className="text-sm">
+                  {translate("ageLabel")} ({translate("optionalField")})
+                </span>
                 <Input
                   type="number"
                   min={1}
@@ -125,16 +130,20 @@ export function OnboardingPageClient() {
                 />
               </label>
               <label className="block space-y-1">
-                <span className="text-sm">เพศ</span>
+                <span className="text-sm">
+                  {translate("genderLabel")} ({translate("optionalField")})
+                </span>
                 <Select value={gender} onChange={(e) => setGender(e.target.value)}>
-                  <option value="">เลือก</option>
-                  <option value="female">หญิง</option>
-                  <option value="male">ชาย</option>
-                  <option value="other">อื่น ๆ</option>
+                  <option value="">{translate("selectGender")}</option>
+                  <option value="female">{translate("genderFemale")}</option>
+                  <option value="male">{translate("genderMale")}</option>
+                  <option value="other">{translate("genderOther")}</option>
                 </Select>
               </label>
               <label className="block space-y-1">
-                <span className="text-sm">น้ำหนัก (kg)</span>
+                <span className="text-sm">
+                  {translate("weightLabel")} ({translate("optionalField")})
+                </span>
                 <Input
                   type="number"
                   min={1}
@@ -149,38 +158,13 @@ export function OnboardingPageClient() {
 
         {step === 2 && (
           <Card>
-            <CardContent className="space-y-3 pt-4">
-              <p className="text-sm text-[var(--text-secondary)]">
-                ปัจจัยเสี่ยง (เลือกได้มากกว่าหนึ่งข้อ)
-              </p>
-              {[
-                { id: "diabetes", label: "โรคเบาหวาน", checked: hasDiabetes, set: setHasDiabetes },
-                {
-                  id: "hypertension",
-                  label: "ความดันโลหิตสูง",
-                  checked: hasHypertension,
-                  set: setHasHypertension,
-                },
-                {
-                  id: "family",
-                  label: "ประวัติครอบครัวเป็นโรคไต",
-                  checked: hasFamilyHistory,
-                  set: setHasFamilyHistory,
-                },
-              ].map((item) => (
-                <label
-                  key={item.id}
-                  className="flex cursor-pointer items-center gap-3 rounded-xl border border-border-subtle bg-[var(--bg-primary)] px-4 py-3"
-                >
-                  <input
-                    type="checkbox"
-                    checked={item.checked}
-                    onChange={(e) => item.set(e.target.checked)}
-                    className="h-4 w-4 accent-[var(--accent-primary)]"
-                  />
-                  <span className="text-sm">{item.label}</span>
-                </label>
-              ))}
+            <CardContent className="pt-4">
+              <RiskFactorPicker
+                selectedIds={riskFactorIds}
+                otherNote={riskFactorOther}
+                onToggle={handleRiskToggle}
+                onOtherNoteChange={setRiskFactorOther}
+              />
             </CardContent>
           </Card>
         )}
@@ -245,7 +229,7 @@ export function OnboardingPageClient() {
             className="flex-1"
             onClick={() => setStep((s) => s - 1)}
           >
-            ย้อนกลับ
+            {translate("back")}
           </Button>
         )}
         {step < TOTAL_STEPS ? (
@@ -255,11 +239,11 @@ export function OnboardingPageClient() {
             disabled={!canProceed}
             onClick={() => setStep((s) => s + 1)}
           >
-            ถัดไป
+            {translate("next")}
           </Button>
         ) : (
           <Button type="button" className="flex-1" onClick={saveAndFinish}>
-            เริ่มใช้งาน
+            {translate("startUsing")}
           </Button>
         )}
       </div>

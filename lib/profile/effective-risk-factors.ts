@@ -13,6 +13,9 @@ export function getEffectiveRiskFactors(): DemoRiskFactors {
       has_diabetes: Boolean(parsed.has_diabetes),
       has_hypertension: Boolean(parsed.has_hypertension),
       has_family_history: Boolean(parsed.has_family_history),
+      risk_factor_ids: parsed.risk_factor_ids ?? [],
+      risk_factor_other: parsed.risk_factor_other ?? null,
+      display_name: parsed.display_name ?? null,
     };
   } catch {
     return getDefaultDemoRiskFactors();

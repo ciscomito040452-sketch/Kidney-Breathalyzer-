@@ -1,63 +1,55 @@
 "use client";
 
-import { Activity, Calendar, Flame } from "lucide-react";
+import { Activity, Flame } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
-import { Card, CardContent } from "@/components/ui/card";
-import { formatDateThai } from "@/lib/utils";
 
 interface ProfileStatsCardProps {
   totalMeasurements: number;
   currentStreak: number;
-  memberSince: string | null;
 }
 
 export function ProfileStatsCard({
   totalMeasurements,
   currentStreak,
-  memberSince,
 }: ProfileStatsCardProps) {
   const { translate } = usePreferences();
 
   const stats = [
     {
       icon: Activity,
-      label: translate("totalMeasurements"),
       value: String(totalMeasurements),
+      label: translate("statMeasurements"),
+      accent: "bg-accent-primary/10 text-accent-primary",
     },
     {
       icon: Flame,
-      label: translate("currentStreak"),
-      value: `${currentStreak} ${translate("days")}`,
-    },
-    {
-      icon: Calendar,
-      label: translate("memberSince"),
-      value: memberSince ? formatDateThai(new Date(memberSince)) : "—",
+      value: String(currentStreak),
+      label: translate("statStreak"),
+      accent: "bg-orange-500/10 text-orange-600",
     },
   ];
 
   return (
-    <Card>
-      <CardContent className="pt-4">
-        <p className="mb-3 text-sm font-semibold">{translate("healthSummary")}</p>
-        <div className="grid grid-cols-3 gap-2">
-          {stats.map(({ icon: Icon, label, value }) => (
+    <section aria-label={translate("healthSummary")}>
+      <p className="mb-3 text-base font-semibold">{translate("healthSummary")}</p>
+      <div className="grid grid-cols-2 gap-3">
+        {stats.map(({ icon: Icon, value, label, accent }) => (
+          <div
+            key={label}
+            className="rounded-2xl border border-border-subtle bg-[var(--bg-primary)] p-4 shadow-card"
+          >
             <div
-              key={label}
-              className="rounded-xl bg-surface px-2 py-3 text-center"
+              className={`mb-3 flex h-11 w-11 items-center justify-center rounded-2xl ${accent}`}
             >
-              <Icon
-                className="mx-auto mb-1.5 h-4 w-4 text-accent-primary"
-                strokeWidth={1.75}
-              />
-              <p className="text-sm font-semibold tabular-nums">{value}</p>
-              <p className="mt-0.5 text-[10px] leading-tight text-[var(--text-secondary)]">
-                {label}
-              </p>
+              <Icon className="h-5 w-5" strokeWidth={1.75} />
             </div>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+            <p className="text-3xl font-semibold tabular-nums leading-none">
+              {value}
+            </p>
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">{label}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }

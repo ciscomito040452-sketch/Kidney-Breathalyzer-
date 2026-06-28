@@ -1,7 +1,7 @@
 export const PREFERENCES_STORAGE_KEY = "kidney-breathalyzer-preferences";
 
 export type AppLocale = "th" | "en";
-export type DisplayMode = "standard" | "comfort";
+export type DisplayMode = "comfort" | "mobile";
 export type AvatarType = "initials" | "emoji" | "photo";
 
 export interface AvatarPreference {
@@ -19,7 +19,7 @@ export interface ProfilePreferences {
 
 export const DEFAULT_PREFERENCES: ProfilePreferences = {
   locale: "th",
-  displayMode: "standard",
+  displayMode: "mobile",
   notificationsEnabled: true,
   avatar: { type: "initials" },
 };
@@ -48,9 +48,16 @@ export function getStoredPreferences(): ProfilePreferences {
     const raw = localStorage.getItem(PREFERENCES_STORAGE_KEY);
     if (!raw) return DEFAULT_PREFERENCES;
     const parsed = JSON.parse(raw) as Partial<ProfilePreferences>;
+    const displayMode =
+      parsed.displayMode === "comfort" || parsed.displayMode === "mobile"
+        ? parsed.displayMode
+        : parsed.displayMode === "standard"
+          ? "mobile"
+          : DEFAULT_PREFERENCES.displayMode;
     return {
       ...DEFAULT_PREFERENCES,
       ...parsed,
+      displayMode,
       avatar: {
         ...DEFAULT_PREFERENCES.avatar,
         ...parsed.avatar,
@@ -86,9 +93,12 @@ export function applyDisplayMode(mode: DisplayMode) {
   document.documentElement.dataset.display = mode;
 }
 
+export const LOCALE_COOKIE = "kb-locale";
+
 export function applyLocale(locale: AppLocale) {
   if (typeof document === "undefined") return;
   document.documentElement.lang = locale === "th" ? "th" : "en";
+  document.cookie = `${LOCALE_COOKIE}=${locale};path=/;max-age=31536000;SameSite=Lax`;
 }
 
 export async function readAvatarPhotoFile(

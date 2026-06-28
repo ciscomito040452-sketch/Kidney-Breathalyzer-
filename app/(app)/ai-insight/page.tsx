@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { CheckCircle2, Sparkles } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 import { InsightContextSection } from "@/components/ai-insight/InsightContextSection";
 import { TrendChart } from "@/components/dashboard/TrendChart";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
 import { RiskScoreCard } from "@/components/shared/RiskScoreCard";
-import { TabPageHeader } from "@/components/shared/TabPageHeader";
+import { AIInsightPageHeader } from "@/components/ai-insight/AIInsightPageHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HEALTH_TIPS } from "@/lib/risk-engine";
@@ -54,13 +54,7 @@ export default function AIInsightPage() {
 
   return (
     <main className="space-y-6 px-4 py-6">
-      <TabPageHeader
-        title="ข้อมูลเชิงลึกจาก AI"
-        subtitle="การวิเคราะห์เบื้องต้นจากข้อมูลการวัด"
-        icon={
-          <Sparkles className="h-5 w-5 text-accent-primary" strokeWidth={1.75} />
-        }
-      />
+      <AIInsightPageHeader />
 
       {!latest ? (
         <Card>

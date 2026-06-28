@@ -7,9 +7,9 @@ import {
   Bell,
   ChevronRight,
   Globe,
+  Hand,
   LogOut,
   Shield,
-  Sun,
   User,
 } from "lucide-react";
 import { useDemo } from "@/components/providers/DemoProvider";
@@ -18,7 +18,6 @@ import { DashboardDeviceInfo } from "@/components/dashboard/DashboardDeviceInfo"
 import { DisplayModeToggle } from "@/components/profile/DisplayModeToggle";
 import { LanguageSelector } from "@/components/profile/LanguageSelector";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
-import { ProfileAvatarSheet } from "@/components/profile/ProfileAvatarSheet";
 import { ProfileStatsCard } from "@/components/profile/ProfileStatsCard";
 import { AppLogo } from "@/components/shared/AppLogo";
 import { FlagIcon } from "@/components/shared/FlagIcon";
@@ -28,9 +27,9 @@ import { formatGender } from "@/lib/i18n/messages";
 import {
   getProfileDisplayFromStorage,
   getProfileInitials,
-  getRiskFactorsFromStorage,
   getStoredOnboardingProfile,
 } from "@/lib/profile/onboarding-storage";
+import { summarizeRiskFactorLabels } from "@/lib/profile/risk-factor-labels";
 import { cn } from "@/lib/utils";
 
 interface ProfilePageClientProps {
@@ -56,14 +55,14 @@ function SettingsToggle({
       aria-label={label}
       onClick={() => onChange(!enabled)}
       className={cn(
-        "relative h-[31px] w-[51px] shrink-0 rounded-full transition-colors",
+        "relative inline-flex h-7 w-12 shrink-0 overflow-hidden rounded-full transition-colors",
         enabled ? "bg-accent-primary" : "bg-border-subtle"
       )}
     >
       <span
         className={cn(
-          "absolute top-[2px] h-[27px] w-[27px] rounded-full bg-white shadow-card transition-transform",
-          enabled ? "translate-x-[22px]" : "translate-x-[2px]"
+          "absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform",
+          enabled ? "translate-x-[22px]" : "translate-x-0.5"
         )}
       />
     </button>
@@ -82,55 +81,57 @@ export function ProfilePageClient({
     setNotificationsEnabled,
     translate,
   } = usePreferences();
-  const [avatarOpen, setAvatarOpen] = useState(false);
   const [profile, setProfile] = useState({
+    displayName: "",
     age: 45,
     gender: "other",
     weight_kg: 70,
     initials: "KB",
   });
   const [riskSummary, setRiskSummary] = useState<string[]>([]);
-  const [memberSince, setMemberSince] = useState<string | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
     const display = getProfileDisplayFromStorage();
-    const factors = getRiskFactorsFromStorage();
     const stored = getStoredOnboardingProfile();
     setProfile({
+      displayName: display.display_name ?? "",
       age: display.age,
       gender: display.gender,
       weight_kg: display.weight_kg,
       initials: getProfileInitials(),
     });
-    setMemberSince(stored?.completed_at ?? null);
 
-    const summary: string[] = [];
-    if (factors.has_diabetes) summary.push(translate("diabetes"));
-    if (factors.has_hypertension) summary.push(translate("hypertension"));
-    if (factors.has_family_history) summary.push(translate("familyHistory"));
-    setRiskSummary(summary);
-  }, [locale, translate, pathname]);
+    setRiskSummary(
+      summarizeRiskFactorLabels(
+        locale,
+        stored?.risk_factor_ids ?? [],
+        stored?.risk_factor_other ?? null
+      )
+    );
+  }, [locale, pathname]);
 
-  const subtitle = `${profile.weight_kg} ${translate("profileKg")}${
-    riskSummary.length > 0 ? ` · ${riskSummary.join(", ")}` : ""
-  }`;
+  const displayName =
+    profile.displayName.trim() || translate("defaultDisplayName");
+
+  const metaParts = [
+    profile.weight_kg ? `${profile.weight_kg} ${translate("profileKg")}` : null,
+    profile.age ? `${profile.age} ${translate("profileYears")}` : null,
+    profile.gender ? formatGender(locale, profile.gender) : null,
+  ].filter(Boolean);
 
   return (
     <main className="space-y-6 px-4 py-6">
       <header className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-4">
-          <ProfileAvatar
-            initials={profile.initials}
-            onEdit={() => setAvatarOpen(true)}
-          />
+          <ProfileAvatar initials={profile.initials} />
           <div className="min-w-0">
-            <h1 className="text-xl font-semibold">{translate("profileTitle")}</h1>
-            <p className="text-sm text-[var(--text-secondary)]">{subtitle}</p>
-            <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-              {profile.age} {translate("profileYears")} ·{" "}
-              {formatGender(locale, profile.gender)}
-            </p>
+            <h1 className="truncate text-xl font-semibold">{displayName}</h1>
+            {metaParts.length > 0 && (
+              <p className="text-sm text-[var(--text-secondary)]">
+                {metaParts.join(" · ")}
+              </p>
+            )}
           </div>
         </div>
         <AppLogo size={40} className="h-10 w-10 shrink-0" />
@@ -139,7 +140,6 @@ export function ProfilePageClient({
       <ProfileStatsCard
         totalMeasurements={totalMeasurements}
         currentStreak={currentStreak}
-        memberSince={memberSince}
       />
 
       <DashboardDeviceInfo lastMeasuredAt={lastMeasuredAt} />
@@ -147,38 +147,28 @@ export function ProfilePageClient({
       <Card className="overflow-hidden p-0">
         <Link
           href={ROUTE_PROFILE_EDIT}
-          className="flex items-center justify-between border-b border-border-subtle px-4 py-3.5 transition-colors hover:bg-surface/80"
+          className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3.5 transition-colors hover:bg-surface/80"
         >
-          <div className="flex items-center gap-3">
-            <User className="h-5 w-5 text-accent-primary" />
+          <div className="flex min-w-0 items-center gap-3">
+            <User className="h-5 w-5 shrink-0 text-accent-primary" />
             <span className="text-sm">{translate("personalInfo")}</span>
           </div>
-          <div className="flex items-center gap-1 text-sm text-[var(--text-secondary)]">
-            <span>
-              {profile.age} {translate("profileYears")} ·{" "}
-              {formatGender(locale, profile.gender)}
-            </span>
-            <ChevronRight className="h-4 w-4 opacity-60" />
+          <div className="flex min-w-0 items-center gap-1 text-sm text-[var(--text-secondary)]">
+            <span className="truncate">{displayName}</span>
+            <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
           </div>
         </Link>
 
-        <div className="flex items-center justify-between border-b border-border-subtle px-4 py-3.5">
+        <div className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3.5">
           <div className="flex items-center gap-3">
-            <Bell className="h-5 w-5 text-accent-primary" />
+            <Bell className="h-5 w-5 shrink-0 text-accent-primary" />
             <span className="text-sm">{translate("notifications")}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs text-[var(--text-secondary)]">
-              {preferences.notificationsEnabled
-                ? translate("notificationsOn")
-                : translate("notificationsOff")}
-            </span>
-            <SettingsToggle
-              enabled={preferences.notificationsEnabled}
-              onChange={setNotificationsEnabled}
-              label={translate("notifications")}
-            />
-          </div>
+          <SettingsToggle
+            enabled={preferences.notificationsEnabled}
+            onChange={setNotificationsEnabled}
+            label={translate("notifications")}
+          />
         </div>
 
         <div className="border-b border-border-subtle px-4 py-3.5">
@@ -197,7 +187,7 @@ export function ProfilePageClient({
 
         <div className="px-4 py-3.5">
           <div className="mb-3 flex items-center gap-3">
-            <Sun className="h-5 w-5 text-accent-primary" />
+            <Hand className="h-5 w-5 text-accent-primary" />
             <span className="text-sm">{translate("displayMode")}</span>
           </div>
           <DisplayModeToggle />
@@ -251,12 +241,6 @@ export function ProfilePageClient({
       <p className="pb-2 text-center text-[10px] text-[var(--text-secondary)]">
         {translate("appVersion")} 0.1.0
       </p>
-
-      <ProfileAvatarSheet
-        open={avatarOpen}
-        onOpenChange={setAvatarOpen}
-        initials={profile.initials}
-      />
     </main>
   );
 }

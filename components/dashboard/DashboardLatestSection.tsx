@@ -1,4 +1,7 @@
+"use client";
+
 import { FlaskConical, Wind } from "lucide-react";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
 import { RiskScoreCard } from "@/components/shared/RiskScoreCard";
 import { SensorValueCard } from "@/components/shared/SensorValueCard";
@@ -37,6 +40,7 @@ export function DashboardLatestSection({
   measuredAt,
   riskDelta,
 }: DashboardLatestSectionProps) {
+  const { translate } = usePreferences();
   const ammoniaPpb = formatAmmoniaPpb(mq135);
   const acetonePpb = formatAcetonePpb(mq3);
   const ammoniaStatus = getAmmoniaStatus(mq135);
@@ -54,7 +58,7 @@ export function DashboardLatestSection({
   return (
     <section className="space-y-3">
       <PageSectionHeader
-        title="ผลการวัดล่าสุด"
+        title={translate("latestResults")}
         subtitle={formatDateTimeThai(measuredAt)}
       />
 
