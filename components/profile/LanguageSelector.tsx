@@ -26,7 +26,7 @@ export function LanguageSelector() {
               "flex min-h-[44px] flex-1 items-center justify-center gap-2 rounded-xl border px-3 py-2 text-sm font-medium transition-colors",
               active
                 ? "border-accent-primary bg-accent-primary/10 text-accent-primary"
-                : "border-border-subtle bg-surface text-[var(--text-secondary)]"
+                : "border-border-subtle bg-surface-elevated text-[var(--text-secondary)]"
             )}
             aria-pressed={active}
           >

@@ -1,12 +1,11 @@
 import type { LucideIcon } from "lucide-react";
 import { Activity, ClipboardList, Gauge, Wind } from "lucide-react";
+import { getSensorUILabels } from "@/lib/i18n/labels";
+import { t, type MessageKey } from "@/lib/i18n/messages";
+import type { AppLocale } from "@/lib/preferences/profile-preferences";
 import type { DemoRiskFactors } from "@/lib/profile/onboarding-storage";
 import { summarizeRiskFactorLabels } from "@/lib/profile/risk-factor-labels";
-import {
-  formatAcetonePpb,
-  formatAmmoniaPpb,
-  SENSOR_UI,
-} from "@/lib/sensor-labels";
+import { formatAcetonePpb, formatAmmoniaPpb } from "@/lib/sensor-labels";
 import { normalizeMq135, normalizeMq3 } from "@/lib/risk-engine";
 import type { Measurement } from "@/types/measurement";
 
@@ -21,11 +20,18 @@ export interface InsightFactor {
   statusLabel: string;
 }
 
-export const INSIGHT_STATUS_LABELS: Record<InsightFactorStatus, string> = {
-  good: "ปกติ",
-  moderate: "ควรติดตาม",
-  low: "ควรปรับปรุง",
+const STATUS_KEYS: Record<InsightFactorStatus, MessageKey> = {
+  good: "insightStatusGood",
+  moderate: "insightStatusModerate",
+  low: "insightStatusLow",
 };
+
+function insightStatusLabel(
+  locale: AppLocale,
+  status: InsightFactorStatus
+): string {
+  return t(locale, STATUS_KEYS[status]);
+}
 
 function sensorStatus(normalized: number): InsightFactorStatus {
   if (normalized < 0.4) return "good";
@@ -39,21 +45,28 @@ function measurementFrequencyStatus(count: number): InsightFactorStatus {
   return "low";
 }
 
-function formatRiskFactorSummary(factors: DemoRiskFactors): string {
+function formatRiskFactorSummary(
+  locale: AppLocale,
+  factors: DemoRiskFactors
+): string {
   if (factors.risk_factor_ids?.length) {
     const labels = summarizeRiskFactorLabels(
-      "th",
+      locale,
       factors.risk_factor_ids,
       factors.risk_factor_other ?? null
     );
-    return labels.length > 0 ? labels.join(", ") : "ไม่มีที่ระบุ";
+    return labels.length > 0
+      ? labels.join(", ")
+      : t(locale, "insightNoRiskSpecified");
   }
 
   const items: string[] = [];
-  if (factors.has_diabetes) items.push("เบาหวาน");
-  if (factors.has_hypertension) items.push("ความดันโลหิตสูง");
-  if (factors.has_family_history) items.push("ประวัติโรคไตในครอบครัว");
-  return items.length > 0 ? items.join(", ") : "ไม่มีที่ระบุ";
+  if (factors.has_diabetes) items.push(t(locale, "riskFactorDiabetes"));
+  if (factors.has_hypertension) items.push(t(locale, "riskFactorHypertension"));
+  if (factors.has_family_history) items.push(t(locale, "riskFactorFamily"));
+  return items.length > 0
+    ? items.join(", ")
+    : t(locale, "insightNoRiskSpecified");
 }
 
 function countMeasurementsInDays(
@@ -69,8 +82,11 @@ export function buildInsightContextFactors(input: {
   latest: Measurement;
   measurements: Measurement[];
   riskFactors: DemoRiskFactors;
+  locale?: AppLocale;
 }): InsightFactor[] {
+  const locale = input.locale ?? "th";
   const { latest, measurements, riskFactors } = input;
+  const sensorUi = getSensorUILabels(locale);
   const ammoniaNorm = normalizeMq135(latest.mq135_value);
   const acetoneNorm = normalizeMq3(latest.mq3_value);
   const weeklyCount = countMeasurementsInDays(measurements, 7);
@@ -87,34 +103,39 @@ export function buildInsightContextFactors(input: {
     {
       id: "ammonia",
       icon: Wind,
-      label: SENSOR_UI.ammonia.label,
-      value: `${formatAmmoniaPpb(latest.mq135_value)} ${SENSOR_UI.ammonia.unit}`,
+      label: sensorUi.ammonia.label,
+      value: `${formatAmmoniaPpb(latest.mq135_value)} ${sensorUi.ammonia.unit}`,
       status: ammoniaStatus,
-      statusLabel: INSIGHT_STATUS_LABELS[ammoniaStatus],
+      statusLabel: insightStatusLabel(locale, ammoniaStatus),
     },
     {
       id: "acetone",
       icon: Activity,
-      label: SENSOR_UI.acetone.label,
-      value: `${formatAcetonePpb(latest.mq3_value)} ${SENSOR_UI.acetone.unit}`,
+      label: sensorUi.acetone.label,
+      value: `${formatAcetonePpb(latest.mq3_value)} ${sensorUi.acetone.unit}`,
       status: acetoneStatus,
-      statusLabel: INSIGHT_STATUS_LABELS[acetoneStatus],
+      statusLabel: insightStatusLabel(locale, acetoneStatus),
     },
     {
       id: "measurement-frequency",
       icon: Gauge,
-      label: "ความถี่การวัด",
-      value: `${weeklyCount} ครั้ง/7 วัน`,
+      label: t(locale, "insightMeasurementFreq"),
+      value: t(locale, "insightMeasurementFreqValue").replace(
+        "{n}",
+        String(weeklyCount)
+      ),
       status: frequencyStatus,
-      statusLabel: INSIGHT_STATUS_LABELS[frequencyStatus],
+      statusLabel: insightStatusLabel(locale, frequencyStatus),
     },
     {
       id: "risk-factors",
       icon: ClipboardList,
-      label: "ปัจจัยเสี่ยง (จากที่คุณระบุ)",
-      value: formatRiskFactorSummary(riskFactors),
+      label: t(locale, "insightRiskFactorsLabel"),
+      value: formatRiskFactorSummary(locale, riskFactors),
       status: hasRiskFactors ? "moderate" : "good",
-      statusLabel: hasRiskFactors ? "มีปัจจัยเสี่ยง" : "ไม่มีที่ระบุ",
+      statusLabel: hasRiskFactors
+        ? t(locale, "insightHasRiskFactors")
+        : t(locale, "insightNoRiskSpecified"),
     },
   ];
 }

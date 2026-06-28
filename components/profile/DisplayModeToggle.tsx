@@ -27,7 +27,7 @@ export function DisplayModeToggle() {
 
   return (
     <div className="space-y-2">
-      <div className="relative flex rounded-xl bg-surface p-1">
+      <div className="relative flex rounded-xl bg-surface-elevated p-1">
         {options.map(({ mode, icon: Icon, label }) => {
           const active = displayMode === mode;
           return (
@@ -52,7 +52,7 @@ export function DisplayModeToggle() {
           );
         })}
         <div
-          className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[var(--bg-primary)] shadow-card transition-transform duration-200 ease-out"
+          className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[var(--bg-fill)] shadow-card transition-transform duration-200 ease-out"
           style={{
             transform:
               displayMode === "dark" ? "translateX(100%)" : "translateX(0)",

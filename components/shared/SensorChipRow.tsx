@@ -52,7 +52,7 @@ export function SensorChipRow({ mq135, mq3, compact = false }: SensorChipRowProp
           <div
             key={chip.label}
             className={cn(
-              "rounded-xl border border-border-subtle bg-white/60 p-2.5",
+              "rounded-xl border border-border-subtle bg-surface-elevated p-2.5",
               compact && "p-2"
             )}
           >

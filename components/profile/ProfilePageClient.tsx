@@ -56,12 +56,12 @@ function SettingsToggle({
       onClick={() => onChange(!enabled)}
       className={cn(
         "relative inline-flex h-7 w-12 shrink-0 overflow-hidden rounded-full transition-colors",
-        enabled ? "bg-accent-primary" : "bg-border-subtle"
+        enabled ? "bg-accent-primary" : "bg-[var(--bg-fill)]"
       )}
     >
       <span
         className={cn(
-          "absolute top-0.5 h-6 w-6 rounded-full bg-white shadow-sm transition-transform",
+          "absolute top-0.5 h-6 w-6 rounded-full bg-[var(--bg-surface-elevated)] shadow-sm transition-transform",
           enabled ? "translate-x-[22px]" : "translate-x-0.5"
         )}
       />
@@ -134,7 +134,7 @@ export function ProfilePageClient({
             )}
           </div>
         </div>
-        <AppLogo size={40} className="h-10 w-10 shrink-0" />
+        <AppLogo size={36} variant="mark" className="h-9 w-9 shrink-0" />
       </header>
 
       <ProfileStatsCard
@@ -147,7 +147,7 @@ export function ProfilePageClient({
       <Card className="overflow-hidden p-0">
         <Link
           href={ROUTE_PROFILE_EDIT}
-          className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3.5 transition-colors hover:bg-surface/80"
+          className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3.5 transition-colors hover:bg-surface-elevated/80"
         >
           <div className="flex min-w-0 items-center gap-3">
             <User className="h-5 w-5 shrink-0 text-accent-primary" />

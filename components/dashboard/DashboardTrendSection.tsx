@@ -44,7 +44,6 @@ export function DashboardTrendSection({
       <TrendChart
         data={trendData}
         title={translate("trendTitle").replace("{n}", String(days))}
-        subtitle={translate("trendSubtitle")}
         compact
         showDualLine
       />

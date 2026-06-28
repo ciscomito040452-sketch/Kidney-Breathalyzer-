@@ -13,6 +13,7 @@ import { BarChart3 } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { TrendChartLegend } from "@/components/shared/TrendChartLegend";
 import { getSensorUILabels } from "@/lib/i18n/labels";
 import { formatChartAxisDate } from "@/lib/utils";
 
@@ -26,17 +27,17 @@ export interface TrendDataPoint {
 interface TrendChartProps {
   data: TrendDataPoint[];
   title?: string;
-  subtitle?: string;
   compact?: boolean;
   showDualLine?: boolean;
+  showLegend?: boolean;
 }
 
 export function TrendChart({
   data,
   title,
-  subtitle,
   compact = false,
   showDualLine = false,
+  showLegend,
 }: TrendChartProps) {
   const { locale, translate } = usePreferences();
   const sensorUi = getSensorUILabels(locale);
@@ -51,14 +52,13 @@ export function TrendChart({
 
   const hasDualData =
     showDualLine && chartData.some((d) => d.acetone_ppb != null);
+  const legendVisible = showLegend ?? hasDualData;
 
   return (
     <Card>
       <CardHeader className={compact ? "space-y-1 pb-2" : "space-y-1"}>
         <CardTitle className="text-base">{chartTitle}</CardTitle>
-        {subtitle && (
-          <p className="text-xs text-[var(--text-secondary)]">{subtitle}</p>
-        )}
+        {legendVisible && <TrendChartLegend />}
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (

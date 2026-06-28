@@ -1,25 +1,20 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import {
   Line,
   LineChart,
   ResponsiveContainer,
-  Tooltip,
   YAxis,
 } from "recharts";
-import {
-  ArrowRight,
-  BookOpen,
-  Lightbulb,
-  Sparkles,
-} from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChevronRight, Sparkles } from "lucide-react";
+import { DashboardInsightDetailSheet } from "@/components/dashboard/DashboardInsightDetailSheet";
+import { Card, CardContent } from "@/components/ui/card";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
-import type {
-  DashboardInsight,
-  InsightHighlightTone,
-} from "@/lib/dashboard/build-dashboard-insight";
+import { getRiskFullLabels } from "@/lib/i18n/labels";
+import type { DashboardInsight } from "@/lib/dashboard/build-dashboard-insight";
+import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
+import type { RiskLevel } from "@/types/measurement";
 import { cn } from "@/lib/utils";
 
 interface SparklinePoint {
@@ -29,135 +24,113 @@ interface SparklinePoint {
 
 interface DashboardInsightCardProps {
   insight: DashboardInsight;
+  riskScore: number;
+  riskLevel: RiskLevel;
   resultId?: string;
   sparklineData?: SparklinePoint[];
 }
 
-const highlightStyles: Record<InsightHighlightTone, string> = {
-  good: "bg-risk-low/10 text-risk-low ring-risk-low/20",
-  attention: "bg-accent-primary/10 text-accent-primary ring-accent-primary/20",
-  neutral: "bg-surface text-[var(--text-secondary)] ring-border-subtle",
+const statusPill: Record<RiskLevel, string> = {
+  low: "bg-risk-low/15 text-risk-low",
+  moderate: "bg-risk-moderate/15 text-risk-moderate",
+  high: "bg-risk-high/15 text-risk-high",
 };
 
 export function DashboardInsightCard({
   insight,
+  riskScore,
+  riskLevel,
   resultId,
   sparklineData = [],
 }: DashboardInsightCardProps) {
-  const { translate } = usePreferences();
+  const { locale, translate } = usePreferences();
+  const [detailOpen, setDetailOpen] = useState(false);
+  const riskLabels = getRiskFullLabels(locale);
+
   const chartData = sparklineData.map((d) => ({
     ...d,
     score: Math.round(d.risk_score * 100),
   }));
 
   return (
-    <Card>
-      <CardHeader className="space-y-1">
-        <CardTitle className="flex items-center gap-2 text-base">
-          <Sparkles className="h-4 w-4 text-accent-primary" strokeWidth={1.75} />
-          {translate("aiSummaryTitle")}
-        </CardTitle>
-        <p className="text-sm text-[var(--text-secondary)]">
-          {translate("aiSummarySubtitle")}
-        </p>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-wrap gap-2">
-          {insight.highlights.map((item) => (
-            <span
-              key={item.id}
-              className={cn(
-                "inline-flex max-w-full rounded-full px-2.5 py-1 text-xs font-medium ring-1",
-                highlightStyles[item.tone]
-              )}
-            >
-              <span className="truncate">{item.label}</span>
-            </span>
-          ))}
-        </div>
+    <>
+      <Card className="overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setDetailOpen(true)}
+          className="w-full text-left transition-opacity active:opacity-90"
+          aria-label={`${translate("aiSummaryTitle")} — ${translate("viewDetail")}`}
+        >
+          <CardContent className="space-y-4 p-4 pt-5">
+            <div className="flex items-center gap-2">
+              <Sparkles
+                className="h-4 w-4 text-accent-primary"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <span className="text-base font-semibold text-[var(--text-primary)]">
+                {translate("aiSummaryTitle")}
+              </span>
+            </div>
 
-        {chartData.length >= 2 && (
-          <div className="rounded-2xl bg-surface px-3 py-3">
-            <p className="mb-2 text-xs font-medium text-[var(--text-secondary)]">
-              {translate("trendScore7days")}
-              {insight.trendCaption && (
-                <span className="text-[var(--text-primary)]">
-                  {" "}
-                  · {insight.trendCaption}
+            <div className="flex items-center justify-between gap-4">
+              <div className="min-w-0 space-y-2">
+                <p className="text-4xl font-semibold tabular-nums tracking-tight">
+                  {formatRiskScoreDisplay(riskScore)}
+                </p>
+                <span
+                  className={cn(
+                    "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                    statusPill[riskLevel]
+                  )}
+                >
+                  {riskLabels[riskLevel]}
                 </span>
+              </div>
+
+              {chartData.length >= 2 && (
+                <div className="h-12 w-28 shrink-0 opacity-90" aria-hidden>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartData}>
+                      <YAxis hide domain={["dataMin - 5", "dataMax + 5"]} />
+                      <Line
+                        type="monotone"
+                        dataKey="score"
+                        stroke="var(--accent-primary, #2563EB)"
+                        strokeWidth={2}
+                        dot={false}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                </div>
               )}
+            </div>
+
+            <p className="line-clamp-2 text-sm leading-relaxed text-[var(--text-secondary)]">
+              {insight.summary}
             </p>
-            <ResponsiveContainer width="100%" height={64}>
-              <LineChart data={chartData}>
-                <YAxis hide domain={["dataMin - 5", "dataMax + 5"]} />
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: 12,
-                    border: "1px solid var(--border-subtle, #E5E5EA)",
-                    fontSize: 12,
-                  }}
-                  formatter={(value) => [
-                    `${value ?? 0}/100`,
-                    translate("scoreChartLabel"),
-                  ]}
-                  labelFormatter={() => ""}
-                />
-                <Line
-                  type="monotone"
-                  dataKey="score"
-                  stroke="var(--accent-primary, #2563EB)"
-                  strokeWidth={2}
-                  dot={false}
-                />
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
-        )}
 
-        <p className="text-sm leading-relaxed text-[var(--text-primary)]">
-          {insight.summary}
-        </p>
-
-        <div className="space-y-3 rounded-2xl bg-surface p-4">
-          <div className="flex gap-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-primary/10 text-accent-primary">
-              <BookOpen className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-            </span>
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-[var(--text-primary)]">
-                {translate("researchNoteTitle")}
-              </p>
-              <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-                {insight.researchNote}
-              </p>
+            <div className="flex items-center justify-between border-t border-border-subtle pt-3">
+              <span className="text-sm font-medium text-accent-primary">
+                {translate("viewDetail")}
+              </span>
+              <ChevronRight
+                className="h-4 w-4 text-accent-primary"
+                strokeWidth={2}
+                aria-hidden
+              />
             </div>
-          </div>
+          </CardContent>
+        </button>
+      </Card>
 
-          <div className="flex gap-3 border-t border-border-subtle pt-3">
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-primary/10 text-accent-primary">
-              <Lightbulb className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-            </span>
-            <div className="space-y-1">
-              <p className="text-sm font-semibold text-[var(--text-primary)]">
-                {translate("nextStepsTitle")}
-              </p>
-              <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-                {insight.suggestion}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {resultId && (
-          <Link
-            href={`/result/${resultId}`}
-            className="inline-flex items-center gap-1 text-sm font-medium text-accent-primary"
-          >
-            {translate("viewDetail")}
-            <ArrowRight className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-          </Link>
-        )}
-      </CardContent>
-    </Card>
+      <DashboardInsightDetailSheet
+        open={detailOpen}
+        onOpenChange={setDetailOpen}
+        insight={insight}
+        sparklineData={sparklineData}
+        resultId={resultId}
+      />
+    </>
   );
 }

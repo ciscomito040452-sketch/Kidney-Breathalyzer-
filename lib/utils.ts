@@ -10,6 +10,19 @@ function localeTag(locale: AppLocale): string {
   return locale === "en" ? "en-US" : "th-TH";
 }
 
+export function formatDateLocale(
+  locale: AppLocale,
+  date: Date | string
+): string {
+  const d = typeof date === "string" ? new Date(date) : date;
+  return d.toLocaleDateString(localeTag(locale), {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+}
+
 export function formatDateThai(date: Date | string): string {
   const d = typeof date === "string" ? new Date(date) : date;
   return d.toLocaleDateString("th-TH", {

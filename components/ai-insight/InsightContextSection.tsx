@@ -18,7 +18,7 @@ export function InsightContextSection({
   latest,
   measurements,
 }: InsightContextSectionProps) {
-  const { translate } = usePreferences();
+  const { locale, translate } = usePreferences();
   const [riskFactors, setRiskFactors] = useState(getDefaultDemoRiskFactors());
 
   useEffect(() => {
@@ -31,8 +31,9 @@ export function InsightContextSection({
         latest,
         measurements,
         riskFactors,
+        locale,
       }),
-    [latest, measurements, riskFactors]
+    [latest, measurements, riskFactors, locale]
   );
 
   return (

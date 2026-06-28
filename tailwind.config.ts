@@ -11,17 +11,20 @@ const config: Config = {
     extend: {
       colors: {
         accent: {
-          primary: "#2563EB",
-          secondary: "#7DD3FC",
+          primary: "rgb(var(--accent-primary-rgb) / <alpha-value>)",
+          secondary: "rgb(var(--accent-secondary-rgb) / <alpha-value>)",
         },
-        surface: "#F5F5F7",
+        surface: {
+          DEFAULT: "var(--bg-surface)",
+          elevated: "var(--bg-surface-elevated)",
+        },
         risk: {
-          low: "#60A5FA",
-          moderate: "#3B82F6",
-          high: "#1E3A8A",
+          low: "rgb(var(--risk-low-rgb) / <alpha-value>)",
+          moderate: "rgb(var(--risk-moderate-rgb) / <alpha-value>)",
+          high: "rgb(var(--risk-high-rgb) / <alpha-value>)",
         },
         border: {
-          subtle: "#E5E5EA",
+          subtle: "var(--border-subtle)",
         },
       },
       fontFamily: {
@@ -32,7 +35,7 @@ const config: Config = {
         "2xl": "16px",
       },
       boxShadow: {
-        card: "0 2px 8px rgba(0, 0, 0, 0.06)",
+        card: "var(--shadow-card)",
       },
       maxWidth: {
         app: "430px",

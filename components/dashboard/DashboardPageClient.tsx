@@ -87,6 +87,8 @@ export function DashboardPageClient({
       {dashboardInsight && latest && (
         <DashboardInsightCard
           insight={dashboardInsight}
+          riskScore={latest.risk_score}
+          riskLevel={latest.risk_level}
           resultId={latest.id}
           sparklineData={sparklineData}
         />

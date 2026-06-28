@@ -24,30 +24,24 @@ function StatIconBadge({
   icon: LucideIcon;
   variant: StatTileProps["variant"];
 }) {
-  const isMeasure = variant === "measure";
-
   return (
     <div
       className={cn(
-        "relative mb-4 flex h-14 w-14 items-center justify-center rounded-[18px] shadow-card ring-1 ring-white/25",
-        isMeasure
-          ? "bg-gradient-to-br from-accent-primary to-[#4a9ae8]"
-          : "bg-gradient-to-br from-[#6eb5e8] to-accent-secondary"
+        "mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ring-1",
+        variant === "measure"
+          ? "bg-accent-primary/10 text-accent-primary ring-accent-primary/15"
+          : "bg-accent-secondary/15 text-accent-primary ring-accent-primary/10"
       )}
       aria-hidden
     >
-      <div className="absolute inset-[3px] rounded-[15px] bg-white/10" />
-      <Icon
-        className="relative z-[1] h-6 w-6 text-white drop-shadow-sm"
-        strokeWidth={1.65}
-      />
+      <Icon className="h-6 w-6" strokeWidth={1.75} />
     </div>
   );
 }
 
 function StatTile({ icon, value, label, variant }: StatTileProps) {
   return (
-    <div className="rounded-2xl border border-border-subtle bg-[var(--bg-primary)] p-4 shadow-card">
+    <div className="rounded-2xl border border-border-subtle bg-surface p-4 shadow-card">
       <StatIconBadge icon={icon} variant={variant} />
       <p className="text-3xl font-semibold tabular-nums leading-none tracking-tight">
         {value}
