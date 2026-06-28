@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   description: "คัดกรองความเสี่ยงโรคไตจากลมหายใจ",
   icons: {
     icon: "/favicon.svg",
-    apple: "/logo.svg",
+    apple: "/Logo.png",
   },
 };
 

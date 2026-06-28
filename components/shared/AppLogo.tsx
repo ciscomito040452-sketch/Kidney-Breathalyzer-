@@ -10,7 +10,7 @@ export function AppLogo({ size = 96, className }: AppLogoProps) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/logo.svg"
+      src="/Logo.png"
       alt={APP_NAME}
       width={size}
       height={size}
