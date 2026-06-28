@@ -7,8 +7,8 @@ export const metadata: Metadata = {
   title: "Kidney Breathalyzer",
   description: "คัดกรองความเสี่ยงโรคไตจากลมหายใจ",
   icons: {
-    icon: "/Logo.png",
-    apple: "/Logo.png",
+    icon: "/favicon.svg",
+    apple: "/logo.svg",
   },
 };
 

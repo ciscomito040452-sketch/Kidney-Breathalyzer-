@@ -5,6 +5,7 @@ import { StreakCard } from "@/components/gamification/StreakCard";
 import { WeeklyGoalCard } from "@/components/gamification/WeeklyGoalCard";
 import { DashboardDeviceInfo } from "@/components/dashboard/DashboardDeviceInfo";
 import { DashboardTrendSection } from "@/components/dashboard/DashboardTrendSection";
+import { LatestMeasurementCard } from "@/components/dashboard/LatestMeasurementCard";
 import { PageHeader } from "@/components/dashboard/PageHeader";
 import { RiskHeroCard } from "@/components/dashboard/RiskHeroCard";
 import { AIInsightCard } from "@/components/layout/AIInsightCard";
@@ -16,10 +17,12 @@ import {
   computeRiskScoreDelta,
 } from "@/lib/measurements/risk-delta";
 import { getDemoMeasurements } from "@/lib/mock/demo-store";
+import { getEffectiveRiskFactors } from "@/lib/profile/effective-risk-factors";
 import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
 
 export default function DashboardPage() {
-  const measurements = getDemoMeasurements();
+  const riskFactors = getEffectiveRiskFactors();
+  const measurements = getDemoMeasurements(riskFactors);
   const latest = measurements[0];
   const gamification = computeGamificationStats(measurements);
 
@@ -82,6 +85,14 @@ export default function DashboardPage() {
         count={gamification.weekly_count}
         target={WEEKLY_GOAL_TARGET}
       />
+
+      {latest && (
+        <LatestMeasurementCard
+          measuredAt={latest.measured_at}
+          mq135={latest.mq135_value}
+          mq3={latest.mq3_value}
+        />
+      )}
 
       <DashboardTrendSection measurements={measurements} />
 

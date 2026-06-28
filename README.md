@@ -57,6 +57,9 @@ npx vercel --prod      # deploy production URL สำหรับกรรมก
 
 ดูรายละเอียดในโฟลเดอร์ `Docs/` และ `AGENTS.md`
 
+- [Docs/VIDEO_SCRIPT.md](Docs/VIDEO_SCRIPT.md) — สคริปต์อัดวิดีโอนำเสนอ 3–5 นาที
+- [Docs/TEST_CHECKLIST.md](Docs/TEST_CHECKLIST.md) — checklist ทดสอบก่อน demo
+
 ## Stack
 
 Next.js 14, TypeScript, Tailwind CSS, Supabase (optional), Recharts

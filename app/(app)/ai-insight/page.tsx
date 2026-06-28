@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HEALTH_TIPS } from "@/lib/risk-engine";
 import { getDemoMeasurements } from "@/lib/mock/demo-store";
+import { getEffectiveRiskFactors } from "@/lib/profile/effective-risk-factors";
 import { formatRiskScoreDisplay, SENSOR_UI } from "@/lib/sensor-labels";
 import { formatDateTimeThai } from "@/lib/utils";
 
 export default function AIInsightPage() {
-  const measurements = getDemoMeasurements();
+  const measurements = getDemoMeasurements(getEffectiveRiskFactors());
   const latest = measurements[0];
   const last7 = measurements.filter((m) => {
     const cutoff = new Date();

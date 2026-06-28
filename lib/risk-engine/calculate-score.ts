@@ -22,15 +22,14 @@ export interface CalculateScoreResult {
 }
 
 function calculateTrendBonus(
-  mq135: number,
   history: CalculateScoreInput["history"]
 ): number {
   if (!history || history.length < 3) return 0;
 
+  const personalAvg =
+    history.reduce((sum, m) => sum + m.mq135_value, 0) / history.length;
+  const threshold = personalAvg * 1.15;
   const recent = history.slice(0, 3);
-  const avg =
-    recent.reduce((sum, m) => sum + m.mq135_value, 0) / recent.length;
-  const threshold = avg * 1.15;
 
   const allAbove = recent.every((m) => m.mq135_value > threshold);
   return allAbove ? 0.15 : 0;
@@ -48,7 +47,7 @@ export function calculateRiskScore(
   if (input.riskFactors?.has_hypertension) multiplier += 0.1;
   if (input.riskFactors?.has_family_history) multiplier += 0.05;
 
-  const trendBonus = calculateTrendBonus(input.mq135_value, input.history);
+  const trendBonus = calculateTrendBonus(input.history);
 
   const risk_score = Math.min(1, baseScore + multiplier + trendBonus);
   const risk_level = scoreToRiskLevel(risk_score);

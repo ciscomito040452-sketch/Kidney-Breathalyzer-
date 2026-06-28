@@ -9,8 +9,14 @@ import { Input, Select } from "@/components/ui/input";
 import { MEDICAL_DISCLAIMER } from "@/lib/constants";
 import {
   ONBOARDING_STORAGE_KEY,
+  type DemoRiskFactors,
   type StoredOnboardingProfile,
 } from "@/lib/profile/onboarding-storage";
+import {
+  buildRiskFactorsCookieValue,
+  RISK_FACTORS_COOKIE,
+} from "@/lib/profile/risk-factors-cookie";
+import { useDemo } from "@/components/providers/DemoProvider";
 
 const DEVICE_STEPS = [
   {
@@ -40,6 +46,7 @@ export type { StoredOnboardingProfile as OnboardingProfile };
 export function OnboardingPageClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { enterDemoMode } = useDemo();
   const initialStep = Math.min(
     Math.max(Number(searchParams.get("step")) || 1, 1),
     TOTAL_STEPS
@@ -76,6 +83,15 @@ export function OnboardingPageClient() {
       completed_at: new Date().toISOString(),
     };
     localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(profile));
+
+    const factors: DemoRiskFactors = {
+      has_diabetes: hasDiabetes,
+      has_hypertension: hasHypertension,
+      has_family_history: hasFamilyHistory,
+    };
+    document.cookie = `${RISK_FACTORS_COOKIE}=${buildRiskFactorsCookieValue(factors)};path=/;max-age=31536000;SameSite=Lax`;
+
+    enterDemoMode();
     router.push("/dashboard");
   }, [
     age,
@@ -85,6 +101,7 @@ export function OnboardingPageClient() {
     hasHypertension,
     hasFamilyHistory,
     disclaimerAccepted,
+    enterDemoMode,
     router,
   ]);
 

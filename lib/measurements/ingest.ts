@@ -1,11 +1,12 @@
 import type { Measurement } from "@/types/measurement";
 import { calculateRiskScore, generateExplanation } from "@/lib/risk-engine";
+import { computeTrendContext } from "@/lib/risk-engine/trend-context";
 import {
   addDemoMeasurement,
   getDemoMeasurements,
 } from "@/lib/mock/demo-store";
 import { createMockMeasurement } from "@/lib/mock/generator";
-import { DEMO_PROFILE } from "@/lib/mock/demo-user";
+import { getEffectiveRiskFactors } from "@/lib/profile/effective-risk-factors";
 
 export interface IngestMeasurementInput {
   mq135_value: number;
@@ -28,26 +29,24 @@ export function ingestMeasurement(
 ): IngestMeasurementResult {
   const { mq135_value, mq3_value, is_mock = false, measured_at } = input;
 
-  const history = getDemoMeasurements();
+  const riskFactors = getEffectiveRiskFactors();
+  const history = getDemoMeasurements(riskFactors);
   const { risk_score, risk_level } = calculateRiskScore({
     mq135_value,
     mq3_value,
-    riskFactors: {
-      has_diabetes: DEMO_PROFILE.has_diabetes,
-      has_hypertension: DEMO_PROFILE.has_hypertension,
-      has_family_history: DEMO_PROFILE.has_family_history,
-    },
+    riskFactors,
     history,
   });
 
+  const trend = computeTrendContext(history, mq135_value);
   const ai_explanation = generateExplanation({
     risk_level,
     mq135_value,
     mq3_value,
-    riskFactors: {
-      has_diabetes: DEMO_PROFILE.has_diabetes,
-      has_family_history: DEMO_PROFILE.has_family_history,
-    },
+    riskFactors,
+    avgMq135: trend.avgMq135,
+    trendPercent: trend.trendPercent,
+    consecutiveHighDays: trend.consecutiveHighDays,
   });
 
   const measurement = addDemoMeasurement(

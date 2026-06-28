@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { getDemoMeasurements } from "@/lib/mock/demo-store";
+import { getEffectiveRiskFactors } from "@/lib/profile/effective-risk-factors";
 import { ingestMeasurement } from "@/lib/measurements/ingest";
 import type { CreateMeasurementRequest } from "@/types/api";
 
 export async function GET() {
-  const measurements = getDemoMeasurements();
+  const measurements = getDemoMeasurements(getEffectiveRiskFactors());
   return NextResponse.json({ data: measurements });
 }
 

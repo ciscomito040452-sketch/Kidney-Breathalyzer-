@@ -7,13 +7,22 @@ export interface ExplanationInput {
   mq3_value: number;
   avgMq135?: number;
   trendPercent?: number;
+  consecutiveHighDays?: number;
   riskFactors?: RiskFactors;
 }
 
 export function generateExplanation(input: ExplanationInput): string {
   const parts: string[] = [];
 
-  if (input.avgMq135 && input.trendPercent && input.trendPercent > 15) {
+  if (input.consecutiveHighDays && input.consecutiveHighDays >= 3) {
+    const pct =
+      input.trendPercent && input.trendPercent > 0
+        ? ` ${Math.round(input.trendPercent)}%`
+        : "";
+    parts.push(
+      `ค่า ammonia ในลมหายใจสูงกว่าค่าเฉลี่ยของคุณ${pct} ติดต่อกัน ${input.consecutiveHighDays} วัน`
+    );
+  } else if (input.avgMq135 && input.trendPercent && input.trendPercent > 15) {
     parts.push(
       `ค่า ammonia ในลมหายใจสูงกว่าค่าเฉลี่ยของคุณ ${Math.round(input.trendPercent)}% ในช่วง 7 วันที่ผ่านมา`
     );
@@ -28,6 +37,9 @@ export function generateExplanation(input: ExplanationInput): string {
   }
   if (input.riskFactors?.has_hypertension) {
     parts.push("ประกอบกับประวัติความดันโลหิตสูง");
+  }
+  if (input.riskFactors?.has_family_history) {
+    parts.push("ประกอบกับประวัติโรคไตในครอบครัว");
   }
 
   const levelText: Record<RiskLevel, string> = {

@@ -112,13 +112,13 @@ export function HistoryPageClient({
             <Link
               key={m.id}
               href={`/result/${m.id}`}
-              className="flex items-center justify-between rounded-xl border border-border-subtle bg-surface px-4 py-3 transition-colors hover:bg-surface/80"
+              className="flex items-center justify-between gap-3 rounded-xl border border-border-subtle bg-surface px-4 py-3 transition-colors hover:bg-surface/80"
             >
-              <div>
+              <div className="min-w-0 flex-1">
                 <p className="text-sm font-medium">
                   {formatDateTimeThai(m.measured_at)}
                 </p>
-                <p className="text-xs text-[var(--text-secondary)]">
+                <p className="truncate text-xs text-[var(--text-secondary)]">
                   คะแนน {Math.round(m.risk_score * 100)}/100 ·{" "}
                   {SENSOR_UI.ammonia.label.split(" ")[0]}{" "}
                   {formatAmmoniaPpb(m.mq135_value)} ·{" "}
@@ -126,7 +126,7 @@ export function HistoryPageClient({
                   {formatAcetonePpb(m.mq3_value)} ppb
                 </p>
               </div>
-              <RiskBadge level={m.risk_level} />
+              <RiskBadge level={m.risk_level} className="shrink-0" />
             </Link>
           ))
         )}

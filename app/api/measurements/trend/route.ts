@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
 import { getDemoMeasurements } from "@/lib/mock/demo-store";
+import { getEffectiveRiskFactors } from "@/lib/profile/effective-risk-factors";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const days = Number(searchParams.get("days") ?? "7");
-  const measurements = getDemoMeasurements();
+  const parsedDays = Number(searchParams.get("days") ?? "7");
+  const days = Number.isFinite(parsedDays)
+    ? Math.min(90, Math.max(1, Math.floor(parsedDays)))
+    : 7;
+  const measurements = getDemoMeasurements(getEffectiveRiskFactors());
 
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days);

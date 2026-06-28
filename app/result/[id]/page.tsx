@@ -9,6 +9,7 @@ import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
 import { HEALTH_TIPS } from "@/lib/risk-engine";
 import { getDemoMeasurementById } from "@/lib/mock/demo-store";
+import { getEffectiveRiskFactors } from "@/lib/profile/effective-risk-factors";
 import { formatDateTimeThai } from "@/lib/utils";
 
 interface ResultPageProps {
@@ -16,14 +17,17 @@ interface ResultPageProps {
 }
 
 export default function ResultPage({ params }: ResultPageProps) {
-  const measurement = getDemoMeasurementById(params.id);
+  const measurement = getDemoMeasurementById(
+    params.id,
+    getEffectiveRiskFactors()
+  );
 
   if (!measurement) {
     notFound();
   }
 
   return (
-    <main className="min-h-screen space-y-6 px-4 py-6">
+    <main className="min-h-screen space-y-6 px-4 py-6 pb-10">
       <header>
         <Link
           href="/history"
