@@ -9,12 +9,16 @@ import { DashboardDeviceInfo } from "@/components/dashboard/DashboardDeviceInfo"
 import { DashboardLatestSection } from "@/components/dashboard/DashboardLatestSection";
 import { DashboardInsightCard } from "@/components/dashboard/DashboardInsightCard";
 import { DashboardTrendSection } from "@/components/dashboard/DashboardTrendSection";
+import { ScreeningContextBanner } from "@/components/dashboard/ScreeningContextBanner";
 import { PageHeader } from "@/components/dashboard/PageHeader";
+import { DoctorCTA } from "@/components/result/DoctorCTA";
+import { WhenToSeeDoctorCard } from "@/components/shared/WhenToSeeDoctorCard";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { ROUTE_DEVICE_GUIDE, WEEKLY_GOAL_TARGET } from "@/lib/constants";
 import type { DashboardInsight } from "@/lib/dashboard/build-dashboard-insight";
+import type { DoctorCtaDecision } from "@/lib/dashboard/should-show-doctor-cta";
 import type { UserStreaks } from "@/types/measurement";
 import type { Measurement } from "@/types/measurement";
 import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
@@ -27,6 +31,7 @@ interface DashboardPageClientProps {
   riskDelta: number | null;
   sparklineData: { date: string; risk_score: number }[];
   weeklyAvgScore: number;
+  doctorCta: DoctorCtaDecision;
 }
 
 export function DashboardPageClient({
@@ -37,6 +42,7 @@ export function DashboardPageClient({
   riskDelta,
   sparklineData,
   weeklyAvgScore,
+  doctorCta,
 }: DashboardPageClientProps) {
   const { translate } = usePreferences();
 
@@ -47,14 +53,18 @@ export function DashboardPageClient({
       <DashboardDeviceInfo lastMeasuredAt={latest?.measured_at ?? null} />
 
       {latest && (
-        <DashboardLatestSection
-          riskLevel={latest.risk_level}
-          riskScore={latest.risk_score}
-          mq135={latest.mq135_value}
-          mq3={latest.mq3_value}
-          measuredAt={latest.measured_at}
-          riskDelta={riskDelta}
-        />
+        <>
+          <DashboardLatestSection
+            riskLevel={latest.risk_level}
+            riskScore={latest.risk_score}
+            mq135={latest.mq135_value}
+            mq3={latest.mq3_value}
+            measuredAt={latest.measured_at}
+            riskDelta={riskDelta}
+          />
+          <ScreeningContextBanner />
+          {doctorCta.show && <DoctorCTA variant={doctorCta.variant} />}
+        </>
       )}
 
       <Button className="h-[52px] w-full gap-2" asChild>
@@ -93,6 +103,8 @@ export function DashboardPageClient({
           sparklineData={sparklineData}
         />
       )}
+
+      <WhenToSeeDoctorCard />
 
       <DisclaimerBanner />
     </main>

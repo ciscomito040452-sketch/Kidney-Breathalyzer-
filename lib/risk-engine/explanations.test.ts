@@ -58,6 +58,6 @@ describe("generateExplanation", () => {
       acetoneStatus: "normal",
     });
     expect(text).toContain("อยู่ในแนวโน้มที่ควรติดตามอย่างต่อเนื่อง");
-    expect(text).toContain("ระดับต่ำ");
+    expect(text).toContain("คัดกรองความเสี่ยงโรคไต");
   });
 });

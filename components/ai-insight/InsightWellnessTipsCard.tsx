@@ -1,7 +1,7 @@
 "use client";
 
 import type { LucideIcon } from "lucide-react";
-import { Activity, ChevronRight, Droplets, Stethoscope, Utensils } from "lucide-react";
+import { Activity, Droplets, Stethoscope, Utensils } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import {
   InsightGroupedCard,
@@ -45,11 +45,6 @@ export function InsightWellnessTipsCard({ tips }: InsightWellnessTipsCardProps) 
                 <p className="min-w-0 flex-1 text-sm leading-snug text-[var(--text-primary)]">
                   {tip}
                 </p>
-                <ChevronRight
-                  className="h-4 w-4 shrink-0 text-[var(--text-secondary)] opacity-40"
-                  strokeWidth={1.75}
-                  aria-hidden
-                />
               </div>
             );
           })}

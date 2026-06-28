@@ -76,9 +76,10 @@ export function generateExplanation(
   }
 
   const levelText: Record<RiskLevel, string> = {
-    low: "ระบบประเมินความเสี่ยงในระดับต่ำ",
-    moderate: "ระบบประเมินความเสี่ยงในระดับปานกลาง",
-    high: "ระบบประเมินความเสี่ยงในระดับสูง ควรปรึกษาแพทย์",
+    low: "ระบบประเมินการคัดกรองความเสี่ยงโรคไตในระดับต่ำ — ควรวัดต่อเนื่อง",
+    moderate:
+      "ระบบประเมินการคัดกรองความเสี่ยงโรคไตในระดับปานกลาง — ควรติดตามและพิจารณาปรึกษาแพทย์หากค่ายังสูง",
+    high: "ระบบประเมินการคัดกรองความเสี่ยงโรคไตในระดับสูง — แนะนำปรึกษาแพทย์เพื่อตรวจเลือดและปัสสาวะ",
   };
 
   parts.push(levelText[input.risk_level]);
@@ -101,9 +102,10 @@ function generateExplanationEn(input: ExplanationInput): string {
   }
 
   const levelText: Record<RiskLevel, string> = {
-    low: "Overall screening risk is assessed as low.",
-    moderate: "Overall screening risk is assessed as moderate.",
-    high: "Overall screening risk is assessed as high — consider seeing a doctor.",
+    low: "Kidney disease screening risk is assessed as low — keep measuring regularly.",
+    moderate:
+      "Kidney disease screening risk is assessed as moderate — monitor and consider a doctor if values stay elevated.",
+    high: "Kidney disease screening risk is assessed as high — consult a doctor for blood and urine tests.",
   };
 
   return `${lead} ${levelText[input.risk_level]}`;

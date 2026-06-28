@@ -28,7 +28,7 @@ describe("ingestMeasurement", () => {
 
     expect(result.id).toBeTruthy();
     expect(result.risk_level).toBeDefined();
-    expect(result.ai_explanation).toContain("ระบบประเมินความเสี่ยง");
+    expect(result.ai_explanation).toContain("ระบบประเมินการคัดกรอง");
   });
 
   it("mentions elevated ammonia when reading is above 280 ppb", () => {

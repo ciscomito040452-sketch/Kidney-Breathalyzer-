@@ -1,5 +1,8 @@
+"use client";
+
 import type { RiskLevel } from "@/types/measurement";
-import { RISK_SHORT_LABELS } from "@/lib/constants";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { getRiskShortLabels } from "@/lib/i18n/messages";
 import { riskLevelColor } from "@/lib/risk-engine/risk-level";
 import { cn } from "@/lib/utils";
 
@@ -16,6 +19,9 @@ interface RiskIndicatorProps {
 
 /** Pill fallback for very tight layouts */
 export function RiskIndicator({ level, className }: RiskIndicatorProps) {
+  const { locale } = usePreferences();
+  const riskLabels = getRiskShortLabels(locale);
+
   return (
     <span
       className={cn(
@@ -25,7 +31,7 @@ export function RiskIndicator({ level, className }: RiskIndicatorProps) {
         className
       )}
     >
-      {RISK_SHORT_LABELS[level]}
+      {riskLabels[level]}
     </span>
   );
 }

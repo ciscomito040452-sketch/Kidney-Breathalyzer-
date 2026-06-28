@@ -20,10 +20,9 @@ import {
 } from "@/lib/sensors/status";
 import type { Measurement } from "@/types/measurement";
 import type { RiskFactors } from "@/lib/risk-engine/calculate-score";
-import {
-  suggestionForLevel,
-  suggestionStepsForLevel,
-} from "@/lib/dashboard/suggestion-steps";
+import { analyzeMeasurements } from "@/lib/ai-insight/analyze-measurements";
+import { buildActionStepsFromRecommendation } from "@/lib/dashboard/build-action-steps";
+import { buildTrendRecommendation } from "@/lib/dashboard/build-trend-recommendation";
 
 export type InsightHighlightTone = "good" | "attention" | "neutral";
 
@@ -117,12 +116,25 @@ export function buildDashboardInsight(input: {
         : formatRiskDeltaThai(riskDelta)
       : null;
 
+  const analytics = analyzeMeasurements(measurements);
+  const ammoniaTrend = analytics?.ammoniaTrend ?? "stable";
+  const recommendation = buildTrendRecommendation(
+    locale,
+    latest.risk_level,
+    ammoniaTrend
+  );
+  const suggestionSteps = buildActionStepsFromRecommendation(
+    recommendation,
+    latest.risk_level,
+    locale
+  );
+
   return {
     summary,
     highlights,
     researchNote: locale === "en" ? RESEARCH_NOTE_EN : RESEARCH_NOTE_TH,
-    suggestion: suggestionForLevel(latest.risk_level, locale),
-    suggestionSteps: suggestionStepsForLevel(latest.risk_level, locale),
+    suggestion: recommendation.nextStep,
+    suggestionSteps,
     trendCaption,
   };
 }

@@ -12,8 +12,8 @@ export function parseInsightSummary(
 ): ParsedSummary {
   if (locale === "en") {
     const conclusionPatterns = [
-      /Overall screening risk is assessed as [^.]+\./,
-      /Overall screening risk is assessed as .+$/,
+      /Kidney disease screening risk is assessed as [^.]+\./,
+      /Kidney disease screening risk is assessed as .+$/,
     ];
     let conclusion = "";
     for (const pattern of conclusionPatterns) {
@@ -29,7 +29,7 @@ export function parseInsightSummary(
     return { lead: rest || summary, factors: [], conclusion };
   }
 
-  const conclusionMatch = summary.match(/ระบบประเมินความเสี่ยง[^]+$/);
+  const conclusionMatch = summary.match(/ระบบประเมินการคัดกรอง[^]+$/);
   const conclusion = conclusionMatch?.[0]?.trim() ?? "";
   const body = conclusion
     ? summary.slice(0, summary.indexOf(conclusion)).trim()

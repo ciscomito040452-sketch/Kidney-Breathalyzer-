@@ -14,6 +14,7 @@ describe("buildDashboardInsight", () => {
     expect(insight.highlights.length).toBeGreaterThanOrEqual(3);
     expect(insight.summary.length).toBeGreaterThan(20);
     expect(insight.researchNote).toContain("งานวิจัย");
-    expect(insight.suggestion.length).toBeGreaterThan(10);
+    expect(insight.suggestion).toContain("แพทย์");
+    expect(insight.suggestionSteps[0]).toBe(insight.suggestion);
   });
 });

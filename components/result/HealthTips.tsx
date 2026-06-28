@@ -1,4 +1,7 @@
+"use client";
+
 import { CheckCircle2 } from "lucide-react";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface HealthTipsProps {
@@ -6,10 +9,14 @@ interface HealthTipsProps {
 }
 
 export function HealthTips({ tips }: HealthTipsProps) {
+  const { translate } = usePreferences();
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-base">คำแนะนำด้านสุขภาพ</CardTitle>
+        <CardTitle className="text-base">
+          {translate("healthTipsTitle")}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ul className="space-y-2">

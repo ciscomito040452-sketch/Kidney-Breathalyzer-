@@ -5,11 +5,8 @@ import { FlaskConical, Wind } from "lucide-react";
 import { RiskScoreCard } from "@/components/shared/RiskScoreCard";
 import { SensorEducationSheet } from "@/components/shared/SensorEducationSheet";
 import { SensorValueCard } from "@/components/shared/SensorValueCard";
-import {
-  formatAcetonePpb,
-  formatAmmoniaPpb,
-  SENSOR_UI,
-} from "@/lib/sensor-labels";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { getRiskFullLabels, getSensorUILabels } from "@/lib/i18n/labels";
 import {
   getAcetoneStatus,
   getAmmoniaStatus,
@@ -20,7 +17,10 @@ import {
   ammoniaBarPercent,
   ammoniaThresholdPercent,
 } from "@/lib/sensors/sensor-zones";
-import { RISK_LABELS } from "@/lib/constants";
+import {
+  formatAcetonePpb,
+  formatAmmoniaPpb,
+} from "@/lib/sensor-labels";
 import type { RiskLevel } from "@/types/measurement";
 
 interface RiskResultCardProps {
@@ -37,6 +37,9 @@ export function RiskResultCard({
   mq3,
 }: RiskResultCardProps) {
   const [fullEducationOpen, setFullEducationOpen] = useState(false);
+  const { locale, translate } = usePreferences();
+  const sensorUi = getSensorUILabels(locale);
+  const riskLabels = getRiskFullLabels(locale);
 
   const ammoniaPpb = formatAmmoniaPpb(mq135);
   const acetonePpb = formatAcetonePpb(mq3);
@@ -50,7 +53,7 @@ export function RiskResultCard({
     riskLevel,
     ammoniaStatus,
     acetoneStatus,
-    riskLevelLabel: RISK_LABELS[riskLevel],
+    riskLevelLabel: riskLabels[riskLevel],
   };
 
   return (
@@ -69,9 +72,9 @@ export function RiskResultCard({
               strokeWidth={1.75}
             />
           }
-          label={SENSOR_UI.ammonia.label}
+          label={sensorUi.ammonia.label}
           value={ammoniaPpb}
-          unit={SENSOR_UI.ammonia.unit}
+          unit={sensorUi.ammonia.unit}
           status={ammoniaStatus}
           barPercent={ammoniaBarPercent(ammoniaPpb)}
           thresholdPercent={ammoniaThresholdPercent()}
@@ -85,9 +88,9 @@ export function RiskResultCard({
               strokeWidth={1.75}
             />
           }
-          label={SENSOR_UI.acetone.label}
+          label={sensorUi.acetone.label}
           value={acetonePpb}
-          unit={SENSOR_UI.acetone.unit}
+          unit={sensorUi.acetone.unit}
           status={acetoneStatus}
           barPercent={acetoneBarPercent(acetonePpb)}
           thresholdPercent={acetoneThresholdPercent()}
@@ -101,7 +104,7 @@ export function RiskResultCard({
         onClick={() => setFullEducationOpen(true)}
         className="text-sm font-medium text-accent-primary"
       >
-        ทำความเข้าใจค่าเซนเซอร์และเกณฑ์
+        {translate("understandSensors")}
       </button>
 
       <SensorEducationSheet

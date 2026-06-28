@@ -1,5 +1,9 @@
+"use client";
+
 import { Badge } from "@/components/ui/badge";
-import { RISK_LABELS, RISK_SHORT_LABELS } from "@/lib/constants";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { getRiskFullLabels } from "@/lib/i18n/labels";
+import { getRiskShortLabels } from "@/lib/i18n/messages";
 import type { RiskLevel } from "@/types/measurement";
 import { cn } from "@/lib/utils";
 
@@ -10,6 +14,10 @@ interface RiskBadgeProps {
 }
 
 export function RiskBadge({ level, className, compact }: RiskBadgeProps) {
+  const { locale } = usePreferences();
+  const fullLabels = getRiskFullLabels(locale);
+  const shortLabels = getRiskShortLabels(locale);
+
   return (
     <Badge
       variant={level}
@@ -18,7 +26,7 @@ export function RiskBadge({ level, className, compact }: RiskBadgeProps) {
         className
       )}
     >
-      {compact ? RISK_SHORT_LABELS[level] : RISK_LABELS[level]}
+      {compact ? shortLabels[level] : fullLabels[level]}
     </Badge>
   );
 }

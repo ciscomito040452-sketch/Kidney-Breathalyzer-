@@ -6,7 +6,8 @@ import {
 import {
   buildMetricTrendNarrativeForPeriod,
 } from "@/lib/ai-insight/trend-narrative";
-import { suggestionStepsForLevel } from "@/lib/dashboard/suggestion-steps";
+import { buildActionStepsFromRecommendation } from "@/lib/dashboard/build-action-steps";
+import { buildTrendRecommendation } from "@/lib/dashboard/build-trend-recommendation";
 import type { InsightHighlightTone } from "@/lib/dashboard/build-dashboard-insight";
 import {
   getRiskFullLabels,
@@ -82,31 +83,6 @@ function trendPhraseEn(direction: TrendDirection): string {
       return "trending downward";
     default:
       return "relatively stable";
-  }
-}
-
-function suggestionForLevel(
-  riskLevel: RiskLevel,
-  locale: AppLocale
-): string {
-  if (locale === "en") {
-    switch (riskLevel) {
-      case "high":
-        return "Based on your history, consider seeing a doctor for further evaluation and keep measuring regularly.";
-      case "moderate":
-        return "Keep measuring 2–3 times per week, stay hydrated, and consult a doctor if elevated readings persist.";
-      default:
-        return "Your overall pattern looks reassuring — keep regular measurements to spot long-term changes early.";
-    }
-  }
-
-  switch (riskLevel) {
-    case "high":
-      return "จากภาพรวมข้อมูล ควรนัดพบแพทย์เพื่อตรวจเพิ่มเติม และวัดติดตามอย่างสม่ำเสมอ";
-    case "moderate":
-      return "แนะนำให้วัดสม่ำเสมอ 2–3 ครั้งต่อสัปดาห์ ดื่มน้ำให้เพียงพอ และปรึกษาแพทย์หากค่ายังสูงต่อเนื่อง";
-    default:
-      return "ภาพรวมอยู่ในเกณฑ์ที่น่าพอใจ — รักษาการวัดสม่ำเสมอเพื่อเห็นการเปลี่ยนแปลงระยะยาว";
   }
 }
 
@@ -368,14 +344,23 @@ export function buildHolisticInsight(input: {
   const ammoniaName = sensorUi.ammonia.label.split(" ")[0];
   const latest = input.measurements[0];
   const latestRiskLevel = latest?.risk_level ?? overallRiskLevel;
-  const suggestionSteps = suggestionStepsForLevel(latestRiskLevel, locale);
+  const recommendation = buildTrendRecommendation(
+    locale,
+    latestRiskLevel,
+    analytics.ammoniaTrend
+  );
+  const suggestionSteps = buildActionStepsFromRecommendation(
+    recommendation,
+    latestRiskLevel,
+    locale
+  );
 
   return {
     summary,
     summaryBullets,
     highlights,
     researchNote: locale === "en" ? RESEARCH_NOTE_EN : RESEARCH_NOTE_TH,
-    suggestion: suggestionForLevel(overallRiskLevel, locale),
+    suggestion: recommendation.nextStep,
     suggestionSteps,
     periodCaption,
     overallRiskLevel,

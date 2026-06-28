@@ -1,5 +1,7 @@
 import { DashboardPageClient } from "@/components/dashboard/DashboardPageClient";
 import { buildDashboardInsight } from "@/lib/dashboard/build-dashboard-insight";
+import { shouldShowDoctorCta } from "@/lib/dashboard/should-show-doctor-cta";
+import { getAmmoniaTrendForMeasurements } from "@/lib/result/build-result-explanation";
 import { computeGamificationStats } from "@/lib/gamification";
 import { computeRiskScoreDelta } from "@/lib/measurements/risk-delta";
 import { getDemoMeasurements } from "@/lib/mock/demo-store";
@@ -42,6 +44,15 @@ export default function DashboardPage() {
       })
     : null;
 
+  const analytics = getAmmoniaTrendForMeasurements(measurements);
+  const doctorCta = latest
+    ? shouldShowDoctorCta({
+        riskLevel: latest.risk_level,
+        ammoniaTrend: analytics?.ammoniaTrend,
+        mq135Value: latest.mq135_value,
+      })
+    : { show: false, variant: "soft" as const };
+
   return (
     <DashboardPageClient
       latest={latest}
@@ -51,6 +62,7 @@ export default function DashboardPage() {
       riskDelta={riskDelta}
       sparklineData={sparklineData}
       weeklyAvgScore={weeklyAvgScore}
+      doctorCta={doctorCta}
     />
   );
 }

@@ -131,15 +131,24 @@ const messages = {
     landingStart: "เริ่มต้นใช้งาน",
     landingDemo: "ดู Demo",
     landingDemoHint: "ไม่ต้องล็อกอิน · ข้อมูลตัวอย่าง 30 วัน",
-    riskScoreLabel: "คะแนนความเสี่ยง",
+    riskScoreLabel: "คะแนนคัดกรองความเสี่ยงโรคไต",
+    screeningContextSubtitle:
+      "ไม่ใช่การวินิจฉัยโรค — ใช้ติดตามแนวโน้มและตัดสินใจไปตรวจเพิ่ม",
+    whenToSeeDoctorTitle: "เมื่อไหร่ควรปรึกษาแพทย์?",
+    whenToSeeDoctorPoint1:
+      "คะแนนคัดกรองอยู่ในระดับสูง หรือปานกลางต่อเนื่องหลายครั้ง",
+    whenToSeeDoctorPoint2:
+      "แนวโน้มแอมโมเนียหรือคะแนนสูงขึ้นหลายวัน",
+    whenToSeeDoctorPoint3:
+      "แพทย์จะยืนยันด้วยการตรวจเลือดและปัสสาวะ — ไม่ใช่จากลมหายใจอย่างเดียว",
     explainDataAria: "อธิบายข้อมูลนี้",
     sensorAmmonia: "แอมโมเนีย (NH₃)",
     sensorAcetone: "อะซิโทน",
     sensorNormal: "ปกติ",
     sensorElevated: "สูงกว่าปกติ",
-    riskLabelLow: "ความเสี่ยงต่ำ",
-    riskLabelModerate: "ความเสี่ยงปานกลาง",
-    riskLabelHigh: "ความเสี่ยงสูง",
+    riskLabelLow: "ความเสี่ยงต่ำ (การคัดกรอง)",
+    riskLabelModerate: "ความเสี่ยงปานกลาง (การคัดกรอง)",
+    riskLabelHigh: "ความเสี่ยงสูง (การคัดกรอง)",
     riskDeltaStable: "ใกล้เคียงค่าเฉลี่ย 7 วันที่ผ่านมา",
     riskDeltaUp: "สูงขึ้น {n}% จาก 7 วันก่อน",
     riskDeltaDown: "ลดลง {n}% จาก 7 วันก่อน",
@@ -161,7 +170,7 @@ const messages = {
       "ค่า{sensor}มีแนวโน้มสูงขึ้นประมาณ {pct}% ในช่วง {n} วัน",
     trendInsightFalling:
       "ค่า{sensor}มีแนวโน้มลดลงประมาณ {pct}% ในช่วง {n} วัน",
-    trendInsightLatestRisk: "การวัดล่าสุด: {level}",
+    trendInsightLatestRisk: "การวัดล่าสุด: {level} (การคัดกรองโรคไต)",
     trendRecHighRising:
       "ควรนัดพบแพทย์เพื่อตรวจเพิ่มเติมโดยเร็ว — ค่าคัดกรองสูงและมีแนวโน้มเพิ่มขึ้น",
     trendRecHighStable:
@@ -233,6 +242,8 @@ const messages = {
     understandSensors: "ทำความเข้าใจค่าเซนเซอร์และเกณฑ์",
     healthTipsTitle: "คำแนะนำด้านสุขภาพ",
     seeDoctor: "พบแพทย์",
+    resultBackToHistory: "ผลการวัด",
+    resultBackDashboard: "กลับหน้าหลัก",
     latestSensors: "ค่าเซนเซอร์ล่าสุด",
     scoreChartLabel: "คะแนน",
     defaultDisplayName: "ผู้ใช้",
@@ -364,15 +375,24 @@ const messages = {
     landingStart: "Get started",
     landingDemo: "View demo",
     landingDemoHint: "No login · 30 days of sample data",
-    riskScoreLabel: "Risk score",
+    riskScoreLabel: "Kidney disease screening score",
+    screeningContextSubtitle:
+      "Not a medical diagnosis — use to track trends and decide when to get follow-up tests",
+    whenToSeeDoctorTitle: "When should you see a doctor?",
+    whenToSeeDoctorPoint1:
+      "Screening score is high, or moderate for several readings in a row",
+    whenToSeeDoctorPoint2:
+      "Ammonia or score has been rising over multiple days",
+    whenToSeeDoctorPoint3:
+      "A doctor confirms with blood and urine tests — not breath alone",
     explainDataAria: "Explain this data",
     sensorAmmonia: "Ammonia (NH₃)",
     sensorAcetone: "Acetone",
     sensorNormal: "Normal",
     sensorElevated: "Above normal",
-    riskLabelLow: "Low risk",
-    riskLabelModerate: "Moderate risk",
-    riskLabelHigh: "High risk",
+    riskLabelLow: "Low risk (screening)",
+    riskLabelModerate: "Moderate risk (screening)",
+    riskLabelHigh: "High risk (screening)",
     riskDeltaStable: "Near your 7-day average",
     riskDeltaUp: "Up {n}% vs. prior 7 days",
     riskDeltaDown: "Down {n}% vs. prior 7 days",
@@ -394,7 +414,7 @@ const messages = {
       "{sensor} rose about {pct}% over {n} days",
     trendInsightFalling:
       "{sensor} fell about {pct}% over {n} days",
-    trendInsightLatestRisk: "Latest reading: {level}",
+    trendInsightLatestRisk: "Latest reading: {level} (kidney screening)",
     trendRecHighRising:
       "Consider seeing a doctor soon — screening risk is high and rising",
     trendRecHighStable:
@@ -469,6 +489,8 @@ const messages = {
     understandSensors: "Understand sensor values and thresholds",
     healthTipsTitle: "Health tips",
     seeDoctor: "See a doctor",
+    resultBackToHistory: "Measurement result",
+    resultBackDashboard: "Back to home",
     latestSensors: "Latest sensor values",
     scoreChartLabel: "Score",
     defaultDisplayName: "User",
