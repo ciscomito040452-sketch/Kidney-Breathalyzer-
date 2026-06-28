@@ -78,3 +78,28 @@ const GENDER_LABELS: Record<string, string> = {
 export function formatGenderThai(gender: string): string {
   return GENDER_LABELS[gender] ?? gender;
 }
+
+export function saveOnboardingProfile(
+  patch: Partial<Omit<StoredOnboardingProfile, "completed_at">> & {
+    completed_at?: string;
+  }
+): StoredOnboardingProfile {
+  const existing = getStoredOnboardingProfile();
+  const profile: StoredOnboardingProfile = {
+    age: existing?.age ?? null,
+    gender: existing?.gender ?? null,
+    weight_kg: existing?.weight_kg ?? null,
+    has_diabetes: existing?.has_diabetes ?? false,
+    has_hypertension: existing?.has_hypertension ?? false,
+    has_family_history: existing?.has_family_history ?? false,
+    disclaimer_accepted: existing?.disclaimer_accepted ?? false,
+    completed_at: existing?.completed_at ?? new Date().toISOString(),
+    ...patch,
+  };
+
+  if (typeof window !== "undefined") {
+    localStorage.setItem(ONBOARDING_STORAGE_KEY, JSON.stringify(profile));
+  }
+
+  return profile;
+}

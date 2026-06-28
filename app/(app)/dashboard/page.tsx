@@ -5,12 +5,13 @@ import { StreakCard } from "@/components/gamification/StreakCard";
 import { WeeklyGoalCard } from "@/components/gamification/WeeklyGoalCard";
 import { DashboardDeviceInfo } from "@/components/dashboard/DashboardDeviceInfo";
 import { DashboardLatestSection } from "@/components/dashboard/DashboardLatestSection";
+import { DashboardInsightCard } from "@/components/dashboard/DashboardInsightCard";
 import { DashboardTrendSection } from "@/components/dashboard/DashboardTrendSection";
 import { PageHeader } from "@/components/dashboard/PageHeader";
-import { AIInsightCard } from "@/components/layout/AIInsightCard";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
-import { CTA_DEVICE_GUIDE, WEEKLY_GOAL_TARGET } from "@/lib/constants";
+import { CTA_DEVICE_GUIDE, ROUTE_DEVICE_GUIDE, WEEKLY_GOAL_TARGET } from "@/lib/constants";
+import { buildDashboardInsight } from "@/lib/dashboard/build-dashboard-insight";
 import { computeGamificationStats } from "@/lib/gamification";
 import {
   computeRiskScoreDelta,
@@ -45,6 +46,14 @@ export default function DashboardPage() {
         Math.max(gamification.weekly_count, 1)
       : 0;
 
+  const dashboardInsight = latest
+    ? buildDashboardInsight({
+        latest,
+        measurements,
+        riskFactors,
+      })
+    : null;
+
   return (
     <main className="space-y-6 px-4 py-6">
       <PageHeader />
@@ -63,7 +72,7 @@ export default function DashboardPage() {
       )}
 
       <Button className="h-[52px] w-full gap-2" asChild>
-        <Link href="/onboarding?step=4">
+        <Link href={ROUTE_DEVICE_GUIDE}>
           <Smartphone className="h-5 w-5" />
           {CTA_DEVICE_GUIDE}
         </Link>
@@ -88,9 +97,9 @@ export default function DashboardPage() {
 
       <DashboardTrendSection measurements={measurements} />
 
-      {latest && (
-        <AIInsightCard
-          explanation={latest.ai_explanation}
+      {dashboardInsight && latest && (
+        <DashboardInsightCard
+          insight={dashboardInsight}
           resultId={latest.id}
           sparklineData={sparklineData}
         />

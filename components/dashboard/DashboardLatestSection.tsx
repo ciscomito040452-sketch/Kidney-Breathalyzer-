@@ -46,6 +46,7 @@ export function DashboardLatestSection({
     ammoniaPpb,
     acetonePpb,
     riskScore,
+    riskLevel,
     ammoniaStatus,
     acetoneStatus,
   };

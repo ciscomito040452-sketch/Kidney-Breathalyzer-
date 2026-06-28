@@ -24,6 +24,7 @@ export interface TrendDataPoint {
 interface TrendChartProps {
   data: TrendDataPoint[];
   title?: string;
+  subtitle?: string;
   compact?: boolean;
   showDualLine?: boolean;
 }
@@ -31,6 +32,7 @@ interface TrendChartProps {
 export function TrendChart({
   data,
   title = "แนวโน้ม 7 วัน",
+  subtitle,
   compact = false,
   showDualLine = false,
 }: TrendChartProps) {
@@ -48,8 +50,11 @@ export function TrendChart({
 
   return (
     <Card>
-      <CardHeader className={compact ? "pb-2" : undefined}>
+      <CardHeader className={compact ? "space-y-1 pb-2" : "space-y-1"}>
         <CardTitle className="text-base">{title}</CardTitle>
+        {subtitle && (
+          <p className="text-xs text-[var(--text-secondary)]">{subtitle}</p>
+        )}
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (

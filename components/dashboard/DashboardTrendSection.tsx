@@ -39,7 +39,13 @@ export function DashboardTrendSection({
         onChange={setDays}
         formatLabel={(d) => `${d} วัน`}
       />
-      <TrendChart data={trendData} title={`แนวโน้ม ${days} วัน`} compact />
+      <TrendChart
+        data={trendData}
+        title={`แนวโน้ม ${days} วัน`}
+        subtitle="เส้นน้ำเงิน = แอมโมเนีย · เส้นฟ้าอ่อน = อะซิโทน"
+        compact
+        showDualLine
+      />
     </div>
   );
 }

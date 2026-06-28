@@ -67,7 +67,8 @@ function curatedSensorValues(daysFromLatest: number): {
   mq3_value: number;
 } | null {
   if (daysFromLatest === 0) {
-    return { mq135_value: 308, mq3_value: 0.5 };
+    // Ammonia elevated for demo contrast; acetone normal (180 ppb < 225 threshold)
+    return { mq135_value: 308, mq3_value: 0.36 };
   }
   if (daysFromLatest === 1) {
     return { mq135_value: 288, mq3_value: 0.46 };

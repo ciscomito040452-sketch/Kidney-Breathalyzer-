@@ -45,3 +45,5 @@ export type DashboardTrendDays = (typeof DASHBOARD_TREND_DAY_OPTIONS)[number];
 
 export const CTA_VIEW_DETAIL = "ดูรายละเอียด";
 export const CTA_DEVICE_GUIDE = "ดูวิธีใช้อุปกรณ์";
+export const ROUTE_DEVICE_GUIDE = "/guide/device";
+export const ROUTE_PROFILE_EDIT = "/profile/edit";

@@ -16,11 +16,13 @@ describe("seedDemoMeasurements", () => {
     expect(first).toMatch(/^00000000-0000-4000-8000-/);
   });
 
-  it("latest reading is high but not maxed out", () => {
+  it("latest reading shows demo mix: elevated ammonia, normal acetone", () => {
     const latest = seedDemoMeasurements(30)[0];
-    expect(latest.mq135_value).toBeLessThan(330);
+    expect(latest.mq135_value).toBe(308);
+    expect(latest.mq3_value).toBe(0.36);
+    expect(Math.round(latest.mq3_value * 500)).toBeLessThan(225);
     expect(latest.risk_score).toBeLessThan(0.95);
-    expect(latest.risk_level).toBe("high");
+    expect(latest.risk_level).toBe("moderate");
     expect(latest.ai_explanation.length).toBeGreaterThan(20);
   });
 

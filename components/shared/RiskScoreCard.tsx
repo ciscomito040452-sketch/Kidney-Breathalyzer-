@@ -31,6 +31,7 @@ export function RiskScoreCard({
   const context: EducationContext = {
     ...educationContext,
     riskScore,
+    riskLevel,
     riskLevelLabel: RISK_LABELS[riskLevel],
   };
 
@@ -58,11 +59,17 @@ export function RiskScoreCard({
             )}
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-3xl font-semibold tabular-nums tracking-tight">
-            {formatRiskScoreDisplay(riskScore)}
-          </p>
-          <RiskMeter riskScore={riskScore} riskLevel={riskLevel} />
+        <CardContent className="space-y-4">
+          <div className="flex items-end justify-between gap-3">
+            <p className="text-4xl font-semibold tabular-nums tracking-tight">
+              {formatRiskScoreDisplay(riskScore)}
+            </p>
+          </div>
+          <RiskMeter
+            riskScore={riskScore}
+            riskLevel={riskLevel}
+            showStatusLabel
+          />
           {riskDelta != null && (
             <p className="text-xs text-[var(--text-secondary)]">
               {formatRiskDeltaThai(riskDelta)}

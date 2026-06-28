@@ -47,6 +47,7 @@ export function RiskResultCard({
     ammoniaPpb,
     acetonePpb,
     riskScore,
+    riskLevel,
     ammoniaStatus,
     acetoneStatus,
     riskLevelLabel: RISK_LABELS[riskLevel],

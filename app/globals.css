@@ -24,6 +24,17 @@
   --text-secondary: #98989d;
 }
 
+html[data-display="comfort"] {
+  --bg-primary: #faf9f7;
+  --bg-canvas: #e8e6e1;
+  --bg-surface: #f0eeea;
+  --accent-primary: #3d7cc9;
+  --text-primary: #2c2c2e;
+  --text-secondary: #7a7a7f;
+  --border-subtle: #e8e6e2;
+  --shadow-card: 0 2px 12px rgba(0, 0, 0, 0.04);
+}
+
 @layer base {
   * {
     @apply border-border-subtle;

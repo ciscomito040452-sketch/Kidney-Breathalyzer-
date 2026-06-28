@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DemoProvider } from "@/components/providers/DemoProvider";
+import { PreferencesProvider } from "@/components/providers/PreferencesProvider";
 import { MobileFrame } from "@/components/layout/MobileFrame";
 import "./globals.css";
 
@@ -20,6 +21,11 @@ export default function RootLayout({
   return (
     <html lang="th">
       <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var r=localStorage.getItem("kidney-breathalyzer-preferences");if(r){var p=JSON.parse(r);if(p.displayMode)document.documentElement.dataset.display=p.displayMode;if(p.locale)document.documentElement.lang=p.locale==="th"?"th":"en";}}catch(e){}`,
+          }}
+        />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link
           rel="preconnect"
@@ -33,7 +39,9 @@ export default function RootLayout({
       </head>
       <body className="font-sans antialiased">
         <DemoProvider>
-          <MobileFrame>{children}</MobileFrame>
+          <PreferencesProvider>
+            <MobileFrame>{children}</MobileFrame>
+          </PreferencesProvider>
         </DemoProvider>
       </body>
     </html>

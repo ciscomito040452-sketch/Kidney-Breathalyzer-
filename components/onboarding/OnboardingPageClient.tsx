@@ -1,8 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Bluetooth, Cloud, Wind } from "lucide-react";
+import { ONBOARDING_DEVICE_STEPS } from "@/lib/device-guide/content";
 import { OnboardingStepIndicator } from "@/components/onboarding/OnboardingStepIndicator";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { Button } from "@/components/ui/button";
@@ -19,26 +20,7 @@ import {
 } from "@/lib/profile/risk-factors-cookie";
 import { useDemo } from "@/components/providers/DemoProvider";
 
-const DEVICE_STEPS = [
-  {
-    icon: Bluetooth,
-    title: "เปิดอุปกรณ์และเชื่อมต่อ Wi-Fi",
-    description:
-      "เปิด Kidney Breathalyzer แล้วเชื่อมต่อเครือข่าย Wi-Fi ตามที่แสดงบนหน้าจออุปกรณ์",
-  },
-  {
-    icon: Wind,
-    title: "เป่าลมหายใจที่อุปกรณ์",
-    description:
-      "วางปากให้สนิทกับท่อเป่า หายใจเข้าลึก แล้วเป่าออกช้า ๆ ตามที่อุปกรณ์แจ้ง",
-  },
-  {
-    icon: Cloud,
-    title: "รอข้อมูลซิงค์เข้าแอป",
-    description:
-      "อุปกรณ์จะส่งค่าเซนเซอร์ไปยังระบบอัตโนมัติ ผลการคัดกรองความเสี่ยงจะปรากฏบนหน้าหลักของแอป",
-  },
-] as const;
+const DEVICE_STEPS = ONBOARDING_DEVICE_STEPS;
 
 const TOTAL_STEPS = 4;
 
@@ -226,7 +208,10 @@ export function OnboardingPageClient() {
         {step === 4 && (
           <section className="space-y-3">
             <p className="text-sm text-[var(--text-secondary)]">
-              การวัดเกิดที่อุปกรณ์ IoT — แอปจะแสดงผลหลังข้อมูลซิงค์เข้ามา
+              การวัดเกิดที่อุปกรณ์ IoT — แอปจะแสดงผลหลังข้อมูลซิงค์เข้ามา ·{" "}
+              <Link href="/guide/device" className="font-medium text-accent-primary">
+                อ่านคู่มือฉบับเต็ม
+              </Link>
             </p>
             {DEVICE_STEPS.map((item, index) => {
               const Icon = item.icon;
