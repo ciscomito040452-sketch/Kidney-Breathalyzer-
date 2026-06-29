@@ -4,9 +4,10 @@ import { useMemo, useState } from "react";
 import { ClipboardList } from "lucide-react";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { HistoryDayGroupSection } from "@/components/history/HistoryDayGroupSection";
+import { HistoryLatestHero } from "@/components/history/HistoryLatestHero";
 import { HistoryPeriodControl } from "@/components/history/HistoryPeriodControl";
 import { HistoryRiskFilterChips } from "@/components/history/HistoryRiskFilterChips";
-import { TrendChart } from "@/components/dashboard/TrendChart";
+import { TrendChart, type TrendMetric } from "@/components/dashboard/TrendChart";
 import { TrendChartInsight } from "@/components/dashboard/TrendChartInsight";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
@@ -33,6 +34,7 @@ export function HistoryPageClient({
   const { locale, translate } = usePreferences();
   const [period, setPeriod] = useState<HistoryPeriod>("last_30");
   const [riskFilter, setRiskFilter] = useState<RiskLevel | "all">("all");
+  const [metric, setMetric] = useState<TrendMetric>("risk_score");
 
   const filtered = useMemo(() => {
     const inPeriod = filterMeasurementsByPeriod(initialMeasurements, period);
@@ -72,6 +74,15 @@ export function HistoryPageClient({
       ? `${filtered.length} ${translate("itemsCount")} · ${periodLabel}`
       : `${translate("noItems")} · ${periodLabel}`;
 
+  const metricOptions: TrendMetric[] = ["risk_score", "ammonia", "acetone"];
+  const metricLabels: Record<TrendMetric, string> = {
+    risk_score: translate("trendMetricRisk"),
+    ammonia: translate("trendMetricAmmonia"),
+    acetone: translate("trendMetricAcetone"),
+  };
+
+  const latestInFilter = filtered[0];
+
   return (
     <main className="space-y-6 px-4 py-6">
       <TabPageHeader
@@ -86,13 +97,14 @@ export function HistoryPageClient({
         formatLabel={(p) => getHistoryPeriodLabel(locale, p)}
       />
 
-      <TrendChart
-        data={trendData}
-        title={getPeriodChartTitle(locale, period)}
-        showDualLine
-      />
+      <HistoryRiskFilterChips value={riskFilter} onChange={setRiskFilter} />
 
-      {trendInsight && <TrendChartInsight insight={trendInsight} />}
+      {latestInFilter && (
+        <HistoryLatestHero
+          key={`${period}-${riskFilter}-${latestInFilter.id}`}
+          measurement={latestInFilter}
+        />
+      )}
 
       <section className="space-y-3">
         <PageSectionHeader
@@ -100,21 +112,30 @@ export function HistoryPageClient({
           subtitle={listSubtitle}
         />
 
-        <HistoryRiskFilterChips value={riskFilter} onChange={setRiskFilter} />
-
         {filtered.length === 0 ? (
           <EmptyState
             icon={ClipboardList}
             message={translate("historyEmpty")}
           />
         ) : (
-          <div className="space-y-5">
+          <div className="space-y-5" key={`${period}-${riskFilter}-groups`}>
             {groups.map((group) => (
               <HistoryDayGroupSection key={group.key} group={group} />
             ))}
           </div>
         )}
       </section>
+
+      <TrendChart
+        data={trendData}
+        title={getPeriodChartTitle(locale, period)}
+        metric={metric}
+        onMetricChange={setMetric}
+        metricOptions={metricOptions}
+        formatMetricLabel={(m) => metricLabels[m]}
+      />
+
+      {trendInsight && <TrendChartInsight insight={trendInsight} />}
 
       <DisclaimerBanner />
     </main>

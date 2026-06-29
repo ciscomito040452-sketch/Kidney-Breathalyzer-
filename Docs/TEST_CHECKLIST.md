@@ -21,6 +21,10 @@ Production: https://kidney-breathalyzer.vercel.app
 | 15 | Dashboard summary vs Result AI | PASS | — | result-explanation-parity.test.ts |
 | 16 | Trend 3 วัน — กราฟ ammonia | PASS | — | curated 268→288→308 in generator |
 | 17 | Acetone 3 วันล่าสุด | PASS | — | curated < 225 ppb in generator.test |
+| 18 | DoctorCTA — ไม่โทร 1669, เปิด guidance sheet | PASS | redeploy | doctor-guidance.test.ts |
+| 19 | Dashboard — hero ring + metric tiles | PASS | redeploy | ScreeningHeroSummary |
+| 20 | History — latest hero ก่อน list | PASS | redeploy | HistoryLatestHero |
+| 21 | Motion — ring fill, sheet slide, reduced-motion | PASS | — | globals.css + kb-* classes |
 
 ## Viewport (375px / 320px)
 

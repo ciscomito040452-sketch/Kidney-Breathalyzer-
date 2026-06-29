@@ -12,6 +12,7 @@ import {
   Wind,
 } from "lucide-react";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
+import { StaggerSection } from "@/components/shared/StaggerSection";
 import { AppLogo } from "@/components/shared/AppLogo";
 import { useDemo } from "@/components/providers/DemoProvider";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
@@ -149,7 +150,7 @@ export function LandingPageClient() {
         <p className="mb-3 text-base font-semibold text-[var(--text-primary)]">
           {translate("landingHowItWorks")}
         </p>
-        <div className="space-y-2.5">
+        <StaggerSection className="space-y-2.5">
           {steps.map((item, index) => (
             <LandingStepCard
               key={item.title}
@@ -158,7 +159,7 @@ export function LandingPageClient() {
               {...item}
             />
           ))}
-        </div>
+        </StaggerSection>
       </section>
 
       <section className="sticky bottom-0 border-t border-border-subtle bg-[var(--bg-primary)] px-4 pb-6 pt-4">

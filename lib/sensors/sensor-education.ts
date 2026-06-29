@@ -58,7 +58,7 @@ function ammoniaSections(ctx: EducationContext): EducationSection[] {
   sections.push({
     kind: "threshold",
     title: "เกณฑ์อ้างอิง (PoC)",
-    body: `ปกติ: ต่ำกว่า ${threshold} ${SENSOR_UI.ammonia.unit}\nสูงกว่าปกติ: ${threshold} ${SENSOR_UI.ammonia.unit} ขึ้นไป`,
+    body: `เกณฑ์อ้างอิง: ต่ำกว่า ${threshold} ${SENSOR_UI.ammonia.unit}\nสูงกว่าเกณฑ์: ${threshold} ${SENSOR_UI.ammonia.unit} ขึ้นไป`,
   });
 
   return sections;
@@ -92,7 +92,7 @@ function acetoneSections(ctx: EducationContext): EducationSection[] {
   sections.push({
     kind: "threshold",
     title: "เกณฑ์อ้างอิง (PoC)",
-    body: `ปกติ: ต่ำกว่า ${threshold} ${SENSOR_UI.acetone.unit}\nสูงกว่าปกติ: ${threshold} ${SENSOR_UI.acetone.unit} ขึ้นไป`,
+    body: `เกณฑ์อ้างอิง: ต่ำกว่า ${threshold} ${SENSOR_UI.acetone.unit}\nสูงกว่าเกณฑ์: ${threshold} ${SENSOR_UI.acetone.unit} ขึ้นไป`,
   });
 
   return sections;

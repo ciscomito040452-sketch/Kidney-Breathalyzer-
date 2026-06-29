@@ -63,6 +63,7 @@ export default function DashboardPage() {
       sparklineData={sparklineData}
       weeklyAvgScore={weeklyAvgScore}
       doctorCta={doctorCta}
+      ammoniaTrend={analytics?.ammoniaTrend}
     />
   );
 }

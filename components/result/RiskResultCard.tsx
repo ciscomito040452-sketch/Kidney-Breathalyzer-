@@ -28,6 +28,7 @@ interface RiskResultCardProps {
   riskScore: number;
   mq135: number;
   mq3: number;
+  compact?: boolean;
 }
 
 export function RiskResultCard({
@@ -35,6 +36,7 @@ export function RiskResultCard({
   riskScore,
   mq135,
   mq3,
+  compact = false,
 }: RiskResultCardProps) {
   const [fullEducationOpen, setFullEducationOpen] = useState(false);
   const { locale, translate } = usePreferences();
@@ -58,11 +60,13 @@ export function RiskResultCard({
 
   return (
     <div className="space-y-3">
-      <RiskScoreCard
-        riskLevel={riskLevel}
-        riskScore={riskScore}
-        educationContext={educationContext}
-      />
+      {!compact && (
+        <RiskScoreCard
+          riskLevel={riskLevel}
+          riskScore={riskScore}
+          educationContext={educationContext}
+        />
+      )}
 
       <div className="flex gap-3">
         <SensorValueCard

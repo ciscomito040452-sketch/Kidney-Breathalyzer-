@@ -1,11 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { TrendChart } from "@/components/dashboard/TrendChart";
-import { TrendChartInsight } from "@/components/dashboard/TrendChartInsight";
+import { TrendChart, type TrendMetric } from "@/components/dashboard/TrendChart";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { SegmentedControl } from "@/components/shared/SegmentedControl";
-import { buildTrendPeriodInsight } from "@/lib/dashboard/build-trend-period-insight";
 import { DASHBOARD_TREND_DAY_OPTIONS, type DashboardTrendDays } from "@/lib/constants";
 import type { Measurement } from "@/types/measurement";
 
@@ -16,8 +14,9 @@ interface DashboardTrendSectionProps {
 export function DashboardTrendSection({
   measurements,
 }: DashboardTrendSectionProps) {
-  const { locale, translate } = usePreferences();
+  const { translate } = usePreferences();
   const [days, setDays] = useState<DashboardTrendDays>(7);
+  const [metric, setMetric] = useState<TrendMetric>("risk_score");
 
   const filteredMeasurements = useMemo(() => {
     const cutoff = new Date();
@@ -37,10 +36,12 @@ export function DashboardTrendSection({
       }));
   }, [filteredMeasurements]);
 
-  const trendInsight = useMemo(
-    () => buildTrendPeriodInsight(filteredMeasurements, locale, days),
-    [filteredMeasurements, locale, days]
-  );
+  const metricOptions: TrendMetric[] = ["risk_score", "ammonia", "acetone"];
+  const metricLabels: Record<TrendMetric, string> = {
+    risk_score: translate("trendMetricRisk"),
+    ammonia: translate("trendMetricAmmonia"),
+    acetone: translate("trendMetricAcetone"),
+  };
 
   return (
     <div className="space-y-3">
@@ -54,9 +55,11 @@ export function DashboardTrendSection({
         data={trendData}
         title={translate("trendTitle").replace("{n}", String(days))}
         compact
-        showDualLine
+        metric={metric}
+        onMetricChange={setMetric}
+        metricOptions={metricOptions}
+        formatMetricLabel={(m) => metricLabels[m]}
       />
-      {trendInsight && <TrendChartInsight insight={trendInsight} />}
     </div>
   );
 }

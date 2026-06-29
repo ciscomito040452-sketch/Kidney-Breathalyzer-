@@ -15,6 +15,7 @@ interface RiskScoreRingProps {
   riskLevel: RiskLevel;
   size?: number;
   className?: string;
+  animateOnMount?: boolean;
 }
 
 export function RiskScoreRing({
@@ -22,9 +23,10 @@ export function RiskScoreRing({
   riskLevel,
   size = 44,
   className,
+  animateOnMount = false,
 }: RiskScoreRingProps) {
   const pct = scorePercent(riskScore);
-  const strokeWidth = 4;
+  const strokeWidth = size > 80 ? 6 : 4;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const dashOffset = circumference - (pct / 100) * circumference;
@@ -51,11 +53,24 @@ export function RiskScoreRing({
         cy={center}
         r={radius}
         fill="none"
-        className={cn(ringStroke[riskLevel], "transition-[stroke-dashoffset]")}
+        className={cn(
+          ringStroke[riskLevel],
+          animateOnMount
+            ? "kb-ring-fill-animate"
+            : "transition-[stroke-dashoffset] duration-500"
+        )}
         strokeWidth={strokeWidth}
         strokeLinecap="round"
         strokeDasharray={circumference}
-        strokeDashoffset={dashOffset}
+        strokeDashoffset={animateOnMount ? undefined : dashOffset}
+        style={
+          animateOnMount
+            ? ({
+                ["--ring-circumference" as string]: circumference,
+                ["--ring-offset" as string]: dashOffset,
+              } as React.CSSProperties)
+            : undefined
+        }
       />
     </svg>
   );

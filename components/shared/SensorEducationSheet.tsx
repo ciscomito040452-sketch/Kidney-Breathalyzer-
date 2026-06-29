@@ -278,12 +278,12 @@ export function SensorEducationSheet({
     >
       <button
         type="button"
-        className="absolute inset-0 bg-black/40"
+        className="absolute inset-0 bg-black/40 kb-backdrop-fade"
         aria-label="ปิด"
         onClick={() => onOpenChange(false)}
       />
       <div
-        className="relative z-10 flex max-h-[min(88vh,720px)] w-full max-w-app flex-col rounded-t-2xl bg-[var(--bg-canvas)] shadow-mobile"
+        className="relative z-10 flex max-h-[min(88vh,720px)] w-full max-w-app flex-col rounded-t-2xl bg-[var(--bg-canvas)] shadow-mobile kb-sheet-up"
         role="dialog"
         aria-modal="true"
         aria-labelledby="education-sheet-title"

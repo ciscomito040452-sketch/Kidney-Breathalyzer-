@@ -13,6 +13,7 @@ import { BarChart3 } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { SegmentedControl } from "@/components/shared/SegmentedControl";
 import { TrendChartLegend } from "@/components/shared/TrendChartLegend";
 import { getSensorUILabels } from "@/lib/i18n/labels";
 import { formatChartAxisDate } from "@/lib/utils";
@@ -24,12 +25,44 @@ export interface TrendDataPoint {
   risk_score: number;
 }
 
+export type TrendMetric = "risk_score" | "ammonia" | "acetone";
+
 interface TrendChartProps {
   data: TrendDataPoint[];
   title?: string;
   compact?: boolean;
   showDualLine?: boolean;
   showLegend?: boolean;
+  metric?: TrendMetric;
+  onMetricChange?: (metric: TrendMetric) => void;
+  metricOptions?: TrendMetric[];
+  formatMetricLabel?: (metric: TrendMetric) => string;
+}
+
+function lineConfig(
+  metric: TrendMetric,
+  sensorUi: ReturnType<typeof getSensorUILabels>
+): { dataKey: string; name: string; stroke: string } {
+  switch (metric) {
+    case "risk_score":
+      return {
+        dataKey: "score_pct",
+        name: "Score",
+        stroke: "var(--accent-primary, #2563EB)",
+      };
+    case "ammonia":
+      return {
+        dataKey: "mq135_value",
+        name: sensorUi.ammonia.label,
+        stroke: "var(--accent-primary, #2563EB)",
+      };
+    case "acetone":
+      return {
+        dataKey: "acetone_ppb",
+        name: sensorUi.acetone.label,
+        stroke: "var(--accent-secondary, #7DD3FC)",
+      };
+  }
 }
 
 export function TrendChart({
@@ -38,6 +71,10 @@ export function TrendChart({
   compact = false,
   showDualLine = false,
   showLegend,
+  metric = "risk_score",
+  onMetricChange,
+  metricOptions,
+  formatMetricLabel,
 }: TrendChartProps) {
   const { locale, translate } = usePreferences();
   const sensorUi = getSensorUILabels(locale);
@@ -46,26 +83,42 @@ export function TrendChart({
 
   const chartData = data.map((d) => ({
     ...d,
+    score_pct: Math.round(d.risk_score * 100),
     acetone_ppb: d.mq3_value != null ? Math.round(d.mq3_value * 500) : undefined,
     label: formatChartAxisDate(locale, d.date),
   }));
 
+  const singleMetricMode = Boolean(onMetricChange && metricOptions?.length);
   const hasDualData =
-    showDualLine && chartData.some((d) => d.acetone_ppb != null);
+    !singleMetricMode &&
+    showDualLine &&
+    chartData.some((d) => d.acetone_ppb != null);
   const legendVisible = showLegend ?? hasDualData;
+  const activeLine = lineConfig(metric, sensorUi);
 
   return (
     <Card>
-      <CardHeader className={compact ? "space-y-1 pb-2" : "space-y-1"}>
+      <CardHeader className={compact ? "space-y-2 pb-2" : "space-y-2"}>
         <CardTitle className="text-base">{chartTitle}</CardTitle>
+        {singleMetricMode && metricOptions && formatMetricLabel && (
+          <SegmentedControl
+            options={metricOptions}
+            value={metric}
+            onChange={onMetricChange!}
+            formatLabel={formatMetricLabel}
+          />
+        )}
         {legendVisible && <TrendChartLegend />}
       </CardHeader>
       <CardContent>
         {chartData.length === 0 ? (
           <EmptyState icon={BarChart3} message={translate("chartNoData")} />
         ) : (
-          <ResponsiveContainer width="100%" height={compact ? 140 : hasDualData ? 220 : 200}>
-            <LineChart data={chartData}>
+          <ResponsiveContainer
+            width="100%"
+            height={compact ? 140 : hasDualData ? 220 : 200}
+          >
+            <LineChart data={chartData} key={`${metric}-${chartData.length}`}>
               <CartesianGrid
                 strokeDasharray="3 3"
                 stroke="var(--border-subtle, #E5E5EA)"
@@ -89,23 +142,43 @@ export function TrendChart({
                   fontSize: 12,
                 }}
               />
-              <Line
-                type="monotone"
-                dataKey="mq135_value"
-                stroke="var(--accent-primary, #2563EB)"
-                strokeWidth={2}
-                dot={false}
-                name={sensorUi.ammonia.label}
-              />
-              {hasDualData && (
+              {singleMetricMode || !hasDualData ? (
                 <Line
                   type="monotone"
-                  dataKey="acetone_ppb"
-                  stroke="var(--accent-secondary, #7DD3FC)"
+                  dataKey={activeLine.dataKey}
+                  stroke={activeLine.stroke}
                   strokeWidth={2}
                   dot={false}
-                  name={sensorUi.acetone.label}
+                  name={activeLine.name}
+                  isAnimationActive
+                  animationDuration={400}
+                  animationEasing="ease-out"
                 />
+              ) : (
+                <>
+                  <Line
+                    type="monotone"
+                    dataKey="mq135_value"
+                    stroke="var(--accent-primary, #2563EB)"
+                    strokeWidth={2}
+                    dot={false}
+                    name={sensorUi.ammonia.label}
+                    isAnimationActive
+                    animationDuration={400}
+                    animationEasing="ease-out"
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="acetone_ppb"
+                    stroke="var(--accent-secondary, #7DD3FC)"
+                    strokeWidth={2}
+                    dot={false}
+                    name={sensorUi.acetone.label}
+                    isAnimationActive
+                    animationDuration={400}
+                    animationEasing="ease-out"
+                  />
+                </>
               )}
             </LineChart>
           </ResponsiveContainer>

@@ -53,11 +53,11 @@ export function generateExplanation(
     );
   } else if (ammoniaElevated) {
     parts.push(
-      `แอมโมเนียในลมหายใจ (${ammoniaPpb} ppb) สูงกว่าเกณฑ์อ้างอิง ขณะที่อะซิโทน (${acetonePpb} ppb) อยู่ในช่วงปกติ`
+      `แอมโมเนียในลมหายใจ (${ammoniaPpb} ppb) สูงกว่าเกณฑ์อ้างอิง ขณะที่อะซิโทน (${acetonePpb} ppb) อยู่ในเกณฑ์อ้างอิง`
     );
   } else if (acetoneElevated) {
     parts.push(
-      `อะซิโทนในลมหายใจ (${acetonePpb} ppb) สูงกว่าเกณฑ์อ้างอิง ขณะที่แอมโมเนียอยู่ในช่วงปกติ`
+      `อะซิโทนในลมหายใจ (${acetonePpb} ppb) สูงกว่าเกณฑ์อ้างอิง ขณะที่แอมโมเนียอยู่ในเกณฑ์อ้างอิง`
     );
   } else {
     parts.push(
@@ -113,16 +113,16 @@ function generateExplanationEn(input: ExplanationInput): string {
 
 export const HEALTH_TIPS = [
   "ดื่มน้ำให้เพียงพอตามที่ร่างกายต้องการ",
-  "ลดการบริโภคโปรตีนในปริมาณที่มากเกินไป",
+  "รับประทานอาหารสมดุลตามคำแนะนำแพทย์",
   "ออกกำลังกายสม่ำเสมอตามความเหมาะสม",
-  "ตรวจสุขภาพกับแพทย์เป็นระยะ",
+  "หากมีโรคไต ควรปรึกษาแพทย์เรื่องโปรตีนและอาหาร",
 ];
 
 export const HEALTH_TIPS_EN = [
   "Stay well hydrated",
-  "Avoid excessive protein intake",
+  "Eat a balanced diet as advised by your doctor",
   "Exercise regularly as appropriate",
-  "See your doctor for routine checkups",
+  "If you have kidney disease, ask your doctor about protein and diet",
 ];
 
 export function getHealthTips(locale: AppLocale): string[] {

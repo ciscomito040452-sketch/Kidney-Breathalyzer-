@@ -32,6 +32,11 @@
   --surface-card-border: var(--border-subtle);
   --accent-tint: rgb(var(--accent-primary-rgb) / 0.1);
   --accent-tint-strong: rgb(var(--accent-primary-rgb) / 0.15);
+  --motion-duration-fast: 200ms;
+  --motion-duration-normal: 320ms;
+  --motion-duration-slow: 450ms;
+  --motion-ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
+  --motion-ease-enter: cubic-bezier(0, 0, 0.2, 1);
 }
 
 html[data-display="comfort"] {
@@ -133,5 +138,107 @@ html[data-display="dark"] {
     margin-bottom: 1rem;
     border-radius: 1.5rem;
     overflow: hidden;
+  }
+}
+
+@keyframes kb-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kb-ring-fill {
+  from {
+    stroke-dashoffset: var(--ring-circumference);
+  }
+  to {
+    stroke-dashoffset: var(--ring-offset);
+  }
+}
+
+@keyframes kb-sheet-up {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes kb-sheet-down {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes kb-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kb-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.kb-fade-up {
+  animation: kb-fade-up var(--motion-duration-normal) var(--motion-ease-enter)
+    both;
+}
+
+.kb-ring-fill-animate {
+  animation: kb-ring-fill var(--motion-duration-slow) var(--motion-ease-standard)
+    both;
+}
+
+.kb-sheet-up {
+  animation: kb-sheet-up var(--motion-duration-normal) var(--motion-ease-enter)
+    both;
+}
+
+.kb-sheet-down {
+  animation: kb-sheet-down var(--motion-duration-fast) var(--motion-ease-standard)
+    both;
+}
+
+.kb-backdrop-fade {
+  animation: kb-backdrop-in var(--motion-duration-fast) ease both;
+}
+
+.kb-backdrop-fade-out {
+  animation: kb-backdrop-in var(--motion-duration-fast) ease reverse both;
+}
+
+.kb-pop-in {
+  animation: kb-pop-in 250ms var(--motion-ease-enter) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kb-fade-up,
+  .kb-ring-fill-animate,
+  .kb-sheet-up,
+  .kb-sheet-down,
+  .kb-backdrop-fade,
+  .kb-backdrop-fade-out,
+  .kb-pop-in {
+    animation: none !important;
   }
 }

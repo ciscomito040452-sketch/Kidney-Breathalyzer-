@@ -112,6 +112,9 @@ export function DashboardInsightCard({
                       stroke="var(--accent-primary, #2563EB)"
                       strokeWidth={2}
                       dot={false}
+                      isAnimationActive
+                      animationDuration={400}
+                      animationEasing="ease-out"
                     />
                   </LineChart>
                 </ResponsiveContainer>

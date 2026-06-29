@@ -33,7 +33,7 @@ export function HistoryMeasurementRow({
     <Link
       href={`/result/${measurement.id}`}
       className={cn(
-        "flex items-center gap-3.5 transition-colors active:bg-surface-elevated",
+        "flex items-center gap-3.5 transition-colors active:scale-[0.99] active:bg-surface-elevated",
         grouped
           ? cn(
               "border-b border-border-subtle px-4 py-4",
