@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Activity, Droplets, Wind } from "lucide-react";
-import { PinnedHealthCard } from "@/components/health/PinnedHealthCard";
+import {
+  PinnedAnalyticsFooter,
+  PinnedHealthCard,
+} from "@/components/health";
+import { SparklineMini } from "@/components/health/SparklineMini";
 import { RiskScoreRing } from "@/components/shared/RiskScoreRing";
 import { SensorEducationSheet } from "@/components/shared/SensorEducationSheet";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { buildPinnedSparklines } from "@/lib/dashboard/build-pinned-sparklines";
 import { getSensorUILabels } from "@/lib/i18n/labels";
 import {
   getRiskQualitativeCaption,
@@ -18,6 +23,12 @@ import {
   formatAmmoniaPpb,
 } from "@/lib/sensor-labels";
 import {
+  acetoneBarPercent,
+  acetoneThresholdPercent,
+  ammoniaBarPercent,
+  ammoniaThresholdPercent,
+} from "@/lib/sensors/sensor-zones";
+import {
   getAcetoneStatus,
   getAmmoniaStatus,
 } from "@/lib/sensors/status";
@@ -26,17 +37,24 @@ import type { Measurement } from "@/types/measurement";
 
 interface DashboardPinnedSectionProps {
   latest: Measurement;
+  measurements: Measurement[];
   riskDelta: number | null;
 }
 
 export function DashboardPinnedSection({
   latest,
+  measurements,
   riskDelta,
 }: DashboardPinnedSectionProps) {
   const { locale, translate } = usePreferences();
   const sensorUi = getSensorUILabels(locale);
   const [ammoniaOpen, setAmmoniaOpen] = useState(false);
   const [acetoneOpen, setAcetoneOpen] = useState(false);
+
+  const sparklines = useMemo(
+    () => buildPinnedSparklines(measurements),
+    [measurements]
+  );
 
   const ammoniaPpb = formatAmmoniaPpb(latest.mq135_value);
   const acetonePpb = formatAcetonePpb(latest.mq3_value);
@@ -72,8 +90,14 @@ export function DashboardPinnedSection({
           <RiskScoreRing
             riskScore={latest.risk_score}
             riskLevel={latest.risk_level}
-            size={56}
+            size={68}
             animateOnMount
+          />
+        }
+        footer={
+          <PinnedAnalyticsFooter
+            sparklineData={sparklines.risk}
+            stroke="var(--metric-screening)"
           />
         }
         animationDelay={0}
@@ -87,6 +111,28 @@ export function DashboardPinnedSection({
         headline={getSensorQualitativeHeadline(locale, ammoniaStatus)}
         caption={getSensorQualitativeCaption(ammoniaPpb, sensorUi.ammonia.unit)}
         onClick={() => setAmmoniaOpen(true)}
+        visual={
+          sparklines.ammonia.length >= 2 ? (
+            <SparklineMini
+              data={sparklines.ammonia}
+              stroke="var(--metric-ammonia)"
+              width={88}
+              height={52}
+            />
+          ) : (
+            <span className="text-2xl font-semibold tabular-nums text-[var(--text-primary)]">
+              {ammoniaPpb}
+            </span>
+          )
+        }
+        footer={
+          <PinnedAnalyticsFooter
+            sparklineData={[]}
+            barPercent={ammoniaBarPercent(ammoniaPpb)}
+            thresholdPercent={ammoniaThresholdPercent()}
+            sensorStatus={ammoniaStatus}
+          />
+        }
         animationDelay={50}
       />
 
@@ -98,6 +144,28 @@ export function DashboardPinnedSection({
         headline={getSensorQualitativeHeadline(locale, acetoneStatus)}
         caption={getSensorQualitativeCaption(acetonePpb, sensorUi.acetone.unit)}
         onClick={() => setAcetoneOpen(true)}
+        visual={
+          sparklines.acetone.length >= 2 ? (
+            <SparklineMini
+              data={sparklines.acetone}
+              stroke="var(--metric-acetone)"
+              width={88}
+              height={52}
+            />
+          ) : (
+            <span className="text-2xl font-semibold tabular-nums text-[var(--text-primary)]">
+              {acetonePpb}
+            </span>
+          )
+        }
+        footer={
+          <PinnedAnalyticsFooter
+            sparklineData={[]}
+            barPercent={acetoneBarPercent(acetonePpb)}
+            thresholdPercent={acetoneThresholdPercent()}
+            sensorStatus={acetoneStatus}
+          />
+        }
         animationDelay={100}
       />
 

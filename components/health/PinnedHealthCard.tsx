@@ -14,6 +14,7 @@ interface PinnedHealthCardProps {
   headline: string;
   caption?: string;
   visual?: ReactNode;
+  footer?: ReactNode;
   href?: string;
   onClick?: () => void;
   className?: string;
@@ -28,6 +29,7 @@ export function PinnedHealthCard({
   headline,
   caption,
   visual,
+  footer,
   href,
   onClick,
   className,
@@ -58,7 +60,7 @@ export function PinnedHealthCard({
         </div>
       </div>
 
-      <div className="mt-3 flex items-end justify-between gap-3">
+      <div className="mt-3.5 flex items-end justify-between gap-3">
         <div className="min-w-0 flex-1">
           <p className="line-clamp-2 text-pinned-headline font-semibold text-[var(--text-primary)]">
             {headline}
@@ -71,11 +73,12 @@ export function PinnedHealthCard({
         </div>
         {visual && <div className="shrink-0">{visual}</div>}
       </div>
+      {footer}
     </>
   );
 
   const cardClass = cn(
-    "kb-fade-up block w-full rounded-2xl p-4 text-left app-card app-card--pinned transition-transform active:scale-[0.99]",
+    "kb-fade-up block w-full rounded-2xl p-5 text-left app-card app-card--pinned transition-transform active:scale-[0.99]",
     className
   );
 

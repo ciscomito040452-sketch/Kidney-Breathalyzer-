@@ -9,6 +9,7 @@ interface SparklineMiniProps {
   className?: string;
   width?: number;
   height?: number;
+  fullWidth?: boolean;
 }
 
 export function SparklineMini({
@@ -17,16 +18,17 @@ export function SparklineMini({
   className,
   width = 72,
   height = 48,
+  fullWidth = false,
 }: SparklineMiniProps) {
   if (data.length < 2) return null;
 
   return (
     <div
-      className={cn("shrink-0", className)}
-      style={{ width, height }}
+      className={cn(fullWidth ? "h-10 w-full" : "shrink-0", className)}
+      style={fullWidth ? undefined : { width, height }}
       aria-hidden
     >
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={fullWidth ? "100%" : height}>
         <LineChart data={data}>
           <Line
             type="monotone"

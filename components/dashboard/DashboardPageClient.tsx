@@ -48,6 +48,7 @@ export function DashboardPageClient({
             <SectionHeader title={translate("pinnedSection")} />
             <DashboardPinnedSection
               latest={latest}
+              measurements={measurements}
               riskDelta={riskDelta}
             />
           </div>
