@@ -107,7 +107,7 @@ html[data-display="dark"] {
   }
 
   body {
-    @apply bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased;
+    @apply overflow-x-hidden bg-[var(--bg-canvas)] text-[var(--text-primary)] antialiased;
   }
 }
 
@@ -204,6 +204,17 @@ html[data-display="dark"] {
     background-color: var(--bg-surface-elevated) !important;
     --tw-ring-width: 0px;
     box-shadow: none;
+  }
+}
+
+@media (max-width: 430px) {
+  .mobile-frame {
+    margin: 0;
+    max-width: 100%;
+    min-height: 100dvh;
+    box-shadow: none;
+    border-radius: 0;
+    overflow-x: hidden;
   }
 }
 

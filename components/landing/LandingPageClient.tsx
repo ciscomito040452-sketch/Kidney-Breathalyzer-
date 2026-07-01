@@ -12,7 +12,9 @@ import {
   Wind,
 } from "lucide-react";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
-import { StaggerSection } from "@/components/shared/StaggerSection";
+import {
+  HealthGroupedCard,
+} from "@/components/health";
 import { AppLogo } from "@/components/shared/AppLogo";
 import { useDemo } from "@/components/providers/DemoProvider";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
@@ -22,53 +24,35 @@ import { cn } from "@/lib/utils";
 
 interface LandingStep {
   icon: LucideIcon;
-  tone: "accent" | "good" | "attention";
   title: string;
   description: string;
 }
 
-const toneStyles = {
-  accent: {
-    icon: "bg-[var(--accent-tint)] text-accent-primary",
-    ring: "ring-accent-primary/10",
-  },
-  good: {
-    icon: "bg-risk-low/15 text-risk-low",
-    ring: "ring-risk-low/15",
-  },
-  attention: {
-    icon: "bg-risk-moderate/15 text-risk-moderate",
-    ring: "ring-risk-moderate/15",
-  },
-} as const;
-
-function LandingStepCard({
+function LandingStepRow({
   step,
   icon: Icon,
-  tone,
   title,
   description,
   stepLabel,
-}: LandingStep & { step: number; stepLabel: string }) {
-  const styles = toneStyles[tone];
-
+  isLast,
+}: LandingStep & {
+  step: number;
+  stepLabel: string;
+  isLast?: boolean;
+}) {
   return (
     <div
       className={cn(
-        "flex items-center gap-3.5 rounded-2xl px-4 py-3.5 app-card app-card--grouped ring-1",
-        styles.ring
+        "flex items-start gap-3 px-4 py-3.5",
+        !isLast && "border-b border-border-subtle"
       )}
     >
       <span
-        className={cn(
-          "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl",
-          styles.icon
-        )}
+        className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-tint)] text-accent-primary"
         aria-hidden
       >
-        <Icon className="h-5 w-5" strokeWidth={1.75} />
+        <Icon className="h-4 w-4" strokeWidth={1.75} />
       </span>
-
       <div className="min-w-0 flex-1">
         <p className="text-[11px] font-semibold uppercase tracking-wide text-[var(--text-secondary)]">
           {stepLabel} {step}
@@ -97,78 +81,68 @@ export function LandingPageClient() {
   const steps: LandingStep[] = [
     {
       icon: Wind,
-      tone: "accent",
       title: translate("landingStep1Title"),
       description: translate("landingStep1Desc"),
     },
     {
       icon: Smartphone,
-      tone: "good",
       title: translate("landingStep2Title"),
       description: translate("landingStep2Desc"),
     },
     {
       icon: LineChart,
-      tone: "attention",
       title: translate("landingStep3Title"),
       description: translate("landingStep3Desc"),
     },
   ];
 
   return (
-    <main className="flex min-h-screen flex-col">
-      <section className="relative px-4 pb-2 pt-10">
-        <div
-          className="pointer-events-none absolute inset-x-0 top-0 h-56 bg-[radial-gradient(ellipse_90%_70%_at_50%_0%,var(--accent-tint-strong),transparent)]"
-          aria-hidden
-        />
+    <main className="flex min-h-dvh w-full max-w-full flex-col overflow-x-hidden bg-[var(--bg-surface)]">
+      <section className="px-5 pb-2 pt-[max(2rem,env(safe-area-inset-top))]">
+        <div className="mx-auto flex w-full max-w-full flex-col items-center text-center">
+          <AppLogo
+            size={96}
+            variant="hero"
+            className="h-24 w-24 max-w-[30vw]"
+          />
 
-        <div className="relative flex flex-col items-center text-center">
-          <div className="rounded-[28px] bg-surface p-2 shadow-card ring-1 ring-border-subtle">
-            <AppLogo size={88} className="h-[88px] w-[88px] shadow-none" />
-          </div>
-
-          <h1 className="mt-6 text-balance text-summary-title font-semibold leading-tight tracking-tight">
+          <h1 className="mt-5 max-w-full text-balance text-[28px] font-bold leading-tight tracking-tight text-[var(--text-primary)] sm:text-[32px]">
             {APP_NAME}
           </h1>
-          <p className="mt-2 max-w-[280px] text-base leading-relaxed text-[var(--text-secondary)]">
+          <p className="mt-2 max-w-[20rem] text-pretty text-base leading-relaxed text-[var(--text-secondary)]">
             {translate("landingTagline")}
           </p>
 
-          <span className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-surface px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)] ring-1 ring-border-subtle">
+          <span className="mt-4 inline-flex max-w-full items-center gap-1.5 rounded-full bg-[var(--bg-primary)] px-3 py-1.5 text-xs font-medium text-[var(--text-secondary)]">
             <ShieldCheck
-              className="h-3.5 w-3.5 text-accent-primary"
+              className="h-3.5 w-3.5 shrink-0 text-accent-primary"
               strokeWidth={1.75}
               aria-hidden
             />
-            {translate("landingScreeningBadge")}
+            <span className="truncate">{translate("landingScreeningBadge")}</span>
           </span>
         </div>
       </section>
 
-      <section className="flex-1 px-4 py-4">
-        <p className="mb-3 text-base font-semibold text-[var(--text-primary)]">
+      <section className="flex-1 px-5 py-4">
+        <h2 className="mb-3 text-section-title text-[var(--text-primary)]">
           {translate("landingHowItWorks")}
-        </p>
-        <StaggerSection className="space-y-2.5">
+        </h2>
+        <HealthGroupedCard className="app-card--pinned">
           {steps.map((item, index) => (
-            <LandingStepCard
+            <LandingStepRow
               key={item.title}
               step={index + 1}
               stepLabel={translate("onboardingStep")}
+              isLast={index === steps.length - 1}
               {...item}
             />
           ))}
-        </StaggerSection>
+        </HealthGroupedCard>
       </section>
 
-      <section className="sticky bottom-0 border-t border-border-subtle bg-[var(--bg-primary)] px-4 pb-6 pt-4">
-        <div
-          className="pointer-events-none absolute inset-x-0 -top-8 h-8 bg-gradient-to-t from-[var(--bg-primary)] to-transparent"
-          aria-hidden
-        />
-
-        <div className="flex flex-col gap-3">
+      <section className="mt-auto border-t border-border-subtle bg-[var(--bg-primary)] px-5 pb-[max(1.5rem,env(safe-area-inset-bottom))] pt-4">
+        <div className="mx-auto flex w-full max-w-full flex-col gap-3">
           <Button size="lg" className="gap-2" asChild>
             <Link href="/onboarding">
               {translate("landingStart")}
@@ -179,14 +153,14 @@ export function LandingPageClient() {
           <Button
             size="lg"
             variant="secondary"
-            className="h-auto flex-col gap-1 py-3"
+            className="h-auto min-h-[52px] flex-col gap-1 py-3"
             onClick={handleDemo}
           >
             <span className="flex items-center gap-2">
               <PlayCircle className="h-4 w-4" strokeWidth={1.75} />
               {translate("landingDemo")}
             </span>
-            <span className="text-xs font-normal text-[var(--text-secondary)]">
+            <span className="text-center text-xs font-normal text-[var(--text-secondary)]">
               {translate("landingDemoHint")}
             </span>
           </Button>

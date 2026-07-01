@@ -4,8 +4,8 @@ import { cn } from "@/lib/utils";
 interface AppLogoProps {
   size?: number;
   className?: string;
-  /** Compact mark for in-app headers; default for landing/marketing */
-  variant?: "default" | "mark";
+  /** Compact mark for in-app headers; hero for landing */
+  variant?: "default" | "mark" | "hero";
 }
 
 export function AppLogo({
@@ -14,6 +14,7 @@ export function AppLogo({
   variant = "default",
 }: AppLogoProps) {
   const isMark = variant === "mark";
+  const isHero = variant === "hero";
 
   return (
     // eslint-disable-next-line @next/next/no-img-element
@@ -24,9 +25,9 @@ export function AppLogo({
       height={size}
       className={cn(
         "object-contain",
-        isMark
-          ? "app-logo-mark rounded-xl bg-surface ring-1 ring-border-subtle"
-          : "rounded-[22px] shadow-card",
+        isMark && "app-logo-mark rounded-xl bg-surface ring-1 ring-border-subtle",
+        isHero && "rounded-[22%]",
+        !isMark && !isHero && "rounded-[22px] shadow-card",
         className
       )}
     />

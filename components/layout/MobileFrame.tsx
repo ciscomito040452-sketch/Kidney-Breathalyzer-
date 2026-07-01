@@ -4,8 +4,8 @@ interface MobileFrameProps {
 
 export function MobileFrame({ children }: MobileFrameProps) {
   return (
-    <div className="min-h-screen bg-[var(--bg-canvas)]">
-      <div className="mobile-frame relative mx-auto min-h-screen w-full max-w-app bg-[var(--bg-primary)] shadow-mobile">
+    <div className="min-h-dvh overflow-x-hidden bg-[var(--bg-canvas)]">
+      <div className="mobile-frame relative mx-auto min-h-dvh w-full max-w-app overflow-x-hidden bg-[var(--bg-primary)] shadow-mobile">
         {children}
       </div>
     </div>
