@@ -21,6 +21,7 @@ import {
   InsightMetricRow,
   parseHighlightLabel,
 } from "@/components/ai-insight/insight-ui";
+import { RiskScoreRing } from "@/components/shared/RiskScoreRing";
 import {
   getRiskQualitativeCaption,
   getRiskQualitativeHeadline,
@@ -30,6 +31,7 @@ import type { HolisticInsight } from "@/lib/ai-insight/build-holistic-insight";
 import type { HolisticInsightHighlight } from "@/lib/ai-insight/build-holistic-insight";
 import type { InsightHighlightTone } from "@/lib/dashboard/build-dashboard-insight";
 import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
+import { scorePercent } from "@/lib/risk-engine/risk-zones";
 
 interface SparklinePoint {
   date: string;
@@ -141,13 +143,26 @@ export function HolisticInsightCard({
           </div>
         </div>
 
-        <div className="mt-4 space-y-1">
-          <p className="text-pinned-headline font-semibold text-[var(--text-primary)]">
-            {headline}
-          </p>
-          <p className="text-pinned-caption text-[var(--text-secondary)]">
-            {caption} · {translate("insightAvgScoreLabel")}
-          </p>
+        <div className="mt-4 flex items-end justify-between gap-3">
+          <div className="min-w-0 flex-1 space-y-1">
+            <p className="text-pinned-headline text-[var(--text-primary)]">
+              {headline}
+            </p>
+            <p className="text-pinned-value text-[var(--text-primary)]">
+              {scorePercent(insight.avgRiskScore)}
+              <span className="ml-1 text-xl font-semibold text-[var(--text-secondary)]">
+                /100
+              </span>
+            </p>
+            <p className="text-pinned-caption text-[var(--text-secondary)]">
+              {caption} · {translate("insightAvgScoreLabel")}
+            </p>
+          </div>
+          <RiskScoreRing
+            riskScore={insight.avgRiskScore}
+            riskLevel={insight.overallRiskLevel}
+            size={64}
+          />
         </div>
 
         {hasChart && (

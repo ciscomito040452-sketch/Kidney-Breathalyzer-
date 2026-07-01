@@ -45,7 +45,11 @@ export function DashboardPageClient({
       {latest && (
         <StaggerSection className="space-y-6">
           <div className="space-y-3">
-            <SectionHeader title={translate("pinnedSection")} />
+            <SectionHeader
+              title={translate("pinnedSection")}
+              subtitle={translate("pinnedSectionSubtitle")}
+              size="large"
+            />
             <DashboardPinnedSection
               latest={latest}
               measurements={measurements}
@@ -54,7 +58,10 @@ export function DashboardPageClient({
           </div>
 
           <div className="space-y-3">
-            <SectionHeader title={translate("highlightsSection")} />
+            <SectionHeader
+              title={translate("highlightsSection")}
+              subtitle={translate("highlightsSectionSubtitle")}
+            />
             <DashboardHighlightsSection
               measurements={measurements}
               dashboardInsight={dashboardInsight}

@@ -28,4 +28,19 @@ describe("result explanation parity", () => {
     expect(resultExplanation).toContain("แอมโมเนีย");
     expect(resultExplanation).toContain("คัดกรองความเสี่ยงโรคไต");
   });
+
+  it("does not use future measurements when explaining older readings", () => {
+    const riskFactors = getDefaultDemoRiskFactors();
+    const measurements = seedDemoMeasurements(30, riskFactors);
+    const oldest = measurements[measurements.length - 1];
+
+    const explanation = buildResultExplanation({
+      measurement: oldest,
+      measurements,
+      riskFactors,
+      locale: "th",
+    });
+
+    expect(explanation).not.toContain("ติดต่อกัน 3 วัน");
+  });
 });

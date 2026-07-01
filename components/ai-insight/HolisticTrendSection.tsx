@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo } from "react";
+import { SectionHeader } from "@/components/health";
 import { TrendChart } from "@/components/dashboard/TrendChart";
 import { HolisticTrendInsightCard } from "@/components/ai-insight/HolisticTrendInsightCard";
-import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import type { HolisticInsight } from "@/lib/ai-insight/build-holistic-insight";
 import type { Measurement } from "@/types/measurement";
@@ -40,7 +40,7 @@ export function HolisticTrendSection({
 
   return (
     <section className="space-y-3">
-      <PageSectionHeader title={translate("insightTrendSection")} />
+      <SectionHeader title={translate("insightTrendSection")} />
       <TrendChart data={trendData} title={chartTitle} showDualLine />
       <HolisticTrendInsightCard insight={insight} />
     </section>

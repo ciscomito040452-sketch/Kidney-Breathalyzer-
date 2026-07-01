@@ -110,6 +110,7 @@ export function HistoryPageClient({
         <HistoryLatestHero
           key={`${period}-${riskFilter}-${latestInFilter.id}`}
           measurement={latestInFilter}
+          measurements={initialMeasurements}
         />
       )}
 

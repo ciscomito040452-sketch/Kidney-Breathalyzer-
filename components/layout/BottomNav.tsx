@@ -26,6 +26,11 @@ export function BottomNav() {
   const pathname = usePathname();
   const { translate } = usePreferences();
 
+  const hideNav =
+    pathname === "/profile/edit" || pathname.startsWith("/guide/");
+
+  if (hideNav) return null;
+
   return (
     <nav
       className="pointer-events-none fixed bottom-0 left-1/2 z-50 w-full max-w-app -translate-x-1/2 px-4 pb-[calc(12px+env(safe-area-inset-bottom,0px))]"

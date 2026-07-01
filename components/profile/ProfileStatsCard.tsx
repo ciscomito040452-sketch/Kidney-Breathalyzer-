@@ -49,7 +49,7 @@ export function ProfileStatsCard({
             >
               <Icon className="h-4 w-4" strokeWidth={1.75} />
             </span>
-            <p className="text-3xl font-semibold tabular-nums leading-none tracking-tight">
+            <p className="text-pinned-value leading-none text-[var(--text-primary)]">
               {value}
             </p>
             <p className="mt-2 text-pinned-caption font-medium text-[var(--text-secondary)]">

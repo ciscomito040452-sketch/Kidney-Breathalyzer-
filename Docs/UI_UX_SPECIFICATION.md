@@ -140,12 +140,19 @@ Version: 1.1 (MVP — aligned with Example UX-UI.png)
 
 Pill badge แบบเต็ม — เก็บไว้สำหรับกรณีพิเศษเท่านั้น
 
-### DashboardLatestSection
+### PinnedHealthCard (ปักหมุด)
 
-Section ผลล่าสุดบน Dashboard — `PageSectionHeader` + `RiskScoreCard` + sensor cards คู่
+การ์ดสรุปแบบ Apple Health — category เล็ก, **value hero** ใหญ่, qualitative headline, sparkline/bar ใน footer
 
-- Card มาตรฐาน `rounded-2xl`, ไม่มี gradient
-- ตัวเลขคะแนน `text-3xl` + `RiskIndicator`
+| Token | Value | ใช้เมื่อ |
+|-------|-------|----------|
+| `--text-pinned-value` | 34px bold | ตัวเลขหลัก (ppb, คะแนน) |
+| `--text-pinned-headline` | 28px bold | สถานะคุณภาพ (`ควรติดตาม`) |
+| `--text-pinned-caption` | 13px | คำอธิบายรอง, ชื่อหมวด |
+| `--text-section-title` | 24px bold | หัวข้อ section (`ปักหมุด`) |
+
+- `variant="metric"` — ตัวเลขใหญ่บน, สถานะเป็น subtext (แอมโมเนีย/อะซิโทน)
+- `variant="qualitative"` (default) — คะแนน + headline สำหรับการคัดกรอง
 
 ### MeasurementStepper
 

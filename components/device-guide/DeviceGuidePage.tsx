@@ -1,3 +1,6 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Clock, Smartphone } from "lucide-react";
 import { DeviceGuideStepCard } from "@/components/device-guide/DeviceGuideStepCard";
@@ -10,16 +13,19 @@ import {
 } from "@/lib/device-guide/content";
 
 export function DeviceGuidePage() {
+  const router = useRouter();
+
   return (
     <main className="space-y-6 px-4 py-6">
       <div className="flex items-center gap-3">
-        <Link
-          href="/dashboard"
+        <button
+          type="button"
+          onClick={() => router.back()}
           className="flex h-10 w-10 items-center justify-center rounded-full bg-surface text-[var(--text-secondary)] transition-colors hover:text-accent-primary"
-          aria-label="กลับหน้าหลัก"
+          aria-label="กลับ"
         >
           <ArrowLeft className="h-5 w-5" strokeWidth={1.75} />
-        </Link>
+        </button>
         <div className="min-w-0">
           <h1 className="text-xl font-semibold">{DEVICE_GUIDE_INTRO.title}</h1>
           <p className="text-sm text-[var(--text-secondary)]">
@@ -28,7 +34,7 @@ export function DeviceGuidePage() {
         </div>
       </div>
 
-      <Card className="border-accent-primary/15 bg-gradient-to-br from-accent-primary/5 to-[var(--bg-primary)]">
+      <Card className="app-card app-card--pinned border-[var(--border-pinned)] bg-surface-elevated shadow-none">
         <CardContent className="space-y-3 pt-5">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent-primary/10 text-accent-primary">
             <Smartphone className="h-6 w-6" strokeWidth={1.75} aria-hidden />

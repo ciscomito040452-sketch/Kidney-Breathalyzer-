@@ -1,5 +1,5 @@
-import { redirect } from "next/navigation";
+import { MeasureInfoPage } from "@/components/measure/MeasureInfoPage";
 
-export default function MeasureRedirectPage() {
-  redirect("/dashboard");
+export default function MeasurePage() {
+  return <MeasureInfoPage />;
 }

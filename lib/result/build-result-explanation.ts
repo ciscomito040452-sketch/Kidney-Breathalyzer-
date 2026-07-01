@@ -22,7 +22,12 @@ export function buildResultExplanation(input: {
 }): string {
   const locale = input.locale ?? "th";
   const { measurement, measurements, riskFactors } = input;
-  const history = measurements.filter((m) => m.id !== measurement.id);
+  const measuredAt = new Date(measurement.measured_at).getTime();
+  const history = measurements.filter(
+    (m) =>
+      m.id !== measurement.id &&
+      new Date(m.measured_at).getTime() < measuredAt
+  );
   const trend = computeTrendContext(history, measurement.mq135_value);
   const ammoniaPpb = formatAmmoniaPpb(measurement.mq135_value);
   const acetonePpb = formatAcetonePpb(measurement.mq3_value);

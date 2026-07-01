@@ -64,28 +64,28 @@ function measurementSlotsForDay(
   daysFromLatest: number,
   rand: () => number
 ): number {
+  if (daysFromLatest === 0) return 1;
   if (daysFromLatest <= 6 && rand() > 0.4) return 2;
   return 1;
 }
 
 const DEMO_RISK_CYCLE: RiskLevel[] = ["low", "moderate", "high"];
 
-/** Curated rising trend — believable high risk (~72–78), not maxed at 100 */
+/** Curated last 7 days — smooth rising ammonia at moderate risk */
 function curatedSensorValues(daysFromLatest: number): {
   mq135_value: number;
   mq3_value: number;
 } | null {
-  if (daysFromLatest === 0) {
-    // Ammonia elevated for demo contrast; acetone normal (180 ppb < 225 threshold)
-    return { mq135_value: 308, mq3_value: 0.36 };
-  }
-  if (daysFromLatest === 1) {
-    return { mq135_value: 288, mq3_value: 0.4 };
-  }
-  if (daysFromLatest === 2) {
-    return { mq135_value: 268, mq3_value: 0.38 };
-  }
-  return null;
+  const curated: Record<number, { mq135_value: number; mq3_value: number }> = {
+    0: { mq135_value: 308, mq3_value: 0.36 },
+    1: { mq135_value: 288, mq3_value: 0.4 },
+    2: { mq135_value: 268, mq3_value: 0.38 },
+    3: { mq135_value: 255, mq3_value: 0.37 },
+    4: { mq135_value: 242, mq3_value: 0.35 },
+    5: { mq135_value: 230, mq3_value: 0.34 },
+    6: { mq135_value: 218, mq3_value: 0.33 },
+  };
+  return curated[daysFromLatest] ?? null;
 }
 
 function shouldRecordDay(

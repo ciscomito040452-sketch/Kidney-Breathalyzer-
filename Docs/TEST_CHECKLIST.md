@@ -25,6 +25,12 @@ Production: https://kidney-breathalyzer.vercel.app
 | 19 | Dashboard — สรุป + ปักหมุด(3) + ไฮไลต์ + เพิ่มเติม | PASS | redeploy | PinnedHealthCard pattern |
 | 20 | History — SummaryPageHeader + latest pinned hero | PASS | redeploy | qualitative headlines |
 | 21 | Apple Health cards — grouped list, iOS segmented control | PASS | — | components/health/* |
+| 22 | Pinned cards — value hero 34px + headline 28px | PASS | redeploy | metric variant sensors |
+| 23 | History rows — SensorStatusPill แทน raw ppb | PASS | redeploy | qualitative list |
+| 24 | Result sensors — level bar + CircleHelp | PASS | redeploy | ResultSensorRows |
+| 25 | Gamification — grouped card + 14-day dots | PASS | redeploy | DashboardGamificationSection |
+| 26 | `/measure` — หน้า info วัดที่อุปกรณ์ | PASS | redeploy | ไม่ redirect เปล่า |
+| 27 | Bottom nav ซ่อนบน profile/edit, guide/device | PASS | redeploy | drill-down pattern |
 
 ## Viewport (375px / 320px)
 

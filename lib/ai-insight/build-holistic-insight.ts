@@ -279,10 +279,25 @@ export function buildHolisticInsight(input: {
   const overallRiskLevel = scoreToRiskLevel(analytics.avgRiskScore);
   const sensorUi = getSensorUILabels(locale);
   const riskLabels = getRiskFullLabels(locale);
-  const ammoniaPpb = formatAmmoniaPpb(analytics.avgMq135);
-  const acetonePpb = formatAcetonePpb(analytics.avgMq3);
-  const ammoniaStatus = getAmmoniaStatus(analytics.avgMq135);
-  const acetoneStatus = getAcetoneStatus(analytics.avgMq3);
+  const sorted = [...input.measurements].sort(
+    (a, b) =>
+      new Date(b.measured_at).getTime() - new Date(a.measured_at).getTime()
+  );
+  const latest = sorted[0];
+  const latestAmmoniaPpb = latest
+    ? formatAmmoniaPpb(latest.mq135_value)
+    : formatAmmoniaPpb(analytics.avgMq135);
+  const latestAcetonePpb = latest
+    ? formatAcetonePpb(latest.mq3_value)
+    : formatAcetonePpb(analytics.avgMq3);
+  const ammoniaStatus = latest
+    ? getAmmoniaStatus(latest.mq135_value)
+    : getAmmoniaStatus(analytics.avgMq135);
+  const acetoneStatus = latest
+    ? getAcetoneStatus(latest.mq3_value)
+    : getAcetoneStatus(analytics.avgMq3);
+  const ammoniaPpb = latestAmmoniaPpb;
+  const acetonePpb = latestAcetonePpb;
 
   const summaryBullets =
     locale === "en"
@@ -315,16 +330,16 @@ export function buildHolisticInsight(input: {
       id: "ammonia",
       label:
         locale === "en"
-          ? `${sensorUi.ammonia.label} avg. ${ammoniaPpb} ${sensorUi.ammonia.unit} · ${statusLabel(ammoniaStatus)}`
-          : `${sensorUi.ammonia.label} เฉลี่ย ${ammoniaPpb} ${sensorUi.ammonia.unit} · ${statusLabel(ammoniaStatus)}`,
+          ? `${sensorUi.ammonia.label} ${ammoniaPpb} ${sensorUi.ammonia.unit} · ${statusLabel(ammoniaStatus)}`
+          : `${sensorUi.ammonia.label} ${ammoniaPpb} ${sensorUi.ammonia.unit} · ${statusLabel(ammoniaStatus)}`,
       tone: ammoniaStatus === "elevated" ? "attention" : "good",
     },
     {
       id: "acetone",
       label:
         locale === "en"
-          ? `${sensorUi.acetone.label} avg. ${acetonePpb} ${sensorUi.acetone.unit} · ${statusLabel(acetoneStatus)}`
-          : `${sensorUi.acetone.label} เฉลี่ย ${acetonePpb} ${sensorUi.acetone.unit} · ${statusLabel(acetoneStatus)}`,
+          ? `${sensorUi.acetone.label} ${acetonePpb} ${sensorUi.acetone.unit} · ${statusLabel(acetoneStatus)}`
+          : `${sensorUi.acetone.label} ${acetonePpb} ${sensorUi.acetone.unit} · ${statusLabel(acetoneStatus)}`,
       tone: acetoneStatus === "elevated" ? "attention" : "good",
     },
     {
@@ -342,7 +357,6 @@ export function buildHolisticInsight(input: {
     .replace("{days}", String(analytics.daySpan));
 
   const ammoniaName = sensorUi.ammonia.label.split(" ")[0];
-  const latest = input.measurements[0];
   const latestRiskLevel = latest?.risk_level ?? overallRiskLevel;
   const recommendation = buildTrendRecommendation(
     locale,

@@ -15,7 +15,6 @@ import { getSensorUILabels } from "@/lib/i18n/labels";
 import {
   getRiskQualitativeCaption,
   getRiskQualitativeHeadline,
-  getSensorQualitativeCaption,
   getSensorQualitativeHeadline,
 } from "@/lib/ui/qualitative-labels";
 import {
@@ -32,6 +31,7 @@ import {
   getAcetoneStatus,
   getAmmoniaStatus,
 } from "@/lib/sensors/status";
+import { scorePercent } from "@/lib/risk-engine/risk-zones";
 import { formatDateTimeLocale } from "@/lib/utils";
 import type { Measurement } from "@/types/measurement";
 
@@ -80,11 +80,13 @@ export function DashboardPinnedSection({
         category={translate("pinnedScreening")}
         timeLabel={timeLabel}
         headline={getRiskQualitativeHeadline(locale, latest.risk_level)}
-        caption={getRiskQualitativeCaption(
-          locale,
-          latest.risk_score,
-          riskDelta
-        )}
+        value={String(scorePercent(latest.risk_score))}
+        valueUnit="/100"
+        caption={
+          riskDelta != null
+            ? getRiskQualitativeCaption(locale, latest.risk_score, riskDelta)
+            : undefined
+        }
         href={`/result/${latest.id}`}
         visual={
           <RiskScoreRing
@@ -109,7 +111,9 @@ export function DashboardPinnedSection({
         category={translate("pinnedAmmonia")}
         timeLabel={timeLabel}
         headline={getSensorQualitativeHeadline(locale, ammoniaStatus)}
-        caption={getSensorQualitativeCaption(ammoniaPpb, sensorUi.ammonia.unit)}
+        value={String(ammoniaPpb)}
+        valueUnit={sensorUi.ammonia.unit}
+        variant="metric"
         onClick={() => setAmmoniaOpen(true)}
         visual={
           sparklines.ammonia.length >= 2 ? (
@@ -142,7 +146,9 @@ export function DashboardPinnedSection({
         category={translate("pinnedAcetone")}
         timeLabel={timeLabel}
         headline={getSensorQualitativeHeadline(locale, acetoneStatus)}
-        caption={getSensorQualitativeCaption(acetonePpb, sensorUi.acetone.unit)}
+        value={String(acetonePpb)}
+        valueUnit={sensorUi.acetone.unit}
+        variant="metric"
         onClick={() => setAcetoneOpen(true)}
         visual={
           sparklines.acetone.length >= 2 ? (

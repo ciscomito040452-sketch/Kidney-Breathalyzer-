@@ -17,8 +17,10 @@
   --metric-acetone: #7eb8e0;
   --metric-acetone-rgb: 126 184 224;
   --text-summary-title: 34px;
-  --text-pinned-headline: 22px;
+  --text-pinned-headline: 28px;
+  --text-pinned-value: 34px;
   --text-pinned-caption: 13px;
+  --text-section-title: 24px;
   --shadow-grouped: 0 1px 3px rgba(0, 0, 0, 0.04);
   --shadow-pinned: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(0, 0, 0, 0.07);
   --border-pinned: rgba(0, 0, 0, 0.07);
@@ -173,8 +175,24 @@ html[data-display="dark"] {
 
   .text-pinned-headline {
     font-size: var(--text-pinned-headline);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+  }
+
+  .text-pinned-value {
+    font-size: var(--text-pinned-value);
+    line-height: 1.1;
+    letter-spacing: -0.03em;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .text-section-title {
+    font-size: var(--text-section-title);
     line-height: 1.2;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
+    font-weight: 700;
   }
 
   .text-pinned-caption {
