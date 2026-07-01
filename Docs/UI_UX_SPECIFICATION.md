@@ -251,23 +251,27 @@ Card เดียว — ไม่ใช่ chat
 
 ```
 ┌─────────────────────────┐
+│      [Logo 72px mobile] │  ← 96px บนจอใหญ่
+│   Kidney Breathalyzer   │  ← hero 26-28px
+│   คัดกรองความเสี่ยง...  │  ← tagline + screening badge
 │                         │
-│      [Logo 80px]        │
+│  ใช้งานอย่างไร      ▼   │  ← accordion (พับค่าเริ่มต้นบนมือถือ ≤430px)
+│  [ขั้นตอน 1-3 เมื่อเปิด] │
 │                         │
-│   Kidney Breathalyzer   │  ← hero 28-32px
-│   คัดกรองความเสี่ยง     │  ← tagline 16px secondary
-│   โรคไตจากลมหายใจ       │
-│                         │
-│  ┌───────────────────┐  │
-│  │  เริ่มต้นใช้งาน    │  │  ← primary CTA
+│  ┌───────────────────┐  │  ← sticky footer
+│  │  เริ่มต้นใช้งาน    │  │
 │  └───────────────────┘  │
 │  ┌───────────────────┐  │
-│  │    ดู Demo        │  │  ← secondary/outline CTA
+│  │    ดู Demo        │  │
 │  └───────────────────┘  │
-│                         │
+│  ไม่ต้องล็อกอิน · 30 วัน │
 │  [disclaimer caption]   │
 └─────────────────────────┘
 ```
+
+- บนมือถือ (≤430px): accordion **พับค่าเริ่มต้น** — CTA ทั้งสองปุ่มต้องเห็นในหน้าจอแรก
+- บนจอใหญ่ (≥431px): accordion **เปิดค่าเริ่มต้น**
+- CTA footer ใช้ `sticky bottom-0` + safe-area inset
 
 ### Dashboard (`/dashboard`) — Apple Health Summary Pattern
 

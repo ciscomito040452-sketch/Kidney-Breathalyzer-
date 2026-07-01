@@ -7,7 +7,7 @@ Production: https://kidney-breathalyzer.vercel.app
 | 1 | `npm run lint` | PASS | — | warning font เท่านั้น |
 | 2 | `npm run build` | PASS | — | |
 | 3 | `npm run test` | PASS | — | Vitest unit tests |
-| 4 | Landing — logo, disclaimer, ดู Demo | PASS | PASS | แก้ logo.svg แล้ว |
+| 4 | Landing — logo, accordion, ดู Demo sticky | PASS | redeploy | accordion พับบนมือถือ, CTA sticky |
 | 5 | Dashboard — โหมดสาธิต, sync animation | PASS | redeploy | กำลังซิงค์ → เชื่อมต่อ |
 | 6 | Dashboard — risk, trend, gamification | PASS | redeploy | 30 วัน seed |
 | 7 | History — กรอง risk + กราฟ | PASS | redeploy | truncate mobile |
