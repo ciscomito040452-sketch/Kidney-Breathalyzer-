@@ -92,14 +92,9 @@ export function OnboardingPageClient() {
     <main className="flex min-h-[calc(100vh-2rem)] flex-col px-4 py-6">
       <header className="mb-6 space-y-4">
         <OnboardingStepIndicator currentStep={step} totalSteps={TOTAL_STEPS} />
-        <div>
-          <p className="text-xs text-[var(--text-secondary)]">
-            {translate("onboardingStep")} {step}/{TOTAL_STEPS}
-          </p>
-          <h1 className="text-summary-title font-semibold tracking-tight">
-            {translate("onboardingTitle")}
-          </h1>
-        </div>
+        <h1 className="text-summary-title font-semibold tracking-tight">
+          {translate("onboardingTitle")}
+        </h1>
       </header>
 
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain">
