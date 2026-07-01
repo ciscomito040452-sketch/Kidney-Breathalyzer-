@@ -94,8 +94,8 @@ export function HistoryPageClient({
         showGreeting={false}
       />
 
-      <HealthGroupedCard>
-        <div className="space-y-3 p-4">
+      <HealthGroupedCard className="app-card--pinned">
+        <div className="space-y-3 p-3">
           <HistoryPeriodControl
             options={HISTORY_PERIOD_OPTIONS}
             value={period}

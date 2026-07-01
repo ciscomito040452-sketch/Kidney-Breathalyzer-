@@ -18,12 +18,12 @@ export function AppLogo({
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/Logo.png"
+      src="/logo.svg"
       alt={APP_NAME}
       width={size}
       height={size}
       className={cn(
-        "object-cover",
+        "object-contain",
         isMark
           ? "app-logo-mark rounded-xl bg-surface ring-1 ring-border-subtle"
           : "rounded-[22px] shadow-card",

@@ -1,6 +1,7 @@
 "use client";
 
 import { SectionHeader, SummaryPageHeader } from "@/components/health";
+import { DashboardGamificationSection } from "@/components/dashboard/DashboardGamificationSection";
 import { DashboardHighlightsSection } from "@/components/dashboard/DashboardHighlightsSection";
 import { DashboardMoreSection } from "@/components/dashboard/DashboardMoreSection";
 import { DashboardPinnedSection } from "@/components/dashboard/DashboardPinnedSection";
@@ -67,10 +68,8 @@ export function DashboardPageClient({
 
       <div className="space-y-3">
         <SectionHeader title={translate("moreSection")} />
-        <DashboardMoreSection
-          lastMeasuredAt={latest?.measured_at ?? null}
-          gamification={gamification}
-        />
+        <DashboardMoreSection lastMeasuredAt={latest?.measured_at ?? null} />
+        <DashboardGamificationSection gamification={gamification} />
       </div>
 
       {latest && latest.risk_level !== "low" && !doctorCta.show && (

@@ -38,7 +38,7 @@ export function DisplayModeToggle() {
               className={cn(
                 "relative z-[1] flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-sm font-medium transition-colors",
                 active
-                  ? "text-accent-primary"
+                  ? "text-[var(--text-primary)] font-semibold"
                   : "text-[var(--text-secondary)]"
               )}
               aria-pressed={active}
@@ -52,7 +52,7 @@ export function DisplayModeToggle() {
           );
         })}
         <div
-          className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[var(--bg-fill)] shadow-card transition-transform duration-200 ease-out"
+          className="pointer-events-none absolute inset-y-1 left-1 w-[calc(50%-4px)] rounded-lg bg-[var(--bg-surface-elevated)] shadow-sm transition-transform duration-200 ease-out"
           style={{
             transform:
               displayMode === "dark" ? "translateX(100%)" : "translateX(0)",

@@ -1,7 +1,7 @@
 "use client";
 
-import type { LucideIcon } from "lucide-react";
 import { CalendarCheck, Wind } from "lucide-react";
+import { SectionHeader } from "@/components/health/SectionHeader";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { cn } from "@/lib/utils";
 
@@ -10,48 +10,8 @@ interface ProfileStatsCardProps {
   currentStreak: number;
 }
 
-interface StatTileProps {
-  icon: LucideIcon;
-  value: string;
-  label: string;
-  variant: "measure" | "streak";
-}
-
-function StatIconBadge({
-  icon: Icon,
-  variant,
-}: {
-  icon: LucideIcon;
-  variant: StatTileProps["variant"];
-}) {
-  return (
-    <div
-      className={cn(
-        "mb-4 flex h-14 w-14 items-center justify-center rounded-2xl",
-        variant === "measure"
-          ? "bg-[var(--accent-tint)] text-accent-primary"
-          : "bg-[var(--accent-tint-strong)] text-accent-primary"
-      )}
-      aria-hidden
-    >
-      <Icon className="h-6 w-6" strokeWidth={1.75} />
-    </div>
-  );
-}
-
-function StatTile({ icon, value, label, variant }: StatTileProps) {
-  return (
-    <div className="bg-surface p-4">
-      <StatIconBadge icon={icon} variant={variant} />
-      <p className="text-3xl font-semibold tabular-nums leading-none tracking-tight">
-        {value}
-      </p>
-      <p className="mt-2 text-sm font-medium text-[var(--text-secondary)]">
-        {label}
-      </p>
-    </div>
-  );
-}
+const statCardClass =
+  "app-card app-card--pinned flex flex-col rounded-2xl p-4";
 
 export function ProfileStatsCard({
   totalMeasurements,
@@ -59,22 +19,44 @@ export function ProfileStatsCard({
 }: ProfileStatsCardProps) {
   const { translate } = usePreferences();
 
+  const stats = [
+    {
+      icon: Wind,
+      value: String(totalMeasurements),
+      label: translate("statMeasurements"),
+      tint: "bg-[rgb(var(--metric-screening-rgb)/0.12)] text-[var(--metric-screening)]",
+    },
+    {
+      icon: CalendarCheck,
+      value: String(currentStreak),
+      label: translate("statStreak"),
+      tint: "bg-[rgb(var(--metric-ammonia-rgb)/0.12)] text-[var(--metric-ammonia)]",
+    },
+  ] as const;
+
   return (
-    <section aria-label={translate("healthSummary")}>
-      <p className="mb-3 text-base font-semibold">{translate("healthSummary")}</p>
-      <div className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-[var(--surface-card-border)] bg-border-subtle shadow-card app-card">
-        <StatTile
-          icon={Wind}
-          value={String(totalMeasurements)}
-          label={translate("statMeasurements")}
-          variant="measure"
-        />
-        <StatTile
-          icon={CalendarCheck}
-          value={String(currentStreak)}
-          label={translate("statStreak")}
-          variant="streak"
-        />
+    <section className="space-y-3" aria-label={translate("healthSummary")}>
+      <SectionHeader title={translate("healthSummary")} />
+      <div className="grid grid-cols-2 gap-3">
+        {stats.map(({ icon: Icon, value, label, tint }) => (
+          <div key={label} className={statCardClass}>
+            <span
+              className={cn(
+                "mb-3 flex h-9 w-9 items-center justify-center rounded-xl",
+                tint
+              )}
+              aria-hidden
+            >
+              <Icon className="h-4 w-4" strokeWidth={1.75} />
+            </span>
+            <p className="text-3xl font-semibold tabular-nums leading-none tracking-tight">
+              {value}
+            </p>
+            <p className="mt-2 text-pinned-caption font-medium text-[var(--text-secondary)]">
+              {label}
+            </p>
+          </div>
+        ))}
       </div>
     </section>
   );

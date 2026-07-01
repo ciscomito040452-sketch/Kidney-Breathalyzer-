@@ -8,8 +8,12 @@ export const metadata: Metadata = {
   title: "Kidney Breathalyzer",
   description: "คัดกรองความเสี่ยงโรคไตจากลมหายใจ",
   icons: {
-    icon: "/favicon.svg",
-    apple: "/Logo.png",
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/logo.svg", type: "image/svg+xml" },
+    ],
+    apple: "/logo.svg",
+    shortcut: "/favicon.svg",
   },
 };
 

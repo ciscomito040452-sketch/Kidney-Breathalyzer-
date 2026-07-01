@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import {
   Bell,
@@ -9,19 +8,27 @@ import {
   Globe,
   Hand,
   LogOut,
+  Moon,
   Shield,
+  Smartphone,
   User,
 } from "lucide-react";
-import { useDemo } from "@/components/providers/DemoProvider";
-import { usePreferences } from "@/components/providers/PreferencesProvider";
-import { DashboardDeviceInfo } from "@/components/dashboard/DashboardDeviceInfo";
+import { DeviceStatusBadge } from "@/components/dashboard/DeviceStatusBadge";
 import { DisplayModeToggle } from "@/components/profile/DisplayModeToggle";
 import { LanguageSelector } from "@/components/profile/LanguageSelector";
 import { ProfileAvatar } from "@/components/profile/ProfileAvatar";
 import { ProfileStatsCard } from "@/components/profile/ProfileStatsCard";
-import { AppLogo } from "@/components/shared/AppLogo";
-import { Card, CardContent } from "@/components/ui/card";
+import { useDemo } from "@/components/providers/DemoProvider";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
+import {
+  HealthGroupedCard,
+  HealthGroupedDivider,
+  HealthListRow,
+  SectionHeader,
+  SummaryPageHeader,
+} from "@/components/health";
 import { ROUTE_DEVICE_GUIDE, ROUTE_PROFILE_EDIT } from "@/lib/constants";
+import { resolveDeviceStatus } from "@/lib/device/status";
 import { formatGender, getGreeting } from "@/lib/i18n/messages";
 import {
   getProfileDisplayFromStorage,
@@ -29,6 +36,7 @@ import {
   getStoredOnboardingProfile,
 } from "@/lib/profile/onboarding-storage";
 import { summarizeRiskFactorLabels } from "@/lib/profile/risk-factor-labels";
+import { formatDateTimeThai } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 
 interface ProfilePageClientProps {
@@ -88,7 +96,6 @@ export function ProfilePageClient({
     initials: "KB",
   });
   const [riskSummary, setRiskSummary] = useState<string[]>([]);
-  const pathname = usePathname();
 
   useEffect(() => {
     const display = getProfileDisplayFromStorage();
@@ -108,7 +115,7 @@ export function ProfilePageClient({
         stored?.risk_factor_other ?? null
       )
     );
-  }, [locale, pathname]);
+  }, [locale]);
 
   const displayName =
     profile.displayName.trim() || translate("defaultDisplayName");
@@ -119,133 +126,169 @@ export function ProfilePageClient({
     profile.gender ? formatGender(locale, profile.gender) : null,
   ].filter(Boolean);
 
+  const deviceStatus = resolveDeviceStatus(lastMeasuredAt, isDemo);
+
   return (
-    <main className="space-y-6 px-4 py-6">
-      <header className="space-y-1">
-        <p className="text-pinned-caption text-[var(--text-secondary)]">
-          {getGreeting(locale)}, {displayName}
-        </p>
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex min-w-0 items-center gap-4">
-            <ProfileAvatar initials={profile.initials} />
-            <div className="min-w-0">
-              <h1 className="truncate text-summary-title font-semibold tracking-tight">
-                {translate("profileTitle")}
-              </h1>
-              {metaParts.length > 0 && (
-                <p className="text-pinned-caption text-[var(--text-secondary)]">
-                  {metaParts.join(" · ")}
-                </p>
-              )}
-            </div>
-          </div>
-          <AppLogo size={36} variant="mark" className="h-9 w-9 shrink-0" />
+    <main className="space-y-6 px-4 py-6 pb-8">
+      <SummaryPageHeader titleKey="profileTitle" showGreeting={false} />
+
+      <Link
+        href={ROUTE_PROFILE_EDIT}
+        className="app-card app-card--pinned kb-fade-up flex items-center gap-4 rounded-2xl p-4 transition-transform active:scale-[0.99]"
+      >
+        <ProfileAvatar initials={profile.initials} size="xl" />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-pinned-headline font-semibold text-[var(--text-primary)]">
+            {displayName}
+          </p>
+          <p className="mt-0.5 text-pinned-caption text-[var(--text-secondary)]">
+            {getGreeting(locale)}
+            {metaParts.length > 0 && ` · ${metaParts.join(" · ")}`}
+          </p>
+          <p className="mt-2 text-xs font-medium text-accent-primary">
+            {translate("editProfileLink")}
+          </p>
         </div>
-      </header>
+        <ChevronRight
+          className="h-4 w-4 shrink-0 text-[var(--text-secondary)]"
+          strokeWidth={2}
+          aria-hidden
+        />
+      </Link>
 
       <ProfileStatsCard
         totalMeasurements={totalMeasurements}
         currentStreak={currentStreak}
       />
 
-      <DashboardDeviceInfo lastMeasuredAt={lastMeasuredAt} />
-
-      <Card className="overflow-hidden p-0">
-        <Link
-          href={ROUTE_PROFILE_EDIT}
-          className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3.5 transition-colors hover:bg-surface-elevated/80"
-        >
-          <div className="flex min-w-0 items-center gap-3">
-            <User className="h-5 w-5 shrink-0 text-accent-primary" />
-            <span className="text-sm">{translate("personalInfo")}</span>
-          </div>
-          <div className="flex min-w-0 items-center gap-1 text-sm text-[var(--text-secondary)]">
-            <span className="truncate">{displayName}</span>
-            <ChevronRight className="h-4 w-4 shrink-0 opacity-60" />
-          </div>
-        </Link>
-
-        <div className="flex items-center justify-between gap-3 border-b border-border-subtle px-4 py-3.5">
-          <div className="flex items-center gap-3">
-            <Bell className="h-5 w-5 shrink-0 text-accent-primary" />
-            <span className="text-sm">{translate("notifications")}</span>
-          </div>
-          <SettingsToggle
-            enabled={preferences.notificationsEnabled}
-            onChange={setNotificationsEnabled}
-            label={translate("notifications")}
+      <section className="space-y-3">
+        <SectionHeader title={translate("settingsSection")} />
+        <HealthGroupedCard className="app-card--pinned">
+          <HealthListRow
+            icon={User}
+            title={translate("personalInfo")}
+            detail={displayName}
+            href={ROUTE_PROFILE_EDIT}
           />
-        </div>
-
-        <div className="border-b border-border-subtle px-4 py-3.5">
-          <div className="mb-3 flex items-center justify-between">
+          <HealthGroupedDivider />
+          <HealthListRow
+            icon={Bell}
+            title={translate("notifications")}
+            detail={
+              preferences.notificationsEnabled
+                ? translate("notificationsOn")
+                : translate("notificationsOff")
+            }
+            trailing={
+              <SettingsToggle
+                enabled={preferences.notificationsEnabled}
+                onChange={setNotificationsEnabled}
+                label={translate("notifications")}
+              />
+            }
+            showChevron={false}
+          />
+          <HealthGroupedDivider />
+          <div className="space-y-3 px-4 py-3.5">
             <div className="flex items-center gap-3">
-              <Globe className="h-5 w-5 text-accent-primary" />
-              <span className="text-sm">{translate("language")}</span>
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-tint)] text-accent-primary">
+                <Globe className="h-4 w-4" strokeWidth={1.75} />
+              </span>
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                {translate("language")}
+              </p>
             </div>
-            <span className="text-sm text-[var(--text-secondary)]">
-              {locale === "th"
-                ? translate("languageTh")
-                : translate("languageEn")}
-            </span>
+            <LanguageSelector />
           </div>
-          <LanguageSelector />
-        </div>
-
-        <div className="px-4 py-3.5">
-          <div className="mb-3 flex items-center gap-3">
-            <Hand className="h-5 w-5 text-accent-primary" />
-            <span className="text-sm">{translate("displayMode")}</span>
+          <HealthGroupedDivider />
+          <div className="space-y-3 px-4 py-3.5">
+            <div className="flex items-center gap-3">
+              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[var(--accent-tint)] text-accent-primary">
+                <Moon className="h-4 w-4" strokeWidth={1.75} />
+              </span>
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                {translate("displayMode")}
+              </p>
+            </div>
+            <DisplayModeToggle />
           </div>
-          <DisplayModeToggle />
-        </div>
-      </Card>
+          <HealthGroupedDivider />
+          <HealthListRow
+            icon={Smartphone}
+            title={translate("deviceStatus")}
+            detail={
+              lastMeasuredAt
+                ? `${translate("lastSync")} · ${formatDateTimeThai(lastMeasuredAt)}`
+                : undefined
+            }
+            trailing={<DeviceStatusBadge status={deviceStatus} />}
+            showChevron={false}
+          />
+          <HealthGroupedDivider />
+          <HealthListRow
+            icon={Smartphone}
+            title={translate("deviceGuide")}
+            href={ROUTE_DEVICE_GUIDE}
+          />
+        </HealthGroupedCard>
+      </section>
 
-      <Card>
-        <CardContent className="space-y-2 pt-4">
-          <div className="flex items-center gap-2">
-            <Shield className="h-4 w-4 text-accent-primary" strokeWidth={1.75} />
-            <p className="text-sm font-semibold">{translate("healthFactors")}</p>
+      <section className="space-y-3">
+        <SectionHeader title={translate("healthFactors")} />
+        <HealthGroupedCard className="app-card--pinned">
+          <div className="space-y-3 px-4 py-4">
+            <div className="flex items-center gap-2">
+              <Shield
+                className="h-4 w-4 text-accent-primary"
+                strokeWidth={1.75}
+                aria-hidden
+              />
+              <p className="text-sm font-medium text-[var(--text-primary)]">
+                {translate("healthFactors")}
+              </p>
+            </div>
+            {riskSummary.length > 0 ? (
+              <div className="flex flex-wrap gap-2">
+                {riskSummary.map((factor) => (
+                  <span
+                    key={factor}
+                    className="inline-flex rounded-full bg-[var(--accent-tint)] px-2.5 py-1 text-xs font-medium text-accent-primary"
+                  >
+                    {factor}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-pinned-caption text-[var(--text-secondary)]">
+                {translate("noRiskFactors")}
+              </p>
+            )}
+            <p className="text-pinned-caption leading-relaxed text-[var(--text-secondary)]">
+              {translate("privacyNote")}
+            </p>
           </div>
-          <p className="text-sm text-[var(--text-secondary)]">
-            {riskSummary.length > 0
-              ? riskSummary.join(" · ")
-              : translate("noRiskFactors")}
-          </p>
-          <p className="text-xs leading-relaxed text-[var(--text-secondary)]">
-            {translate("privacyNote")}
-          </p>
-        </CardContent>
-      </Card>
-
-      <p className="text-center">
-        <Link
-          href={ROUTE_DEVICE_GUIDE}
-          className="text-sm font-medium text-accent-primary"
-        >
-          {translate("deviceGuide")}
-        </Link>
-      </p>
+        </HealthGroupedCard>
+      </section>
 
       {isDemo && (
         <button
           type="button"
           onClick={exitDemoMode}
-          className="flex w-full items-center justify-center gap-2 rounded-xl border border-border-subtle bg-surface py-3 text-sm font-medium text-[var(--text-secondary)]"
+          className="app-card app-card--pinned flex w-full items-center justify-center gap-2 rounded-2xl py-3.5 text-sm font-medium text-[var(--text-secondary)] transition-transform active:scale-[0.99]"
         >
           <LogOut className="h-4 w-4" />
           {translate("exitDemo")}
         </button>
       )}
 
-      <p className="text-center text-xs text-[var(--text-secondary)]">
-        <Link href="/login" className="text-accent-primary">
+      <p className="text-center text-pinned-caption text-[var(--text-secondary)]">
+        <Link href="/login" className="font-medium text-accent-primary">
           {translate("loginReal")}
         </Link>{" "}
         {translate("loginRealHint")}
       </p>
 
-      <p className="pb-2 text-center text-[10px] text-[var(--text-secondary)]">
+      <p className="pb-2 text-center text-[11px] text-[var(--text-secondary)]">
         {translate("appVersion")} 0.1.0
       </p>
     </main>

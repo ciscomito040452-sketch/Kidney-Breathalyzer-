@@ -7,7 +7,7 @@ import type { AvatarPreference } from "@/lib/preferences/profile-preferences";
 
 interface ProfileAvatarProps {
   initials: string;
-  size?: "md" | "lg";
+  size?: "md" | "lg" | "xl";
   className?: string;
 }
 
@@ -28,7 +28,7 @@ function renderAvatarContent(
 
   if (avatar.type === "emoji" && avatar.emoji) {
     return (
-      <span className="text-3xl leading-none" aria-hidden>
+      <span className="text-4xl leading-none" aria-hidden>
         {avatar.emoji}
       </span>
     );
@@ -45,7 +45,12 @@ export function ProfileAvatar({
   className,
 }: ProfileAvatarProps) {
   const { preferences } = usePreferences();
-  const dimension = size === "lg" ? "h-16 w-16" : "h-12 w-12";
+  const dimension =
+    size === "xl"
+      ? "h-[72px] w-[72px]"
+      : size === "lg"
+        ? "h-16 w-16"
+        : "h-12 w-12";
 
   return (
     <div

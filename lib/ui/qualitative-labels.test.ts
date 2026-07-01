@@ -13,7 +13,8 @@ describe("qualitative-labels", () => {
   });
 
   it("formats score caption with optional delta", () => {
-    expect(getRiskQualitativeCaption("th", 0.72)).toContain("72");
+    expect(getRiskQualitativeCaption("th", 0.72)).toContain("72/100");
+    expect(getRiskQualitativeCaption("th", 0.72)).not.toContain("/100/100");
     expect(getRiskQualitativeCaption("th", 0.72, 5)).toContain("เพิ่มขึ้น");
   });
 

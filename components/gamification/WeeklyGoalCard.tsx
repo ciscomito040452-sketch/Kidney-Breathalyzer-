@@ -3,6 +3,10 @@
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+
+const gamificationCardClass =
+  "app-card--pinned border-[var(--border-pinned)] bg-surface-elevated shadow-none";
 
 interface WeeklyGoalCardProps {
   count: number;
@@ -16,7 +20,7 @@ export function WeeklyGoalCard({ count, target }: WeeklyGoalCardProps) {
   const progressPercent = Math.min(100, (count / target) * 100);
 
   return (
-    <Card>
+    <Card className={gamificationCardClass}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium text-[var(--text-secondary)]">
           {translate("weeklyGoalTitle")}

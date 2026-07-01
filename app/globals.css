@@ -20,6 +20,8 @@
   --text-pinned-headline: 22px;
   --text-pinned-caption: 13px;
   --shadow-grouped: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-pinned: 0 1px 2px rgba(0, 0, 0, 0.05), 0 4px 14px rgba(0, 0, 0, 0.07);
+  --border-pinned: rgba(0, 0, 0, 0.07);
   --accent-secondary: #7dd3fc;
   --accent-secondary-rgb: 125 211 252;
   --risk-low: #60a5fa;
@@ -153,9 +155,14 @@ html[data-display="dark"] {
   }
 
   .app-card--pinned {
-    box-shadow: var(--shadow-grouped);
-    border: none;
+    box-shadow: var(--shadow-pinned);
+    border: 1px solid var(--border-pinned);
     background-color: var(--bg-surface-elevated);
+  }
+
+  html[data-display="dark"] .app-card--pinned {
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
   }
 
   .text-summary-title {
