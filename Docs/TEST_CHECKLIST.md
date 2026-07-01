@@ -31,6 +31,12 @@ Production: https://kidney-breathalyzer.vercel.app
 | 25 | Gamification — grouped card + 14-day dots | PASS | redeploy | DashboardGamificationSection |
 | 26 | `/measure` — หน้า info วัดที่อุปกรณ์ | PASS | redeploy | ไม่ redirect เปล่า |
 | 27 | Bottom nav ซ่อนบน profile/edit, guide/device | PASS | redeploy | drill-down pattern |
+| 28 | Tab switch — page enter + nav indicator slide | PASS | redeploy | MotionPage + BottomNav |
+| 29 | Landing Demo — brief enter delay | PASS | redeploy | LandingActions |
+| 30 | Onboarding — step slide forward/back | PASS | redeploy | MotionCrossfade |
+| 31 | Result — push transition จาก history | PASS | redeploy | MotionPushPage template |
+| 32 | Sheets — backdrop fade + sheet down | PASS | redeploy | SheetScaffold |
+| 33 | Reduced motion — animations disabled | PASS | — | prefers-reduced-motion |
 
 ## Viewport (375px / 320px)
 

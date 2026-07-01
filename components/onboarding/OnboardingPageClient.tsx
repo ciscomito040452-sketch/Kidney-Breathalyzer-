@@ -8,6 +8,10 @@ import { HealthGroupedCard } from "@/components/health/HealthGroupedCard";
 import { OnboardingDisclaimerStep } from "@/components/onboarding/OnboardingDisclaimerStep";
 import { OnboardingStepIndicator } from "@/components/onboarding/OnboardingStepIndicator";
 import { RiskFactorPicker } from "@/components/profile/RiskFactorPicker";
+import {
+  MotionCrossfade,
+  type MotionDirection,
+} from "@/components/motion/MotionCrossfade";
 import { Button } from "@/components/ui/button";
 import { Input, Select } from "@/components/ui/input";
 import { useDemo } from "@/components/providers/DemoProvider";
@@ -32,6 +36,7 @@ export function OnboardingPageClient() {
   );
 
   const [step, setStep] = useState(initialStep);
+  const [stepDirection, setStepDirection] = useState<MotionDirection>("none");
   const [displayName, setDisplayName] = useState("");
   const [age, setAge] = useState("");
   const [gender, setGender] = useState("");
@@ -46,6 +51,7 @@ export function OnboardingPageClient() {
       const parsed = Number(stepParam);
       if (parsed >= 1 && parsed <= TOTAL_STEPS) {
         setStep(parsed);
+        setStepDirection("none");
       }
     }
   }, [searchParams]);
@@ -97,8 +103,9 @@ export function OnboardingPageClient() {
         </h1>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain">
-        {step === 1 && (
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+        <MotionCrossfade motionKey={step} direction={stepDirection}>
+          {step === 1 && (
           <HealthGroupedCard variant="elevated">
             <div className="space-y-4 p-4">
               <p className="text-sm text-[var(--text-secondary)]">
@@ -203,6 +210,7 @@ export function OnboardingPageClient() {
             })}
           </section>
         )}
+        </MotionCrossfade>
       </div>
 
       <div className="mt-6 flex gap-3">
@@ -211,7 +219,10 @@ export function OnboardingPageClient() {
             type="button"
             variant="secondary"
             className="flex-1"
-            onClick={() => setStep((s) => s - 1)}
+            onClick={() => {
+              setStepDirection("back");
+              setStep((s) => s - 1);
+            }}
           >
             {translate("back")}
           </Button>
@@ -221,7 +232,10 @@ export function OnboardingPageClient() {
             type="button"
             className="flex-1"
             disabled={!canProceed}
-            onClick={() => setStep((s) => s + 1)}
+            onClick={() => {
+              setStepDirection("forward");
+              setStep((s) => s + 1);
+            }}
           >
             {translate("next")}
           </Button>

@@ -15,6 +15,8 @@ import {
   SummaryPageHeader,
 } from "@/components/health";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { StaggerSection } from "@/components/shared/StaggerSection";
+import { MotionCrossfade } from "@/components/motion/MotionCrossfade";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import {
   filterMeasurementsByPeriod,
@@ -94,64 +96,71 @@ export function HistoryPageClient({
         showGreeting={false}
       />
 
-      <HealthGroupedCard className="app-card--pinned">
-        <div className="space-y-3 p-3">
-          <HistoryPeriodControl
-            options={HISTORY_PERIOD_OPTIONS}
-            value={period}
-            onChange={setPeriod}
-            formatLabel={(p) => getHistoryPeriodLabel(locale, p)}
-          />
-          <HistoryRiskFilterChips value={riskFilter} onChange={setRiskFilter} />
-        </div>
-      </HealthGroupedCard>
-
-      {latestInFilter && (
-        <HistoryLatestHero
-          key={`${period}-${riskFilter}-${latestInFilter.id}`}
-          measurement={latestInFilter}
-          measurements={initialMeasurements}
-        />
-      )}
-
-      <section className="space-y-3">
-        <SectionHeader
-          title={translate("historyListTitle")}
-          action={
-            <span className="text-pinned-caption text-[var(--text-secondary)]">
-              {listSubtitle}
-            </span>
-          }
-        />
-
-        {filtered.length === 0 ? (
-          <EmptyState
-            icon={ClipboardList}
-            message={translate("historyEmpty")}
-          />
-        ) : (
-          <div className="space-y-5" key={`${period}-${riskFilter}-groups`}>
-            {groups.map((group) => (
-              <HistoryDayGroupSection key={group.key} group={group} />
-            ))}
+      <StaggerSection className="space-y-6">
+        <HealthGroupedCard className="app-card--pinned">
+          <div className="space-y-3 p-3">
+            <HistoryPeriodControl
+              options={HISTORY_PERIOD_OPTIONS}
+              value={period}
+              onChange={setPeriod}
+              formatLabel={(p) => getHistoryPeriodLabel(locale, p)}
+            />
+            <HistoryRiskFilterChips value={riskFilter} onChange={setRiskFilter} />
           </div>
-        )}
-      </section>
+        </HealthGroupedCard>
 
-      <section className="space-y-3">
-        <SectionHeader title={translate("highlightsSection")} />
-        <TrendChart
-          data={trendData}
-          title={getPeriodChartTitle(locale, period)}
-          metric={metric}
-          onMetricChange={setMetric}
-          metricOptions={metricOptions}
-          formatMetricLabel={(m) => metricLabels[m]}
-        />
-        {trendInsight && <TrendChartInsight insight={trendInsight} />}
-      </section>
+        <MotionCrossfade motionKey={`${period}-${riskFilter}-hero`}>
+          {latestInFilter && (
+            <HistoryLatestHero
+              measurement={latestInFilter}
+              measurements={initialMeasurements}
+            />
+          )}
+        </MotionCrossfade>
 
-      <DisclaimerBanner />
+        <section className="space-y-3">
+          <SectionHeader
+            title={translate("historyListTitle")}
+            action={
+              <span className="text-pinned-caption text-[var(--text-secondary)]">
+                {listSubtitle}
+              </span>
+            }
+          />
+
+          <MotionCrossfade motionKey={`${period}-${riskFilter}-list`}>
+            {filtered.length === 0 ? (
+              <EmptyState
+                icon={ClipboardList}
+                message={translate("historyEmpty")}
+              />
+            ) : (
+              <div className="space-y-5">
+                {groups.map((group) => (
+                  <HistoryDayGroupSection key={group.key} group={group} />
+                ))}
+              </div>
+            )}
+          </MotionCrossfade>
+        </section>
+
+        <section className="space-y-3">
+          <SectionHeader title={translate("highlightsSection")} />
+          <MotionCrossfade motionKey={`${period}-${riskFilter}-${metric}-chart`}>
+            <TrendChart
+              data={trendData}
+              title={getPeriodChartTitle(locale, period)}
+              metric={metric}
+              onMetricChange={setMetric}
+              metricOptions={metricOptions}
+              formatMetricLabel={(m) => metricLabels[m]}
+            />
+            {trendInsight && <TrendChartInsight insight={trendInsight} />}
+          </MotionCrossfade>
+        </section>
+
+        <DisclaimerBanner />
+      </StaggerSection>
     </main>
   );
 }

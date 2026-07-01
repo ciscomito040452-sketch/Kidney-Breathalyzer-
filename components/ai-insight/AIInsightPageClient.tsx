@@ -10,6 +10,7 @@ import { InsightWellnessTipsCard } from "@/components/ai-insight/InsightWellness
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { AIInsightPageHeader } from "@/components/ai-insight/AIInsightPageHeader";
 import { SectionHeader } from "@/components/health/SectionHeader";
+import { StaggerSection } from "@/components/shared/StaggerSection";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -66,7 +67,7 @@ export function AIInsightPageClient({
           </CardContent>
         </Card>
       ) : (
-        <>
+        <StaggerSection className="space-y-6">
           <div className="space-y-3">
             <SectionHeader title={translate("pinnedSection")} />
             <HolisticInsightCard
@@ -95,7 +96,7 @@ export function AIInsightPageClient({
               </Link>
             </Button>
           )}
-        </>
+        </StaggerSection>
       )}
 
       <DisclaimerBanner />

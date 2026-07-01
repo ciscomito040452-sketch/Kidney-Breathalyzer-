@@ -6,6 +6,7 @@ import {
   HealthGroupedDivider,
 } from "@/components/health";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { useMotionSafe } from "@/lib/motion/use-motion-safe";
 import { Progress } from "@/components/ui/progress";
 import { WEEKLY_GOAL_TARGET } from "@/lib/constants";
 import { cn } from "@/lib/utils";
@@ -19,6 +20,7 @@ export function DashboardGamificationSection({
   gamification,
 }: DashboardGamificationSectionProps) {
   const { translate } = usePreferences();
+  const { animate } = useMotionSafe();
   const completedCount = gamification.challenge_days.filter(Boolean).length;
   const weeklyMet = gamification.weekly_count >= WEEKLY_GOAL_TARGET;
   const weeklyDisplay = weeklyMet
@@ -56,9 +58,15 @@ export function DashboardGamificationSection({
               key={index}
               role="listitem"
               className={cn(
-                "h-2.5 flex-1 rounded-full transition-colors",
-                filled ? "bg-accent-primary" : "bg-border-subtle"
+                "h-2.5 flex-1 rounded-full transition-colors duration-[450ms]",
+                filled ? "bg-accent-primary" : "bg-border-subtle",
+                filled && animate && "kb-pop-in"
               )}
+              style={
+                filled && animate
+                  ? { animationDelay: `${index * 30}ms` }
+                  : undefined
+              }
             />
           ))}
         </div>

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { createPortal } from "react-dom";
 import {
   Line,
   LineChart,
@@ -19,6 +18,7 @@ import {
   X,
 } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { SheetScaffold } from "@/components/motion/SheetScaffold";
 import { Button } from "@/components/ui/button";
 import type {
   DashboardInsight,
@@ -111,7 +111,6 @@ export function DashboardInsightDetailSheet({
   resultId,
 }: DashboardInsightDetailSheetProps) {
   const { locale, translate } = usePreferences();
-  const [mounted, setMounted] = useState(false);
   const [researchOpen, setResearchOpen] = useState(false);
 
   const chartData = sparklineData.map((d) => ({
@@ -127,41 +126,20 @@ export function DashboardInsightDetailSheet({
   const suggestionSteps = insight.suggestionSteps;
 
   useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
     if (!open) return;
     setResearchOpen(false);
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
   }, [open]);
-
-  if (!open || !mounted) return null;
 
   const scoreHighlight = insight.highlights.find((h) => h.id === "score");
   const metricHighlights = insight.highlights.filter((h) => h.id !== "score");
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[100] flex items-end justify-center"
-      role="presentation"
-    >
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/40 backdrop-blur-[2px]"
-        aria-label={translate("cancel")}
-        onClick={() => onOpenChange(false)}
-      />
-      <div
-        className="relative z-10 flex max-h-[min(88vh,720px)] w-full max-w-app flex-col rounded-t-2xl bg-[var(--bg-canvas)] shadow-mobile"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="insight-sheet-title"
-      >
+  return (
+    <SheetScaffold
+      open={open}
+      onOpenChange={onOpenChange}
+      closeLabel={translate("cancel")}
+      ariaLabelledBy="insight-sheet-title"
+      header={
         <div className="flex shrink-0 items-center justify-between rounded-t-2xl border-b border-border-subtle bg-[var(--bg-primary)] px-4 py-3">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
@@ -190,12 +168,13 @@ export function DashboardInsightDetailSheet({
             <X className="h-5 w-5" strokeWidth={1.75} />
           </button>
         </div>
-
-        <div
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4"
-          style={{ WebkitOverflowScrolling: "touch" }}
-        >
-          <div className="space-y-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
+      }
+    >
+      <div
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+        <div className="space-y-4 pb-[calc(1rem+env(safe-area-inset-bottom,0px))]">
             {scoreHighlight && (
               <section className="overflow-hidden rounded-2xl border border-[var(--surface-card-border)] bg-surface shadow-card app-card">
                 {(() => {
@@ -375,7 +354,7 @@ export function DashboardInsightDetailSheet({
                 />
               </button>
               {researchOpen && (
-                <p className="border-t border-border-subtle px-4 py-3 text-xs leading-relaxed text-[var(--text-secondary)]">
+                <p className="kb-crossfade border-t border-border-subtle px-4 py-3 text-xs leading-relaxed text-[var(--text-secondary)]">
                   {insight.researchNote}
                 </p>
               )}
@@ -389,10 +368,8 @@ export function DashboardInsightDetailSheet({
                 </Link>
               </Button>
             )}
-          </div>
         </div>
       </div>
-    </div>,
-    document.body
+    </SheetScaffold>
   );
 }

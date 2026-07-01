@@ -71,20 +71,20 @@ export function DashboardPageClient({
               doctorCta={doctorCta}
             />
           </div>
+
+          <div className="space-y-3">
+            <SectionHeader title={translate("moreSection")} />
+            <DashboardMoreSection lastMeasuredAt={latest?.measured_at ?? null} />
+            <DashboardGamificationSection gamification={gamification} />
+          </div>
+
+          {latest.risk_level !== "low" && !doctorCta.show && (
+            <WhenToSeeDoctorCard />
+          )}
+
+          <DisclaimerBanner />
         </StaggerSection>
       )}
-
-      <div className="space-y-3">
-        <SectionHeader title={translate("moreSection")} />
-        <DashboardMoreSection lastMeasuredAt={latest?.measured_at ?? null} />
-        <DashboardGamificationSection gamification={gamification} />
-      </div>
-
-      {latest && latest.risk_level !== "low" && !doctorCta.show && (
-        <WhenToSeeDoctorCard />
-      )}
-
-      <DisclaimerBanner />
     </main>
   );
 }

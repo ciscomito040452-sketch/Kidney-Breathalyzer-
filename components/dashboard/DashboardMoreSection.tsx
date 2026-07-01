@@ -8,6 +8,7 @@ import {
   HealthGroupedDivider,
   HealthListRow,
 } from "@/components/health";
+import { MotionCrossfade } from "@/components/motion/MotionCrossfade";
 import { useDemo } from "@/components/providers/DemoProvider";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { ROUTE_DEVICE_GUIDE } from "@/lib/constants";
@@ -38,18 +39,22 @@ export function DashboardMoreSection({
         icon={Smartphone}
         title={translate("deviceStatus")}
         detail={
-          isSyncing
-            ? translate("syncing")
-            : lastMeasuredAt
-              ? `${translate("lastSync")} · ${formatDateTimeThai(lastMeasuredAt)}`
-              : undefined
+          isSyncing ? (
+            translate("syncing")
+          ) : lastMeasuredAt ? (
+            `${translate("lastSync")} · ${formatDateTimeThai(lastMeasuredAt)}`
+          ) : undefined
         }
         trailing={
-          isSyncing ? (
-            <Loader2 className="h-4 w-4 animate-spin text-accent-primary" />
-          ) : (
-            <DeviceStatusBadge status={status} />
-          )
+          <MotionCrossfade motionKey={isSyncing ? "syncing" : "done"}>
+            {isSyncing ? (
+              <Loader2 className="h-4 w-4 animate-spin text-accent-primary" />
+            ) : (
+              <span className="kb-pop-in inline-flex">
+                <DeviceStatusBadge status={status} />
+              </span>
+            )}
+          </MotionCrossfade>
         }
         showChevron={false}
       />

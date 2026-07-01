@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { useMotionSafe } from "@/lib/motion/use-motion-safe";
+import { useCountUp } from "@/lib/motion/use-count-up";
 import { cn } from "@/lib/utils";
 
 interface PinnedHealthCardProps {
@@ -42,6 +44,17 @@ export function PinnedHealthCard({
   animationDelay = 0,
 }: PinnedHealthCardProps) {
   const isMetric = variant === "metric" && value != null;
+  const { animate } = useMotionSafe();
+  const numericValue =
+    isMetric && value != null ? parseInt(value, 10) : null;
+  const animatedValue = useCountUp(
+    numericValue ?? 0,
+    animate && numericValue != null && !Number.isNaN(numericValue)
+  );
+  const displayValue =
+    numericValue != null && !Number.isNaN(numericValue)
+      ? String(animatedValue)
+      : value;
 
   const inner = (
     <>
@@ -73,7 +86,7 @@ export function PinnedHealthCard({
           {isMetric ? (
             <>
               <p className="text-pinned-value text-[var(--text-primary)]">
-                {value}
+                {displayValue}
                 {valueUnit && (
                   <span className="ml-1 text-xl font-semibold text-[var(--text-secondary)]">
                     {valueUnit}
@@ -124,7 +137,7 @@ export function PinnedHealthCard({
   );
 
   const cardClass = cn(
-    "kb-fade-up block w-full rounded-2xl p-5 text-left app-card app-card--pinned transition-transform active:scale-[0.99]",
+    "kb-fade-up kb-pressable block w-full rounded-2xl p-5 text-left app-card app-card--pinned",
     className
   );
 

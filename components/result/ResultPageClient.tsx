@@ -11,6 +11,7 @@ import { SectionHeader } from "@/components/health/SectionHeader";
 import { WhenToSeeDoctorCard } from "@/components/shared/WhenToSeeDoctorCard";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { StaggerSection } from "@/components/shared/StaggerSection";
+import { Pressable } from "@/components/motion/Pressable";
 import { Button } from "@/components/ui/button";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { shouldShowDoctorCta } from "@/lib/dashboard/should-show-doctor-cta";
@@ -40,13 +41,14 @@ export function ResultPageClient({
   return (
     <main className="space-y-6 px-4 py-6 pb-10">
       <header>
-        <Link
+        <Pressable
+          as={Link}
           href="/history"
           className="mb-3 inline-flex items-center gap-1.5 text-sm text-accent-primary"
         >
           <ArrowLeft className="h-4 w-4" />
           {translate("resultBackToHistory")}
-        </Link>
+        </Pressable>
         <h1 className="text-summary-title font-semibold tracking-tight">
           {translate("resultDetailTitle")}
         </h1>

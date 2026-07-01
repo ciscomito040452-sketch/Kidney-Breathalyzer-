@@ -51,6 +51,7 @@
   --motion-duration-slow: 450ms;
   --motion-ease-standard: cubic-bezier(0.25, 0.1, 0.25, 1);
   --motion-ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --motion-ease-exit: cubic-bezier(0.4, 0, 1, 1);
 }
 
 html[data-display="comfort"] {
@@ -299,6 +300,59 @@ html[data-display="dark"] {
   }
 }
 
+@keyframes kb-page-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes kb-page-push {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes kb-crossfade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes kb-slide-forward {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes kb-slide-back {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .kb-fade-up {
   animation: kb-fade-up var(--motion-duration-normal) var(--motion-ease-enter)
     both;
@@ -331,6 +385,44 @@ html[data-display="dark"] {
   animation: kb-pop-in 250ms var(--motion-ease-enter) both;
 }
 
+.kb-page-enter {
+  animation: kb-page-enter var(--motion-duration-normal) var(--motion-ease-enter)
+    both;
+}
+
+.kb-page-push {
+  animation: kb-page-push var(--motion-duration-normal) var(--motion-ease-enter)
+    both;
+}
+
+.kb-crossfade {
+  animation: kb-crossfade-in var(--motion-duration-fast) var(--motion-ease-enter)
+    both;
+}
+
+.kb-slide-forward {
+  animation: kb-slide-forward var(--motion-duration-normal)
+    var(--motion-ease-enter) both;
+}
+
+.kb-slide-back {
+  animation: kb-slide-back var(--motion-duration-normal) var(--motion-ease-enter)
+    both;
+}
+
+.kb-pressable {
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
+.kb-pressable:active {
+  transform: scale(0.97);
+}
+
+.kb-nav-indicator {
+  transition: transform var(--motion-duration-fast) var(--motion-ease-standard),
+    width var(--motion-duration-fast) var(--motion-ease-standard);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .kb-fade-up,
   .kb-ring-fill-animate,
@@ -338,7 +430,20 @@ html[data-display="dark"] {
   .kb-sheet-down,
   .kb-backdrop-fade,
   .kb-backdrop-fade-out,
-  .kb-pop-in {
+  .kb-pop-in,
+  .kb-page-enter,
+  .kb-page-push,
+  .kb-crossfade,
+  .kb-slide-forward,
+  .kb-slide-back {
     animation: none !important;
+  }
+
+  .kb-pressable:active {
+    transform: none;
+  }
+
+  .kb-nav-indicator {
+    transition: none;
   }
 }

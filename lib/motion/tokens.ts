@@ -3,6 +3,10 @@ export const MOTION = {
   durationNormal: 320,
   durationSlow: 450,
   staggerStep: 50,
+  pageOffset: 12,
+  pushOffset: 24,
+  pressScale: 0.97,
   easeStandard: "cubic-bezier(0.25, 0.1, 0.25, 1)",
   easeEnter: "cubic-bezier(0, 0, 0.2, 1)",
+  easeExit: "cubic-bezier(0.4, 0, 1, 1)",
 } as const;

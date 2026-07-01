@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { createPortal } from "react-dom";
 import {
   Activity,
   AlertCircle,
@@ -14,6 +12,8 @@ import {
   X,
   type LucideIcon,
 } from "lucide-react";
+import { SheetScaffold } from "@/components/motion/SheetScaffold";
+import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { RiskMeter } from "@/components/shared/RiskMeter";
 import { SensorStatusPill } from "@/components/shared/SensorStatusPill";
 import { RISK_SHORT_LABELS } from "@/lib/constants";
@@ -251,43 +251,17 @@ export function SensorEducationSheet({
   topic,
   context = {},
 }: SensorEducationSheetProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!open) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [open]);
-
-  if (!open || !mounted) return null;
-
+  const { translate } = usePreferences();
   const sections = getSensorEducation(topic, context);
   const HeaderIcon = topicHeaderIcon(topic);
 
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[100] flex items-end justify-center"
-      role="presentation"
-    >
-      <button
-        type="button"
-        className="absolute inset-0 bg-black/40 kb-backdrop-fade"
-        aria-label="ปิด"
-        onClick={() => onOpenChange(false)}
-      />
-      <div
-        className="relative z-10 flex max-h-[min(88vh,720px)] w-full max-w-app flex-col rounded-t-2xl bg-[var(--bg-canvas)] shadow-mobile kb-sheet-up"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="education-sheet-title"
-      >
+  return (
+    <SheetScaffold
+      open={open}
+      onOpenChange={onOpenChange}
+      closeLabel={translate("closeSheet")}
+      ariaLabelledBy="education-sheet-title"
+      header={
         <div className="flex shrink-0 items-center justify-between rounded-t-2xl border-b border-border-subtle bg-[var(--bg-primary)] px-4 py-3">
           <div className="flex items-center gap-2">
             <span className="flex h-9 w-9 items-center justify-center rounded-full bg-accent-primary/10 text-accent-primary">
@@ -304,29 +278,28 @@ export function SensorEducationSheet({
             type="button"
             onClick={() => onOpenChange(false)}
             className="flex h-9 w-9 items-center justify-center rounded-full text-[var(--text-secondary)] hover:bg-surface"
-            aria-label="ปิด"
+            aria-label={translate("closeSheet")}
           >
             <X className="h-5 w-5" strokeWidth={1.75} />
           </button>
         </div>
-
-        <div
-          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4"
-          style={{ WebkitOverflowScrolling: "touch" }}
-        >
-          <div className="space-y-3 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
-            {sections.map((section) => (
-              <EducationSectionCard
-                key={`${section.kind}-${section.title}`}
-                section={section}
-                topic={topic}
-                context={context}
-              />
-            ))}
-          </div>
+      }
+    >
+      <div
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
+        <div className="space-y-3 pb-[calc(1.5rem+env(safe-area-inset-bottom,0px))]">
+          {sections.map((section) => (
+            <EducationSectionCard
+              key={`${section.kind}-${section.title}`}
+              section={section}
+              topic={topic}
+              context={context}
+            />
+          ))}
         </div>
       </div>
-    </div>,
-    document.body
+    </SheetScaffold>
   );
 }

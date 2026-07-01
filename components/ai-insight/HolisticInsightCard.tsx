@@ -16,6 +16,8 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { useMotionSafe } from "@/lib/motion/use-motion-safe";
+import { useCountUp } from "@/lib/motion/use-count-up";
 import {
   InsightGroupedCard,
   InsightMetricRow,
@@ -116,6 +118,9 @@ export function HolisticInsightCard({
   sparklineData = [],
 }: HolisticInsightCardProps) {
   const { locale, translate } = usePreferences();
+  const { animate } = useMotionSafe();
+  const targetScore = scorePercent(insight.avgRiskScore);
+  const animatedScore = useCountUp(targetScore, animate);
   const headline = getRiskQualitativeHeadline(locale, insight.overallRiskLevel);
   const caption = getRiskQualitativeCaption(locale, insight.avgRiskScore);
 
@@ -149,7 +154,7 @@ export function HolisticInsightCard({
               {headline}
             </p>
             <p className="text-pinned-value text-[var(--text-primary)]">
-              {scorePercent(insight.avgRiskScore)}
+              {animatedScore}
               <span className="ml-1 text-xl font-semibold text-[var(--text-secondary)]">
                 /100
               </span>
@@ -179,6 +184,8 @@ export function HolisticInsightCard({
                   stroke="var(--accent-primary)"
                   strokeWidth={2}
                   dot={false}
+                  animationDuration={400}
+                  animationEasing="ease-out"
                 />
               </LineChart>
             </ResponsiveContainer>

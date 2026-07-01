@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { HistoryScoreBadge } from "@/components/history/HistoryScoreBadge";
+import { Pressable } from "@/components/motion/Pressable";
 import { SensorStatusPill } from "@/components/shared/SensorStatusPill";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { getRiskFullLabels } from "@/lib/i18n/labels";
@@ -34,10 +35,11 @@ export function HistoryMeasurementRow({
   const acetoneStatus = getAcetoneStatus(measurement.mq3_value);
 
   return (
-    <Link
+    <Pressable
+      as={Link}
       href={`/result/${measurement.id}`}
       className={cn(
-        "flex items-center gap-3.5 transition-colors active:scale-[0.99] active:bg-surface-elevated",
+        "flex items-center gap-3.5 transition-colors active:bg-surface-elevated",
         grouped
           ? cn(
               "border-b border-border-subtle px-4 py-4",
@@ -74,6 +76,6 @@ export function HistoryMeasurementRow({
         strokeWidth={2}
         aria-hidden
       />
-    </Link>
+    </Pressable>
   );
 }
