@@ -251,27 +251,28 @@ Card เดียว — ไม่ใช่ chat
 
 ```
 ┌─────────────────────────┐
-│      [Logo 72px mobile] │  ← 96px บนจอใหญ่
-│   Kidney Breathalyzer   │  ← hero 26-28px
-│   คัดกรองความเสี่ยง...  │  ← tagline + screening badge
+│      [Logo 80px]        │
 │                         │
-│  ใช้งานอย่างไร      ▼   │  ← accordion (พับค่าเริ่มต้นบนมือถือ ≤430px)
-│  [ขั้นตอน 1-3 เมื่อเปิด] │
+│  คัดกรองความเสี่ยง...   │  ← Large Title 34px ไทย
+│  Kidney Breathalyzer    │  ← caption 13px EN
+│  คัดกรอง · ไม่ใช่วินิจฉัย │  ← screening note
 │                         │
-│  ┌───────────────────┐  │  ← sticky footer
-│  │  เริ่มต้นใช้งาน    │  │
-│  └───────────────────┘  │
+│  [เป่า] [ซิงค์] [ติดตาม] │  ← feature glyphs 3 คอลัมน์
+│                         │
 │  ┌───────────────────┐  │
-│  │    ดู Demo        │  │
+│  │     ดู Demo       │  │  ← primary filled CTA
 │  └───────────────────┘  │
+│    เริ่มต้นใช้งาน       │  ← text link secondary
 │  ไม่ต้องล็อกอิน · 30 วัน │
-│  [disclaimer caption]   │
+│  [disclaimer footnote]  │  ← plain text 11px
 └─────────────────────────┘
 ```
 
-- บนมือถือ (≤430px): accordion **พับค่าเริ่มต้น** — CTA ทั้งสองปุ่มต้องเห็นในหน้าจอแรก
-- บนจอใหญ่ (≥431px): accordion **เปิดค่าเริ่มต้น**
-- CTA footer ใช้ `sticky bottom-0` + safe-area inset
+- พื้นหลัง `--bg-primary` ขาวล้วนทั้งหน้า — ไม่มี accordion / การ์ดขั้นตอน
+- **ดู Demo** = ปุ่มหลัก (filled) — เหมาะกับ Hackathon checkpoint
+- **เริ่มต้นใช้งาน** = text link ไป `/onboarding`
+- Disclaimer เป็น footnote text — ไม่ใช่ card box
+- รายละเอียดขั้นตอนอยู่ใน `/onboarding` และ `/guide/device`
 
 ### Dashboard (`/dashboard`) — Apple Health Summary Pattern
 

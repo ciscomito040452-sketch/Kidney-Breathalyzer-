@@ -116,6 +116,19 @@ html[data-display="dark"] {
     text-wrap: balance;
   }
 
+  .landing-hero-title {
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .landing-footnote {
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--text-secondary);
+  }
+
   .shadow-mobile {
     box-shadow: var(--shadow-mobile);
   }
