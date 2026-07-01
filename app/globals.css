@@ -8,8 +8,18 @@
   --bg-surface: #f5f5f7;
   --bg-surface-elevated: #ffffff;
   --bg-fill: #ffffff;
-  --accent-primary: #2563eb;
-  --accent-primary-rgb: 37 99 235;
+  --accent-primary: #2b7fd4;
+  --accent-primary-rgb: 43 127 212;
+  --metric-screening: #2b7fd4;
+  --metric-screening-rgb: 43 127 212;
+  --metric-ammonia: #5b9fd4;
+  --metric-ammonia-rgb: 91 159 212;
+  --metric-acetone: #7eb8e0;
+  --metric-acetone-rgb: 126 184 224;
+  --text-summary-title: 34px;
+  --text-pinned-headline: 22px;
+  --text-pinned-caption: 13px;
+  --shadow-grouped: 0 1px 3px rgba(0, 0, 0, 0.04);
   --accent-secondary: #7dd3fc;
   --accent-secondary-rgb: 125 211 252;
   --risk-low: #60a5fa;
@@ -29,7 +39,7 @@
     0 24px 48px -12px rgba(30, 58, 95, 0.18);
   --nav-backdrop: rgba(255, 255, 255, 0.92);
   --nav-border: rgba(0, 0, 0, 0.06);
-  --surface-card-border: var(--border-subtle);
+  --surface-card-border: transparent;
   --accent-tint: rgb(var(--accent-primary-rgb) / 0.1);
   --accent-tint-strong: rgb(var(--accent-primary-rgb) / 0.15);
   --motion-duration-fast: 200ms;
@@ -119,9 +129,50 @@ html[data-display="dark"] {
     );
   }
 
-  /* Segmented controls — iOS-style inset track in dark */
+  .segmented-track {
+    background-color: rgb(118 118 128 / 0.12);
+  }
+
   html[data-display="dark"] .segmented-track {
     background-color: rgb(118 118 128 / 0.24);
+  }
+
+  .app-card {
+    @apply rounded-2xl bg-surface;
+  }
+
+  .app-card--grouped {
+    box-shadow: var(--shadow-grouped);
+    border: none;
+  }
+
+  .app-card--elevated {
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--border-subtle);
+    background-color: var(--bg-surface-elevated);
+  }
+
+  .app-card--pinned {
+    box-shadow: var(--shadow-grouped);
+    border: none;
+    background-color: var(--bg-surface-elevated);
+  }
+
+  .text-summary-title {
+    font-size: var(--text-summary-title);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .text-pinned-headline {
+    font-size: var(--text-pinned-headline);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .text-pinned-caption {
+    font-size: var(--text-pinned-caption);
+    line-height: 1.35;
   }
 
   html[data-display="dark"] .app-logo-mark {

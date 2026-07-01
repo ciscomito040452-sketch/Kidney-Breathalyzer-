@@ -13,7 +13,7 @@ export function InsightGroupedCard({
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-[var(--surface-card-border)] bg-surface shadow-card app-card",
+        "overflow-hidden rounded-2xl app-card app-card--grouped",
         className
       )}
     >

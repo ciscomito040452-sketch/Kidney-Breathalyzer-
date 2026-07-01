@@ -43,7 +43,7 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex min-h-[44px] min-w-[44px] flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-1 py-1.5 text-[10px] font-medium transition-colors",
+                "flex min-h-[44px] min-w-[44px] flex-1 flex-col items-center justify-center gap-0.5 rounded-full px-1 py-1.5 text-xs font-medium transition-colors",
                 isActive
                   ? "bg-[var(--accent-tint)] text-accent-primary"
                   : "text-[var(--text-secondary)]"

@@ -55,7 +55,7 @@ function LandingStepCard({
   return (
     <div
       className={cn(
-        "flex items-center gap-3.5 rounded-2xl border border-[var(--surface-card-border)] bg-surface px-4 py-3.5 shadow-card app-card ring-1",
+        "flex items-center gap-3.5 rounded-2xl px-4 py-3.5 app-card app-card--grouped ring-1",
         styles.ring
       )}
     >
@@ -128,7 +128,7 @@ export function LandingPageClient() {
             <AppLogo size={88} className="h-[88px] w-[88px] shadow-none" />
           </div>
 
-          <h1 className="mt-6 text-balance text-[32px] font-semibold leading-tight tracking-tight">
+          <h1 className="mt-6 text-balance text-summary-title font-semibold leading-tight tracking-tight">
             {APP_NAME}
           </h1>
           <p className="mt-2 max-w-[280px] text-base leading-relaxed text-[var(--text-secondary)]">

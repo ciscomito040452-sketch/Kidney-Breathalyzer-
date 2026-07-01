@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ONBOARDING_DEVICE_STEPS } from "@/lib/device-guide/content";
+import { HealthGroupedCard } from "@/components/health/HealthGroupedCard";
 import { OnboardingDisclaimerStep } from "@/components/onboarding/OnboardingDisclaimerStep";
 import { OnboardingStepIndicator } from "@/components/onboarding/OnboardingStepIndicator";
 import { RiskFactorPicker } from "@/components/profile/RiskFactorPicker";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Input, Select } from "@/components/ui/input";
 import { useDemo } from "@/components/providers/DemoProvider";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
@@ -96,14 +96,16 @@ export function OnboardingPageClient() {
           <p className="text-xs text-[var(--text-secondary)]">
             {translate("onboardingStep")} {step}/{TOTAL_STEPS}
           </p>
-          <h1 className="text-xl font-semibold">{translate("onboardingTitle")}</h1>
+          <h1 className="text-summary-title font-semibold tracking-tight">
+            {translate("onboardingTitle")}
+          </h1>
         </div>
       </header>
 
       <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain">
         {step === 1 && (
-          <Card>
-            <CardContent className="space-y-4 pt-4">
+          <HealthGroupedCard variant="elevated">
+            <div className="space-y-4 p-4">
               <p className="text-sm text-[var(--text-secondary)]">
                 {translate("onboardingPersonalHint")}
               </p>
@@ -152,21 +154,21 @@ export function OnboardingPageClient() {
                   onChange={(e) => setWeight(e.target.value)}
                 />
               </label>
-            </CardContent>
-          </Card>
+            </div>
+          </HealthGroupedCard>
         )}
 
         {step === 2 && (
-          <Card>
-            <CardContent className="pt-4">
+          <HealthGroupedCard variant="elevated">
+            <div className="p-4">
               <RiskFactorPicker
                 selectedIds={riskFactorIds}
                 otherNote={riskFactorOther}
                 onToggle={handleRiskToggle}
                 onOtherNoteChange={setRiskFactorOther}
               />
-            </CardContent>
-          </Card>
+            </div>
+          </HealthGroupedCard>
         )}
 
         {step === 3 && (
@@ -187,8 +189,8 @@ export function OnboardingPageClient() {
             {DEVICE_STEPS.map((item, index) => {
               const Icon = item.icon;
               return (
-                <Card key={item.title}>
-                  <CardContent className="flex gap-3 pt-4">
+                <HealthGroupedCard key={item.title} variant="elevated">
+                  <div className="flex gap-3 p-4">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-accent-primary/10">
                       <Icon className="h-5 w-5 text-accent-primary" />
                     </div>
@@ -200,8 +202,8 @@ export function OnboardingPageClient() {
                         {item.description}
                       </p>
                     </div>
-                  </CardContent>
-                </Card>
+                  </div>
+                </HealthGroupedCard>
               );
             })}
           </section>

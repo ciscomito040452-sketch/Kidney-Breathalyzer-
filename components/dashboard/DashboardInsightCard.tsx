@@ -11,9 +11,8 @@ import { ChevronRight, Sparkles } from "lucide-react";
 import { DashboardInsightDetailSheet } from "@/components/dashboard/DashboardInsightDetailSheet";
 import { Card, CardContent } from "@/components/ui/card";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
-import { getRiskFullLabels } from "@/lib/i18n/labels";
+import { getRiskQualitativeHeadline } from "@/lib/ui/qualitative-labels";
 import type { DashboardInsight } from "@/lib/dashboard/build-dashboard-insight";
-import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
 import type { RiskLevel } from "@/types/measurement";
 import { cn } from "@/lib/utils";
 
@@ -28,24 +27,18 @@ interface DashboardInsightCardProps {
   riskLevel: RiskLevel;
   resultId?: string;
   sparklineData?: SparklinePoint[];
+  qualitativeFirst?: boolean;
 }
-
-const statusPill: Record<RiskLevel, string> = {
-  low: "bg-risk-moderate/12 text-[var(--risk-meter-end)]",
-  moderate: "bg-risk-moderate/15 text-risk-moderate",
-  high: "bg-risk-moderate/15 text-[var(--risk-meter-end)]",
-};
 
 export function DashboardInsightCard({
   insight,
-  riskScore,
   riskLevel,
   resultId,
   sparklineData = [],
+  qualitativeFirst = false,
 }: DashboardInsightCardProps) {
   const { locale, translate } = usePreferences();
   const [detailOpen, setDetailOpen] = useState(false);
-  const riskLabels = getRiskFullLabels(locale);
 
   const chartData = sparklineData.map((d) => ({
     ...d,
@@ -53,10 +46,13 @@ export function DashboardInsightCard({
   }));
 
   const hasChart = chartData.length >= 2;
+  const headline = qualitativeFirst
+    ? getRiskQualitativeHeadline(locale, riskLevel)
+    : null;
 
   return (
     <>
-      <Card className="overflow-hidden">
+      <Card className="app-card app-card--pinned overflow-hidden border-0 shadow-none">
         <button
           type="button"
           onClick={() => setDetailOpen(true)}
@@ -84,23 +80,15 @@ export function DashboardInsightCard({
               />
             </div>
 
-            <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-              <p className="text-3xl font-semibold tabular-nums tracking-tight">
-                {formatRiskScoreDisplay(riskScore)}
+            {qualitativeFirst && headline && (
+              <p className="text-pinned-headline font-semibold text-[var(--text-primary)]">
+                {headline}
               </p>
-              <span
-                className={cn(
-                  "inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold",
-                  statusPill[riskLevel]
-                )}
-              >
-                {riskLabels[riskLevel]}
-              </span>
-            </div>
+            )}
 
             {hasChart && (
               <div
-                className="h-12 w-full rounded-xl bg-surface-elevated px-1 py-1"
+                className="h-12 w-full rounded-xl bg-surface px-1 py-1"
                 aria-hidden
               >
                 <ResponsiveContainer width="100%" height="100%">
@@ -109,7 +97,7 @@ export function DashboardInsightCard({
                     <Line
                       type="monotone"
                       dataKey="score"
-                      stroke="var(--accent-primary, #2563EB)"
+                      stroke="var(--accent-primary)"
                       strokeWidth={2}
                       dot={false}
                       isAnimationActive

@@ -7,6 +7,10 @@ import { TrendDeltaBadge } from "@/components/shared/TrendDeltaBadge";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { useMotionSafe } from "@/lib/motion/use-motion-safe";
 import { scorePercent } from "@/lib/risk-engine/risk-zones";
+import {
+  getRiskQualitativeCaption,
+  getRiskQualitativeHeadline,
+} from "@/lib/ui/qualitative-labels";
 import { formatDateTimeLocale } from "@/lib/utils";
 import type { RiskLevel } from "@/types/measurement";
 import { cn } from "@/lib/utils";
@@ -16,6 +20,7 @@ interface ScreeningHeroSummaryProps {
   riskScore: number;
   measuredAt: string;
   riskDelta?: number | null;
+  variant?: "detail" | "pinned";
 }
 
 const heroTint: Record<RiskLevel, string> = {
@@ -29,6 +34,7 @@ export function ScreeningHeroSummary({
   riskScore,
   measuredAt,
   riskDelta,
+  variant = "detail",
 }: ScreeningHeroSummaryProps) {
   const { locale, translate } = usePreferences();
   const { animate, durationMs } = useMotionSafe();
@@ -54,49 +60,78 @@ export function ScreeningHeroSummary({
     return () => cancelAnimationFrame(frame);
   }, [animate, durationMs, targetPct]);
 
-  return (
-    <section
-      className={cn(
-        "kb-fade-up rounded-3xl px-4 py-5 text-center",
-        heroTint[riskLevel]
-      )}
-    >
-      <p className="text-[11px] font-medium uppercase tracking-wide text-[var(--text-secondary)]">
-        {translate("riskScoreLabel")}
-      </p>
-      <p className="mt-0.5 text-xs text-[var(--text-secondary)]">
-        {formatDateTimeLocale(locale, measuredAt)}
-      </p>
+  const headline = getRiskQualitativeHeadline(locale, riskLevel);
+  const caption = getRiskQualitativeCaption(locale, riskScore, riskDelta);
 
-      <div className="relative mx-auto mt-3 flex h-36 w-36 items-center justify-center">
+  if (variant === "pinned") {
+    return (
+      <section
+        className={cn(
+          "kb-fade-up flex items-center gap-4 rounded-2xl p-4 app-card app-card--pinned",
+          heroTint[riskLevel]
+        )}
+      >
         <RiskScoreRing
           riskScore={riskScore}
           riskLevel={riskLevel}
-          size={140}
+          size={56}
+          animateOnMount
+        />
+        <div className="min-w-0 flex-1">
+          <p className="text-pinned-caption text-[var(--text-secondary)]">
+            {formatDateTimeLocale(locale, measuredAt)}
+          </p>
+          <p className="mt-0.5 text-pinned-headline font-semibold text-[var(--text-primary)]">
+            {headline}
+          </p>
+          <p className="mt-1 text-pinned-caption text-[var(--text-secondary)]">
+            {caption}
+          </p>
+        </div>
+      </section>
+    );
+  }
+
+  return (
+    <section
+      className={cn(
+        "kb-fade-up rounded-3xl px-4 py-6 text-center app-card app-card--elevated",
+        heroTint[riskLevel]
+      )}
+    >
+      <p className="text-pinned-caption font-medium text-[var(--text-secondary)]">
+        {translate("pinnedScreening")}
+      </p>
+      <p className="mt-1 text-pinned-headline font-semibold text-[var(--text-primary)]">
+        {headline}
+      </p>
+      <p className="mt-0.5 text-pinned-caption text-[var(--text-secondary)]">
+        {formatDateTimeLocale(locale, measuredAt)}
+      </p>
+
+      <div className="relative mx-auto mt-4 flex h-40 w-40 items-center justify-center">
+        <RiskScoreRing
+          riskScore={riskScore}
+          riskLevel={riskLevel}
+          size={152}
           animateOnMount
           className="absolute inset-0 m-auto"
         />
         <div className="relative text-center">
-          <p className="text-4xl font-semibold tabular-nums tracking-tight">
+          <p className="text-5xl font-semibold tabular-nums tracking-tight">
             {displayPct}
           </p>
-          <p className="text-xs text-[var(--text-secondary)]">/100</p>
+          <p className="text-sm text-[var(--text-secondary)]">/100</p>
         </div>
       </div>
 
-      <div
-        className="mt-3 flex flex-wrap items-center justify-center gap-2"
-        style={{ animationDelay: "120ms" }}
-      >
+      <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
         <RiskBadge level={riskLevel} compact />
         <TrendDeltaBadge delta={riskDelta} />
       </div>
 
-      <p
-        className="mt-3 text-sm leading-relaxed text-[var(--text-secondary)]"
-        style={{ animationDelay: "160ms" }}
-      >
-        {translate("screeningContextSubtitle")}
+      <p className="mt-3 text-pinned-caption leading-relaxed text-[var(--text-secondary)]">
+        {caption}
       </p>
     </section>
   );

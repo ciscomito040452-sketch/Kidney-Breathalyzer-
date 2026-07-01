@@ -1,15 +1,13 @@
 "use client";
 
-import { TabPageHeader } from "@/components/shared/TabPageHeader";
-import { usePreferences } from "@/components/providers/PreferencesProvider";
+import { SummaryPageHeader } from "@/components/health/SummaryPageHeader";
 
 export function AIInsightPageHeader() {
-  const { translate } = usePreferences();
-
   return (
-    <TabPageHeader
-      title={translate("insightTitle")}
-      subtitle={translate("insightSubtitle")}
+    <SummaryPageHeader
+      titleKey="insightTitle"
+      subtitleKey="insightSubtitle"
+      showGreeting={false}
     />
   );
 }

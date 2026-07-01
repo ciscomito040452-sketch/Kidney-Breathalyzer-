@@ -6,7 +6,8 @@ import { ScreeningHeroSummary } from "@/components/dashboard/ScreeningHeroSummar
 import { AIExplanation } from "@/components/result/AIExplanation";
 import { DoctorCTA } from "@/components/result/DoctorCTA";
 import { HealthTips } from "@/components/result/HealthTips";
-import { RiskResultCard } from "@/components/result/RiskResultCard";
+import { ResultSensorRows } from "@/components/result/ResultSensorRows";
+import { SectionHeader } from "@/components/health/SectionHeader";
 import { WhenToSeeDoctorCard } from "@/components/shared/WhenToSeeDoctorCard";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { StaggerSection } from "@/components/shared/StaggerSection";
@@ -37,7 +38,7 @@ export function ResultPageClient({
   });
 
   return (
-    <main className="space-y-4 px-4 py-6 pb-10">
+    <main className="space-y-6 px-4 py-6 pb-10">
       <header>
         <Link
           href="/history"
@@ -46,24 +47,30 @@ export function ResultPageClient({
           <ArrowLeft className="h-4 w-4" />
           {translate("resultBackToHistory")}
         </Link>
+        <h1 className="text-summary-title font-semibold tracking-tight">
+          {translate("resultDetailTitle")}
+        </h1>
       </header>
 
-      <StaggerSection className="space-y-4">
+      <StaggerSection className="space-y-6">
         <ScreeningHeroSummary
+          variant="detail"
           riskLevel={measurement.risk_level}
           riskScore={measurement.risk_score}
           measuredAt={measurement.measured_at}
         />
 
-        <RiskResultCard
-          compact
+        <ResultSensorRows
           riskLevel={measurement.risk_level}
           riskScore={measurement.risk_score}
           mq135={measurement.mq135_value}
           mq3={measurement.mq3_value}
         />
 
-        <AIExplanation explanation={explanation} />
+        <div className="space-y-3">
+          <SectionHeader title={translate("explanationSection")} />
+          <AIExplanation explanation={explanation} />
+        </div>
 
         {doctorCta.show && <DoctorCTA variant={doctorCta.variant} />}
 
@@ -71,7 +78,10 @@ export function ResultPageClient({
           <WhenToSeeDoctorCard />
         )}
 
-        <HealthTips tips={getHealthTips(locale)} />
+        <div className="space-y-3">
+          <SectionHeader title={translate("tipsSection")} />
+          <HealthTips tips={getHealthTips(locale)} />
+        </div>
       </StaggerSection>
 
       <Button variant="secondary" className="w-full" asChild>

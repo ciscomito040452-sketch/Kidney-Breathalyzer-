@@ -2,9 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { InsightWideFactorCard } from "@/components/ai-insight/InsightWideFactorCard";
+import {
+  HealthGroupedCard,
+  HealthGroupedDivider,
+  HealthListRow,
+  SectionHeader,
+} from "@/components/health";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
-import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
-import { SensorValueCard } from "@/components/shared/SensorValueCard";
 import { buildInsightContextFactors } from "@/lib/ai-insight/context-factors";
 import { getDefaultDemoRiskFactors } from "@/lib/mock/demo-user";
 import { getRiskFactorsFromStorage } from "@/lib/profile/onboarding-storage";
@@ -39,37 +43,45 @@ export function InsightContextSection({
 
   return (
     <section className="space-y-3">
-      <PageSectionHeader
+      <SectionHeader
         title={translate("insightContextTitle")}
-        subtitle={translate("insightContextSubtitle")}
+        action={
+          <span className="max-w-[45%] text-right text-pinned-caption text-[var(--text-secondary)]">
+            {translate("insightContextSubtitle")}
+          </span>
+        }
       />
-      <div className="space-y-3">
-        <div className="grid grid-cols-2 gap-3">
-          {compactFactors.map((factor) => {
-            const Icon = factor.icon;
-            return (
-              <SensorValueCard
-                key={factor.id}
-                className="min-w-0"
-                icon={
-                  <Icon
-                    className="h-4 w-4 shrink-0 text-accent-primary"
-                    strokeWidth={1.75}
-                  />
+
+      <HealthGroupedCard>
+        {compactFactors.map((factor, index) => {
+          const Icon = factor.icon;
+          const detail = [factor.value, factor.statusLabel]
+            .filter(Boolean)
+            .join(" · ");
+          return (
+            <div key={factor.id}>
+              {index > 0 && <HealthGroupedDivider />}
+              <HealthListRow
+                icon={Icon}
+                title={factor.label}
+                detail={detail || factor.detail}
+                showChevron={false}
+                trailing={
+                  factor.listItems && factor.listItems.length > 0 ? (
+                    <span className="text-xs text-[var(--text-secondary)]">
+                      {factor.listItems.length}
+                    </span>
+                  ) : undefined
                 }
-                label={factor.label}
-                value={factor.value}
-                listItems={factor.listItems}
-                statusLabel={factor.statusLabel}
-                insightStatus={factor.status}
               />
-            );
-          })}
-        </div>
-        {wideFactors.map((factor) => (
-          <InsightWideFactorCard key={factor.id} factor={factor} />
-        ))}
-      </div>
+            </div>
+          );
+        })}
+      </HealthGroupedCard>
+
+      {wideFactors.map((factor) => (
+        <InsightWideFactorCard key={factor.id} factor={factor} />
+      ))}
     </section>
   );
 }

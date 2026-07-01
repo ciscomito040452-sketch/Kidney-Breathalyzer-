@@ -16,19 +16,20 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
-import { getRiskFullLabels } from "@/lib/i18n/labels";
-import type { MessageKey } from "@/lib/i18n/messages";
-import type { HolisticInsight } from "@/lib/ai-insight/build-holistic-insight";
-import type { HolisticInsightHighlight } from "@/lib/ai-insight/build-holistic-insight";
-import type { InsightHighlightTone } from "@/lib/dashboard/build-dashboard-insight";
-import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
 import {
   InsightGroupedCard,
   InsightMetricRow,
   parseHighlightLabel,
 } from "@/components/ai-insight/insight-ui";
-import { cn } from "@/lib/utils";
-import type { RiskLevel } from "@/types/measurement";
+import {
+  getRiskQualitativeCaption,
+  getRiskQualitativeHeadline,
+} from "@/lib/ui/qualitative-labels";
+import type { MessageKey } from "@/lib/i18n/messages";
+import type { HolisticInsight } from "@/lib/ai-insight/build-holistic-insight";
+import type { HolisticInsightHighlight } from "@/lib/ai-insight/build-holistic-insight";
+import type { InsightHighlightTone } from "@/lib/dashboard/build-dashboard-insight";
+import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
 
 interface SparklinePoint {
   date: string;
@@ -40,11 +41,6 @@ interface HolisticInsightCardProps {
   sparklineData?: SparklinePoint[];
 }
 
-const statusPill: Record<RiskLevel, string> = {
-  low: "bg-risk-low/15 text-risk-low",
-  moderate: "bg-risk-moderate/15 text-risk-moderate",
-  high: "bg-risk-moderate/15 text-[var(--risk-meter-end)]",
-};
 
 const highlightIcons: Record<string, LucideIcon> = {
   "avg-score": Gauge,
@@ -118,7 +114,8 @@ export function HolisticInsightCard({
   sparklineData = [],
 }: HolisticInsightCardProps) {
   const { locale, translate } = usePreferences();
-  const riskLabels = getRiskFullLabels(locale);
+  const headline = getRiskQualitativeHeadline(locale, insight.overallRiskLevel);
+  const caption = getRiskQualitativeCaption(locale, insight.avgRiskScore);
 
   const chartData = sparklineData.map((d) => ({
     ...d,
@@ -144,21 +141,13 @@ export function HolisticInsightCard({
           </div>
         </div>
 
-        <div className="mt-4 flex flex-wrap items-baseline gap-x-3 gap-y-2">
-          <p className="text-4xl font-semibold tabular-nums tracking-tight">
-            {formatRiskScoreDisplay(insight.avgRiskScore)}
+        <div className="mt-4 space-y-1">
+          <p className="text-pinned-headline font-semibold text-[var(--text-primary)]">
+            {headline}
           </p>
-          <span className="text-sm font-medium text-[var(--text-secondary)]">
-            {translate("insightAvgScoreLabel")}
-          </span>
-          <span
-            className={cn(
-              "inline-flex rounded-full px-2.5 py-1 text-xs font-semibold",
-              statusPill[insight.overallRiskLevel]
-            )}
-          >
-            {riskLabels[insight.overallRiskLevel]}
-          </span>
+          <p className="text-pinned-caption text-[var(--text-secondary)]">
+            {caption} · {translate("insightAvgScoreLabel")}
+          </p>
         </div>
 
         {hasChart && (

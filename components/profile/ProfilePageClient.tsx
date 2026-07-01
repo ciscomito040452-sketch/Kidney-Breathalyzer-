@@ -22,7 +22,7 @@ import { ProfileStatsCard } from "@/components/profile/ProfileStatsCard";
 import { AppLogo } from "@/components/shared/AppLogo";
 import { Card, CardContent } from "@/components/ui/card";
 import { ROUTE_DEVICE_GUIDE, ROUTE_PROFILE_EDIT } from "@/lib/constants";
-import { formatGender } from "@/lib/i18n/messages";
+import { formatGender, getGreeting } from "@/lib/i18n/messages";
 import {
   getProfileDisplayFromStorage,
   getProfileInitials,
@@ -121,19 +121,26 @@ export function ProfilePageClient({
 
   return (
     <main className="space-y-6 px-4 py-6">
-      <header className="flex items-start justify-between gap-4">
-        <div className="flex min-w-0 items-center gap-4">
-          <ProfileAvatar initials={profile.initials} />
-          <div className="min-w-0">
-            <h1 className="truncate text-xl font-semibold">{displayName}</h1>
-            {metaParts.length > 0 && (
-              <p className="text-sm text-[var(--text-secondary)]">
-                {metaParts.join(" · ")}
-              </p>
-            )}
+      <header className="space-y-1">
+        <p className="text-pinned-caption text-[var(--text-secondary)]">
+          {getGreeting(locale)}, {displayName}
+        </p>
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex min-w-0 items-center gap-4">
+            <ProfileAvatar initials={profile.initials} />
+            <div className="min-w-0">
+              <h1 className="truncate text-summary-title font-semibold tracking-tight">
+                {translate("profileTitle")}
+              </h1>
+              {metaParts.length > 0 && (
+                <p className="text-pinned-caption text-[var(--text-secondary)]">
+                  {metaParts.join(" · ")}
+                </p>
+              )}
+            </div>
           </div>
+          <AppLogo size={36} variant="mark" className="h-9 w-9 shrink-0" />
         </div>
-        <AppLogo size={36} variant="mark" className="h-9 w-9 shrink-0" />
       </header>
 
       <ProfileStatsCard

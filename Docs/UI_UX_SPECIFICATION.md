@@ -34,7 +34,7 @@ Version: 1.1 (MVP — aligned with Example UX-UI.png)
 :root {
   --bg-primary: #FFFFFF;
   --bg-surface: #F5F5F7;
-  --accent-primary: #2563EB;
+  --accent-primary: #2B7FD4;
   --accent-secondary: #7DD3FC;
   --risk-low: #60A5FA;
   --risk-moderate: #3b82f6;
@@ -262,19 +262,35 @@ Card เดียว — ไม่ใช่ chat
 └─────────────────────────┘
 ```
 
-### Dashboard (`/dashboard`)
+### Dashboard (`/dashboard`) — Apple Health Summary Pattern
 
 เรียงจากบนลงล่าง:
 
-1. **PageHeader** — "สวัสดี" + วันที่
-2. **DashboardDeviceInfo** — DeviceStatusBadge + ซิงค์ล่าสุด
-3. **RiskHeroCard** — risk level ล่าสุด
-4. **Gamification Row** (P1) — StreakCard + WeeklyGoalCard คู่กัน
-5. **ChallengeProgressBar** (P1) — 14-day challenge
-6. **TrendChart** — 7/30 วัน toggle
-7. **LastMeasurement** — วันเวลา + ค่า sensor
-8. **AIInsightCard** — สรุปสั้น ๆ
-9. **DisclaimerBanner**
+1. **SummaryPageHeader** — "สรุป" + ลิงก์โปรไฟล์ + demo badge
+2. **ปักหมุด** — `PinnedHealthCard` × 3 (การคัดกรอง / แอมโมเนีย / อะซิโทน)
+3. **ไฮไลต์** — sparkline แนวโน้ม + สรุป AI + DoctorCTA (ถ้ามี)
+4. **เพิ่มเติม** — `HealthGroupedCard` (อุปกรณ์, gamification, คู่มือ)
+5. **DisclaimerBanner**
+
+Headline หลักใช้คำคุณภาพ (`อยู่ในเกณฑ์ดี` / `ควรติดตาม`) — ตัวเลข ppb อยู่ใน caption
+
+### Result (`/result/:id`)
+
+1. Back link + **resultDetailTitle**
+2. **ScreeningHeroSummary** (variant detail) — คำคุณภาพ + ring
+3. **ResultSensorRows** — grouped list เซนเซอร์
+4. **คำอธิบาย** — AIExplanation
+5. **คำแนะนำ** — HealthTips + DoctorCTA
+6. **DisclaimerBanner**
+
+### History (`/history`) — P1
+
+1. **SummaryPageHeader** — "ประวัติ"
+2. **Filters** — period + risk chips ใน grouped card
+3. **Pinned latest** — PinnedHealthCard
+4. **รายการวัด** — grouped by day
+5. **ไฮไลต์** — TrendChart + TrendChartInsight
+6. **DisclaimerBanner**
 
 ### Onboarding (`/onboarding`) — P1
 
@@ -282,22 +298,6 @@ Card เดียว — ไม่ใช่ chat
 2. Risk factors (checkbox)
 3. ยอมรับ medical disclaimer
 4. **วิธีใช้อุปกรณ์ IoT** — เป่าที่อุปกรณ์ → รอซิงค์เข้าแอป
-
-### Result (`/result/:id`)
-
-1. **RiskResultCard** — level + คะแนน + ค่า MQ-135/MQ-3
-2. **AIExplanation** — section เดียว อธิบาย risk
-3. **HealthTips** — คำแนะนำทั่วไป (ดื่มน้ำ, ลดโปรตีน)
-4. **DoctorCTA** — แสดงเมื่อ high risk เท่านั้น
-5. **DisclaimerBanner**
-
-### History (`/history`) — P1
-
-1. **HistoryPeriodControl** — วันนี้ / สัปดาห์นี้ / เดือนนี้ / 7 / 30 / 90 วัน (scroll แนวนอน)
-2. **TrendChart** — แนวโน้มตามช่วงที่เลือก
-3. **Risk level filters** — ทั้งหมด / ต่ำ / ปานกลาง / สูง
-4. **HistoryDayGroup** — จัดกลุ่มตามวัน (วันนี้, เมื่อวาน, วันที่)
-5. **HistoryMeasurementRow** compact — เวลา + คะแนน + RiskMeter → link `/result/:id`
 
 ---
 

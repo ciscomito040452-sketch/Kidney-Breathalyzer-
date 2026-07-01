@@ -1,29 +1,18 @@
 "use client";
 
-import Link from "next/link";
-import { Smartphone } from "lucide-react";
-import { Challenge14Card } from "@/components/gamification/Challenge14Card";
-import { StreakCard } from "@/components/gamification/StreakCard";
-import { WeeklyGoalCard } from "@/components/gamification/WeeklyGoalCard";
-import { DashboardDeviceInfo } from "@/components/dashboard/DashboardDeviceInfo";
-import { DashboardInsightCard } from "@/components/dashboard/DashboardInsightCard";
-import { DashboardMetricTiles } from "@/components/dashboard/DashboardMetricTiles";
-import { DashboardTrendSection } from "@/components/dashboard/DashboardTrendSection";
-import { ScreeningHeroSummary } from "@/components/dashboard/ScreeningHeroSummary";
-import { PageHeader } from "@/components/dashboard/PageHeader";
-import { DoctorCTA } from "@/components/result/DoctorCTA";
+import { SectionHeader, SummaryPageHeader } from "@/components/health";
+import { DashboardHighlightsSection } from "@/components/dashboard/DashboardHighlightsSection";
+import { DashboardMoreSection } from "@/components/dashboard/DashboardMoreSection";
+import { DashboardPinnedSection } from "@/components/dashboard/DashboardPinnedSection";
 import { WhenToSeeDoctorCard } from "@/components/shared/WhenToSeeDoctorCard";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { StaggerSection } from "@/components/shared/StaggerSection";
-import { Button } from "@/components/ui/button";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
-import { ROUTE_DEVICE_GUIDE, WEEKLY_GOAL_TARGET } from "@/lib/constants";
 import type { TrendDirection } from "@/lib/ai-insight/analyze-measurements";
 import type { DashboardInsight } from "@/lib/dashboard/build-dashboard-insight";
 import type { DoctorCtaDecision } from "@/lib/dashboard/should-show-doctor-cta";
 import type { UserStreaks } from "@/types/measurement";
 import type { Measurement } from "@/types/measurement";
-import { formatRiskScoreDisplay } from "@/lib/sensor-labels";
 
 interface DashboardPageClientProps {
   latest: Measurement | undefined;
@@ -44,76 +33,49 @@ export function DashboardPageClient({
   dashboardInsight,
   riskDelta,
   sparklineData,
-  weeklyAvgScore,
   doctorCta,
-  ammoniaTrend,
 }: DashboardPageClientProps) {
   const { translate } = usePreferences();
 
   return (
-    <main className="space-y-4 px-4 py-6">
-      <PageHeader />
-      <DashboardDeviceInfo lastMeasuredAt={latest?.measured_at ?? null} />
+    <main className="space-y-6 px-4 py-6">
+      <SummaryPageHeader titleKey="summaryTitle" />
 
       {latest && (
-        <StaggerSection className="space-y-4">
-          <ScreeningHeroSummary
-            riskLevel={latest.risk_level}
-            riskScore={latest.risk_score}
-            measuredAt={latest.measured_at}
-            riskDelta={riskDelta}
-          />
-
-          {doctorCta.show && <DoctorCTA variant={doctorCta.variant} />}
-
-          <DashboardMetricTiles
-            mq135={latest.mq135_value}
-            mq3={latest.mq3_value}
-            riskScore={latest.risk_score}
-            riskLevel={latest.risk_level}
-            ammoniaTrend={ammoniaTrend}
-          />
-
-          <DashboardTrendSection measurements={measurements} />
-
-          {dashboardInsight && (
-            <DashboardInsightCard
-              insight={dashboardInsight}
-              riskScore={latest.risk_score}
-              riskLevel={latest.risk_level}
-              resultId={latest.id}
-              sparklineData={sparklineData}
+        <StaggerSection className="space-y-6">
+          <div className="space-y-3">
+            <SectionHeader title={translate("pinnedSection")} />
+            <DashboardPinnedSection
+              latest={latest}
+              riskDelta={riskDelta}
             />
-          )}
+          </div>
+
+          <div className="space-y-3">
+            <SectionHeader title={translate("highlightsSection")} />
+            <DashboardHighlightsSection
+              measurements={measurements}
+              dashboardInsight={dashboardInsight}
+              latest={latest}
+              riskDelta={riskDelta}
+              sparklineData={sparklineData}
+              doctorCta={doctorCta}
+            />
+          </div>
         </StaggerSection>
       )}
 
-      <Button variant="secondary" size="sm" className="h-10 w-full gap-2" asChild>
-        <Link href={ROUTE_DEVICE_GUIDE}>
-          <Smartphone className="h-4 w-4" />
-          {translate("deviceGuide")}
-        </Link>
-      </Button>
-
-      {gamification.weekly_count > 0 && (
-        <p className="text-center text-xs text-[var(--text-secondary)]">
-          {translate("weeklyMeasuredPrefix")} {gamification.weekly_count}{" "}
-          {translate("weeklyMeasuredSuffix")} · {translate("weeklyAvgLabel")}{" "}
-          {formatRiskScoreDisplay(weeklyAvgScore)}
-        </p>
-      )}
-
-      <div className="flex gap-3">
-        <Challenge14Card challengeDays={gamification.challenge_days} />
-        <StreakCard currentStreak={gamification.current_streak} />
+      <div className="space-y-3">
+        <SectionHeader title={translate("moreSection")} />
+        <DashboardMoreSection
+          lastMeasuredAt={latest?.measured_at ?? null}
+          gamification={gamification}
+        />
       </div>
 
-      <WeeklyGoalCard
-        count={gamification.weekly_count}
-        target={WEEKLY_GOAL_TARGET}
-      />
-
-      {latest && latest.risk_level !== "low" && <WhenToSeeDoctorCard />}
+      {latest && latest.risk_level !== "low" && !doctorCta.show && (
+        <WhenToSeeDoctorCard />
+      )}
 
       <DisclaimerBanner />
     </main>

@@ -9,6 +9,7 @@ import { InsightContextSection } from "@/components/ai-insight/InsightContextSec
 import { InsightWellnessTipsCard } from "@/components/ai-insight/InsightWellnessTipsCard";
 import { DisclaimerBanner } from "@/components/layout/DisclaimerBanner";
 import { AIInsightPageHeader } from "@/components/ai-insight/AIInsightPageHeader";
+import { SectionHeader } from "@/components/health/SectionHeader";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -59,23 +60,32 @@ export function AIInsightPageClient({
       <AIInsightPageHeader />
 
       {!insight ? (
-        <Card>
+        <Card className="app-card app-card--grouped border-0 shadow-none">
           <CardContent className="py-8 text-center text-sm text-[var(--text-secondary)]">
             {translate("noMeasurementData")}
           </CardContent>
         </Card>
       ) : (
         <>
-          <HolisticInsightCard
-            insight={insight}
-            sparklineData={sparklineData}
-          />
+          <div className="space-y-3">
+            <SectionHeader title={translate("pinnedSection")} />
+            <HolisticInsightCard
+              insight={insight}
+              sparklineData={sparklineData}
+            />
+          </div>
 
           <InsightContextSection measurements={measurements} />
 
-          <HolisticTrendSection measurements={measurements} insight={insight} />
+          <div className="space-y-3">
+            <SectionHeader title={translate("highlightsSection")} />
+            <HolisticTrendSection measurements={measurements} insight={insight} />
+          </div>
 
-          <InsightWellnessTipsCard tips={healthTips} />
+          <div className="space-y-3">
+            <SectionHeader title={translate("tipsSection")} />
+            <InsightWellnessTipsCard tips={healthTips} />
+          </div>
 
           {latest && (
             <Button variant="secondary" className="h-12 w-full gap-2" asChild>

@@ -9,9 +9,12 @@ import { HistoryPeriodControl } from "@/components/history/HistoryPeriodControl"
 import { HistoryRiskFilterChips } from "@/components/history/HistoryRiskFilterChips";
 import { TrendChart, type TrendMetric } from "@/components/dashboard/TrendChart";
 import { TrendChartInsight } from "@/components/dashboard/TrendChartInsight";
+import {
+  HealthGroupedCard,
+  SectionHeader,
+  SummaryPageHeader,
+} from "@/components/health";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { PageSectionHeader } from "@/components/shared/PageSectionHeader";
-import { TabPageHeader } from "@/components/shared/TabPageHeader";
 import { usePreferences } from "@/components/providers/PreferencesProvider";
 import {
   filterMeasurementsByPeriod,
@@ -85,19 +88,23 @@ export function HistoryPageClient({
 
   return (
     <main className="space-y-6 px-4 py-6">
-      <TabPageHeader
-        title={translate("historyTitle")}
-        subtitle={translate("historySubtitle")}
+      <SummaryPageHeader
+        titleKey="historyTitle"
+        subtitleKey="historySubtitle"
+        showGreeting={false}
       />
 
-      <HistoryPeriodControl
-        options={HISTORY_PERIOD_OPTIONS}
-        value={period}
-        onChange={setPeriod}
-        formatLabel={(p) => getHistoryPeriodLabel(locale, p)}
-      />
-
-      <HistoryRiskFilterChips value={riskFilter} onChange={setRiskFilter} />
+      <HealthGroupedCard>
+        <div className="space-y-3 p-4">
+          <HistoryPeriodControl
+            options={HISTORY_PERIOD_OPTIONS}
+            value={period}
+            onChange={setPeriod}
+            formatLabel={(p) => getHistoryPeriodLabel(locale, p)}
+          />
+          <HistoryRiskFilterChips value={riskFilter} onChange={setRiskFilter} />
+        </div>
+      </HealthGroupedCard>
 
       {latestInFilter && (
         <HistoryLatestHero
@@ -107,9 +114,13 @@ export function HistoryPageClient({
       )}
 
       <section className="space-y-3">
-        <PageSectionHeader
+        <SectionHeader
           title={translate("historyListTitle")}
-          subtitle={listSubtitle}
+          action={
+            <span className="text-pinned-caption text-[var(--text-secondary)]">
+              {listSubtitle}
+            </span>
+          }
         />
 
         {filtered.length === 0 ? (
@@ -126,16 +137,18 @@ export function HistoryPageClient({
         )}
       </section>
 
-      <TrendChart
-        data={trendData}
-        title={getPeriodChartTitle(locale, period)}
-        metric={metric}
-        onMetricChange={setMetric}
-        metricOptions={metricOptions}
-        formatMetricLabel={(m) => metricLabels[m]}
-      />
-
-      {trendInsight && <TrendChartInsight insight={trendInsight} />}
+      <section className="space-y-3">
+        <SectionHeader title={translate("highlightsSection")} />
+        <TrendChart
+          data={trendData}
+          title={getPeriodChartTitle(locale, period)}
+          metric={metric}
+          onMetricChange={setMetric}
+          metricOptions={metricOptions}
+          formatMetricLabel={(m) => metricLabels[m]}
+        />
+        {trendInsight && <TrendChartInsight insight={trendInsight} />}
+      </section>
 
       <DisclaimerBanner />
     </main>
